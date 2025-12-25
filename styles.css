@@ -4007,9 +4007,10 @@ body.nn-resizing {
     background: linear-gradient(to top, var(--nn-bottom-fade-bg) 0%, transparent 100%);
     background: linear-gradient(
         to top,
-        color-mix(in srgb, var(--nn-bottom-fade-bg) 70%, transparent) 0%,
-        color-mix(in srgb, var(--nn-bottom-fade-bg) 35%, transparent) 40%,
-        color-mix(in srgb, var(--nn-bottom-fade-bg) 12%, transparent) 70%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 85%, transparent) 0%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 55%, transparent) 38%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 25%, transparent) 68%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 10%, transparent) 86%,
         transparent 100%
     );
 }
