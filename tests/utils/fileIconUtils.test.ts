@@ -61,6 +61,12 @@ describe('resolveFileNameMatchIconId', () => {
         expect(resolveFileIconId(file, settings)).toBe(null);
         expect(resolveFileIconId(file, settings, { fileNameForMatch: 'Meeting notes' })).toBe('calendar');
     });
+
+    it('supports needles with trailing spaces', () => {
+        const needles = buildFileNameIconNeedles({ 'ai ': 'brain' });
+        expect(resolveFileNameMatchIconIdFromNeedles('AI notes', needles)).toBe('brain');
+        expect(resolveFileNameMatchIconIdFromNeedles('AInotes', needles)).toBe(null);
+    });
 });
 
 describe('resolveFileTypeIconKey', () => {

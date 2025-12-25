@@ -3,8 +3,10 @@ import {
     convertIconizeToIconId,
     convertIconIdToIconize,
     normalizeCanonicalIconId,
+    normalizeFileNameIconMapKey,
     normalizeFileTypeIconMapKey,
     parseIconMapText,
+    serializeIconMapRecord,
     serializeIconForFrontmatter,
     deserializeIconFromFrontmatter
 } from '../../src/utils/iconizeFormat';
@@ -149,5 +151,25 @@ describe('parseIconMapText', () => {
         const parsed = parseIconMapText('pdf=Si', normalizeFileTypeIconMapKey);
         expect(parsed.map.pdf).toBeUndefined();
         expect(parsed.invalidLines).toEqual(['pdf=Si']);
+    });
+
+    it('supports single-quoted file name keys with spaces', () => {
+        const parsed = parseIconMapText("'AI '=brain", normalizeFileNameIconMapKey);
+        expect(parsed.invalidLines).toEqual([]);
+        expect(parsed.map['ai ']).toBe('brain');
+    });
+});
+
+describe('serializeIconMapRecord', () => {
+    it('wraps keys containing whitespace in single quotes', () => {
+        const text = serializeIconMapRecord({ 'ai ': 'brain', meeting: 'calendar' });
+        expect(text).toBe("'ai '=brain\nmeeting=calendar");
+        expect(parseIconMapText(text, normalizeFileNameIconMapKey).map['ai ']).toBe('brain');
+    });
+
+    it("wraps keys starting with '#'", () => {
+        const text = serializeIconMapRecord({ '#inbox': 'calendar' });
+        expect(text).toBe("'#inbox'=calendar");
+        expect(parseIconMapText(text, normalizeFileNameIconMapKey).map['#inbox']).toBe('calendar');
     });
 });

@@ -82,7 +82,9 @@ export class FileIconRuleEditorModal extends Modal {
         this.titleEl.setText(this.options.title);
         this.contentEl.empty();
 
-        this.listEl = this.contentEl.createDiv({ cls: 'nn-file-icon-rule-editor-list' });
+        // Scroll container allows the list to scroll independently of the fixed footer
+        const scrollContainer = this.contentEl.createDiv({ cls: 'nn-file-icon-rule-editor-scroll' });
+        this.listEl = scrollContainer.createDiv({ cls: 'nn-file-icon-rule-editor-list' });
         this.renderRows();
         this.renderFooter();
         this.updateApplyButtonState();
@@ -206,7 +208,7 @@ export class FileIconRuleEditorModal extends Modal {
     private renderFooter(): void {
         this.disposeFooterDisposers();
 
-        const footer = this.contentEl.createDiv({ cls: 'nn-button-container' });
+        const footer = this.contentEl.createDiv({ cls: 'nn-file-icon-rule-editor-footer nn-button-container' });
 
         const addButton = footer.createEl('button', {
             attr: { type: 'button', 'aria-label': strings.modals.fileIconRuleEditor.addRuleAria }
@@ -245,6 +247,8 @@ export class FileIconRuleEditorModal extends Modal {
         const newRow = this.rows[this.rows.length - 1];
         const controls = this.rowControls.get(newRow.id);
         controls?.inputEl.focus();
+        // Ensure the new row is visible when the list is scrollable
+        controls?.rowEl.scrollIntoView({ block: 'nearest' });
     }
 
     /** Removes a rule row by its identifier */

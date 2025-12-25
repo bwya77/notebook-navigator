@@ -81,6 +81,7 @@ const RELEASE_NOTES: ReleaseNote[] = [
         ],
         improved: [
             'File name icons and file type icons can now be assigned from any installed icon pack.',
+            "You can now use spaces in file icon mappings, e.g. 'ai ' to prevent matching titles like 'mail'.",
             'Improved toolbar button layout on all Android devices and iOS devices running Obsidian 1.10 and earlier.'
         ],
         changed: [

@@ -66,9 +66,11 @@ export function buildFileNameIconNeedles(iconMap: Record<string, IconId>): FileN
             return;
         }
 
-        const needle = key.trim().toLowerCase();
+        // Preserve whitespace in the key to allow matching patterns like 'ai ' (with trailing space)
+        const needle = key.toLowerCase();
         const iconId = value.trim();
-        if (!needle || !iconId) {
+        // Reject keys that are empty when trimmed, but allow keys with leading/trailing whitespace
+        if (needle.trim().length === 0 || !iconId) {
             return;
         }
 

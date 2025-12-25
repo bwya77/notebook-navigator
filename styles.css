@@ -3222,6 +3222,15 @@ body.nn-resizing {
     flex-direction: column;
     gap: var(--size-2-2);
     padding: var(--size-4-4);
+    overflow: hidden;
+}
+
+.nn-file-icon-rule-editor-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+    padding-bottom: var(--size-1-5);
 }
 
 .nn-file-icon-rule-editor-list {
@@ -3229,10 +3238,13 @@ body.nn-resizing {
     flex-direction: column;
     gap: var(--size-1-5);
     width: 100%;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding-right: 4px;
+}
+
+.nn-file-icon-rule-editor-footer {
+    flex-shrink: 0;
+    margin-top: 0;
+    padding-top: var(--size-2-2);
+    border-top: 1px solid var(--background-modifier-border);
 }
 
 .nn-file-icon-rule-row {
