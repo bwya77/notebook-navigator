@@ -176,6 +176,7 @@ export const STRINGS_ES = {
         },
         folder: {
             newNote: 'Nueva nota',
+            newNoteFromTemplate: 'Nueva nota desde plantilla',
             newFolder: 'Nueva carpeta',
             newCanvas: 'Nuevo lienzo',
             newBase: 'Nueva base de datos',
@@ -520,6 +521,7 @@ export const STRINGS_ES = {
         selectVaultProfile3: 'Cambiar al perfil de bóveda 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Eliminar archivos', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Crear nueva nota', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Nueva nota desde plantilla', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Mover archivos', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Seleccionar siguiente archivo', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Seleccionar archivo anterior', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -587,7 +589,6 @@ export const STRINGS_ES = {
                 formatting: 'Formato'
             },
             navigation: {
-                behavior: 'Comportamiento',
                 appearance: 'Apariencia',
                 shortcutsAndRecent: 'Atajos y elementos recientes'
             },
@@ -834,6 +835,15 @@ export const STRINGS_ES = {
             showShortcuts: {
                 name: 'Mostrar accesos directos',
                 desc: 'Mostrar la sección de accesos directos en el panel de navegación.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Insignia de acceso directo',
+                desc: "Qué mostrar junto a los accesos directos. Usa los comandos 'Abrir acceso directo 1-9' para abrir los accesos directos directamente.",
+                options: {
+                    index: 'Posición (1-9)',
+                    count: 'Cantidad de elementos',
+                    none: 'Ninguno'
+                }
             },
             showRecentNotes: {
                 name: 'Mostrar notas recientes',

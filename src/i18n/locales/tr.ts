@@ -176,6 +176,7 @@ export const STRINGS_TR = {
         },
         folder: {
             newNote: 'Yeni not',
+            newNoteFromTemplate: 'Şablondan yeni not',
             newFolder: 'Yeni klasör',
             newCanvas: 'Yeni tuval',
             newBase: 'Yeni veritabanı',
@@ -519,6 +520,7 @@ export const STRINGS_TR = {
         selectVaultProfile3: 'Kasa profili 3 seç', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Dosyaları sil', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Yeni not oluştur', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Şablondan yeni not', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Dosyaları taşı', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Sonraki dosyayı seç', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Önceki dosyayı seç', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_TR = {
                 formatting: 'Biçimlendirme'
             },
             navigation: {
-                behavior: 'Davranış',
                 appearance: 'Görünüm',
                 shortcutsAndRecent: 'Kısayollar ve son öğeler'
             },
@@ -833,6 +834,15 @@ export const STRINGS_TR = {
             showShortcuts: {
                 name: 'Kısayolları göster',
                 desc: 'Gezinme bölmesinde kısayollar bölümünü görüntüle.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Kısayol rozeti',
+                desc: "Kısayolların yanında ne görüntüleneceği. Kısayolları doğrudan açmak için 'Kısayol 1-9 aç' komutlarını kullanın.",
+                options: {
+                    index: 'Konum (1-9)',
+                    count: 'Öğe sayısı',
+                    none: 'Yok'
+                }
             },
             showRecentNotes: {
                 name: 'Son notları göster',

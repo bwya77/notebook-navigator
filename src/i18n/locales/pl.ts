@@ -175,6 +175,7 @@ export const STRINGS_PL = {
         },
         folder: {
             newNote: 'Nowa notatka',
+            newNoteFromTemplate: 'Nowa notatka z szablonu',
             newFolder: 'Nowy folder',
             newCanvas: 'Nowa tablica',
             newBase: 'Nowa baza',
@@ -521,6 +522,7 @@ export const STRINGS_PL = {
         selectVaultProfile3: 'Zmień na profil sejfu 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Usuń pliki', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Utwórz nową notatkę', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Nowa notatka z szablonu', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Przenieś pliki', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Wybierz następny plik', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Wybierz poprzedni plik', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -588,7 +590,6 @@ export const STRINGS_PL = {
                 formatting: 'Formatowanie'
             },
             navigation: {
-                behavior: 'Zachowanie',
                 appearance: 'Wygląd',
                 shortcutsAndRecent: 'Skróty i ostatnie elementy'
             },
@@ -835,6 +836,15 @@ export const STRINGS_PL = {
             showShortcuts: {
                 name: 'Pokaż skróty',
                 desc: 'Wyświetl sekcję skrótów w panelu nawigacji.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Plakietka skrótu',
+                desc: "Co wyświetlić obok skrótów. Użyj poleceń 'Otwórz skrót 1-9', aby otwierać skróty bezpośrednio.",
+                options: {
+                    index: 'Pozycja (1-9)',
+                    count: 'Liczba elementów',
+                    none: 'Brak'
+                }
             },
             showRecentNotes: {
                 name: 'Pokaż ostatnie notatki',

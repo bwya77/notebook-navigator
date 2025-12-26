@@ -177,6 +177,7 @@ export const STRINGS_PT_BR = {
         },
         folder: {
             newNote: 'Nova nota',
+            newNoteFromTemplate: 'Nova nota a partir de modelo',
             newFolder: 'Nova pasta',
             newCanvas: 'Nova tela',
             newBase: 'Nova base',
@@ -520,6 +521,7 @@ export const STRINGS_PT_BR = {
         selectVaultProfile3: 'Alterar para o perfil do cofre 3',
         deleteFile: 'Excluir arquivos',
         createNewNote: 'Criar nova nota',
+        createNewNoteFromTemplate: 'Nova nota a partir de modelo',
         moveFiles: 'Mover arquivos',
         selectNextFile: 'Selecionar próximo arquivo',
         selectPreviousFile: 'Selecionar arquivo anterior',
@@ -587,7 +589,6 @@ export const STRINGS_PT_BR = {
                 formatting: 'Formatação'
             },
             navigation: {
-                behavior: 'Comportamento',
                 appearance: 'Aparência',
                 shortcutsAndRecent: 'Atalhos e itens recentes'
             },
@@ -834,6 +835,15 @@ export const STRINGS_PT_BR = {
             showShortcuts: {
                 name: 'Mostrar atalhos',
                 desc: 'Exibir a seção de atalhos no painel de navegação.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Distintivo de atalho',
+                desc: "O que exibir ao lado dos atalhos. Use os comandos 'Abrir atalho 1-9' para abrir atalhos diretamente.",
+                options: {
+                    index: 'Posição (1-9)',
+                    count: 'Contagem de itens',
+                    none: 'Nenhum'
+                }
             },
             showRecentNotes: {
                 name: 'Mostrar notas recentes',

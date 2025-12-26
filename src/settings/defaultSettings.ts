@@ -78,6 +78,7 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
     // Navigation pane tab - Shortcuts & recent items
     showSectionIcons: true,
     showShortcuts: true,
+    shortcutBadgeDisplay: 'index',
     skipAutoScroll: false,
     showRecentNotes: true,
     recentNotesCount: 5,

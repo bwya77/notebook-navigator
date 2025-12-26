@@ -48,6 +48,7 @@ import { getNavigationPaneSizing } from '../utils/paneSizing';
 import { getAndroidFontScale } from '../utils/androidFontScale';
 import { getBackgroundClasses } from '../utils/paneLayout';
 import { confirmRemoveAllTagsFromFiles, openAddTagToFilesModal, removeTagFromFilesWithPrompt } from '../utils/tagModalHelpers';
+import { getTemplaterCreateNewNoteFromTemplate } from '../utils/templaterIntegration';
 import { useNavigatorScale } from '../hooks/useNavigatorScale';
 import { ListPane } from './ListPane';
 import type { ListPaneHandle } from './ListPane';
@@ -85,6 +86,7 @@ export interface NotebookNavigatorHandle {
     focusNavigationPane: () => void;
     deleteActiveFile: () => void;
     createNoteInSelectedFolder: () => Promise<void>;
+    createNoteFromTemplateInSelectedFolder: () => Promise<void>;
     moveSelectedFiles: () => Promise<void>;
     addShortcutForCurrentSelection: () => Promise<void>;
     navigateToFolder: (folder: TFolder, options?: NavigateToFolderOptions) => void;
@@ -536,6 +538,19 @@ export const NotebookNavigatorComponent = React.memo(
 
                     // Use the same logic as the context menu
                     await fileSystemOps.createNewFile(selectionState.selectedFolder);
+                },
+                createNoteFromTemplateInSelectedFolder: async () => {
+                    if (!selectionState.selectedFolder) {
+                        showNotice(strings.fileSystem.errors.noFolderSelected, { variant: 'warning' });
+                        return;
+                    }
+
+                    const createNewNoteFromTemplate = getTemplaterCreateNewNoteFromTemplate(app);
+                    if (!createNewNoteFromTemplate) {
+                        return;
+                    }
+
+                    await createNewNoteFromTemplate(selectionState.selectedFolder);
                 },
                 moveSelectedFiles: async () => {
                     // Get selected files

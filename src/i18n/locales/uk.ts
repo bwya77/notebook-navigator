@@ -176,6 +176,7 @@ export const STRINGS_UK = {
         },
         folder: {
             newNote: 'Нова нотатка',
+            newNoteFromTemplate: 'Нова нотатка з шаблону',
             newFolder: 'Нова папка',
             newCanvas: 'Нове полотно',
             newBase: 'Нова база даних',
@@ -519,6 +520,7 @@ export const STRINGS_UK = {
         selectVaultProfile3: 'Вибрати профіль сховища 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Видалити файли', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Створити нову нотатку', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Нова нотатка з шаблону', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Перемістити файли', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Вибрати наступний файл', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Вибрати попередній файл', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_UK = {
                 formatting: 'Форматування'
             },
             navigation: {
-                behavior: 'Поведінка',
                 appearance: 'Вигляд',
                 shortcutsAndRecent: 'Ярлики та нещодавні елементи'
             },
@@ -833,6 +834,15 @@ export const STRINGS_UK = {
             showShortcuts: {
                 name: 'Показувати ярлики',
                 desc: 'Відображати розділ ярликів у панелі навігації.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Значок ярлика',
+                desc: "Що відображати біля ярликів. Використовуйте команди 'Відкрити ярлик 1-9' для прямого відкриття ярликів.",
+                options: {
+                    index: 'Позиція (1-9)',
+                    count: 'Кількість елементів',
+                    none: 'Немає'
+                }
             },
             showRecentNotes: {
                 name: 'Показувати останні нотатки',

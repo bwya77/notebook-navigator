@@ -176,6 +176,7 @@ export const STRINGS_FA = {
         },
         folder: {
             newNote: 'یادداشت جدید',
+            newNoteFromTemplate: 'یادداشت جدید از قالب',
             newFolder: 'پوشه جدید',
             newCanvas: 'بوم جدید',
             newBase: 'پایگاه جدید',
@@ -519,6 +520,7 @@ export const STRINGS_FA = {
         selectVaultProfile3: 'انتخاب پروفایل خزانه ۳',
         deleteFile: 'حذف فایل‌ها',
         createNewNote: 'ایجاد یادداشت جدید',
+        createNewNoteFromTemplate: 'یادداشت جدید از قالب',
         moveFiles: 'انتقال فایل‌ها',
         selectNextFile: 'انتخاب فایل بعدی',
         selectPreviousFile: 'انتخاب فایل قبلی',
@@ -586,7 +588,6 @@ export const STRINGS_FA = {
                 formatting: 'قالب‌بندی'
             },
             navigation: {
-                behavior: 'رفتار',
                 appearance: 'ظاهر',
                 shortcutsAndRecent: 'میانبرها و موارد اخیر'
             },
@@ -833,6 +834,15 @@ export const STRINGS_FA = {
             showShortcuts: {
                 name: 'نمایش میانبرها',
                 desc: 'بخش میانبرها را در پنل ناوبری نمایش دهید.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'نشان میانبر',
+                desc: "چه چیزی در کنار میانبرها نمایش داده شود. از دستورات 'باز کردن میانبر 1-9' برای باز کردن مستقیم میانبرها استفاده کنید.",
+                options: {
+                    index: 'موقعیت (1-9)',
+                    count: 'تعداد موارد',
+                    none: 'هیچ'
+                }
             },
             showRecentNotes: {
                 name: 'نمایش یادداشت‌های اخیر',

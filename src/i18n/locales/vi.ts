@@ -176,6 +176,7 @@ export const STRINGS_VI = {
         },
         folder: {
             newNote: 'Ghi chú mới',
+            newNoteFromTemplate: 'Ghi chú mới từ mẫu',
             newFolder: 'Thư mục mới',
             newCanvas: 'Canvas mới',
             newBase: 'Cơ sở dữ liệu mới',
@@ -519,6 +520,7 @@ export const STRINGS_VI = {
         selectVaultProfile3: 'Chọn hồ sơ vault 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Xóa tệp', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Tạo ghi chú mới', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Ghi chú mới từ mẫu', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Di chuyển tệp', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Chọn tệp tiếp theo', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Chọn tệp trước', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_VI = {
                 formatting: 'Định dạng'
             },
             navigation: {
-                behavior: 'Hành vi',
                 appearance: 'Giao diện',
                 shortcutsAndRecent: 'Phím tắt và mục gần đây'
             },
@@ -833,6 +834,15 @@ export const STRINGS_VI = {
             showShortcuts: {
                 name: 'Hiện lối tắt',
                 desc: 'Hiển thị phần lối tắt trong ngăn điều hướng.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Huy hiệu lối tắt',
+                desc: "Nội dung hiển thị bên cạnh lối tắt. Sử dụng lệnh 'Mở lối tắt 1-9' để mở lối tắt trực tiếp.",
+                options: {
+                    index: 'Vị trí (1-9)',
+                    count: 'Số lượng mục',
+                    none: 'Không có'
+                }
             },
             showRecentNotes: {
                 name: 'Hiện ghi chú gần đây',

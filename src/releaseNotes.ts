@@ -76,9 +76,13 @@ const RELEASE_NOTES: ReleaseNote[] = [
         version: '1.9.4',
         date: '2025-12-29',
         showOnUpdate: true,
+        info: '==Templater support!== You can now create new notes from templates directly in the navigation pane or in current folder/tag using the new command! Also lots of other improvements in this release like a new visual editor for file icons. Happy new year! 🎉',
         new: [
             '==File name icons and file type icons can now be edited with a new visual editor==. Just click the new **edit button** next to each text field in Settings > Notes > Icons.',
-            'New commands: ==Open shortcut 1-9==. Use this to quickly open files, navigate to folders/tags, or load a custom search filter.',
+            'New menu command: ==New file from template==. If you have the plugin **Templater** installed you can now create new notes with templates directly from the navigation pane!',
+            'New command: ==Create new note from template==. If you have the plugin **Templater** installed you can now create a new note with template in the current folder or tag.',
+            'New commands: ==Open shortcut 1-9==. Use this to quickly open your shortcut files, navigate to folders/tags, or load a custom search filter.',
+            'New setting: Navigation pane > Shortcuts & recent items > ==Shortcut badge==. You can now choose to show index number (1-9), item count or no badge next to shortcuts. Default is index (1-9).',
             'New theme variable: ==--nn-theme-mobile-bg== to change mobile background color. Set it in Style settings or through themes / CSS.'
         ],
         improved: [

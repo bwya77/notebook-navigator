@@ -176,6 +176,7 @@ export const STRINGS_EN = {
         },
         folder: {
             newNote: 'New note',
+            newNoteFromTemplate: 'New note from template',
             newFolder: 'New folder',
             newCanvas: 'New canvas',
             newBase: 'New base',
@@ -519,6 +520,7 @@ export const STRINGS_EN = {
         selectVaultProfile3: 'Select vault profile 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Delete files', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Create new note', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Create new note from template', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Move files', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Select next file', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Select previous file', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_EN = {
                 formatting: 'Formatting'
             },
             navigation: {
-                behavior: 'Behavior',
                 appearance: 'Appearance',
                 shortcutsAndRecent: 'Shortcuts & recent items'
             },
@@ -833,6 +834,15 @@ export const STRINGS_EN = {
             showShortcuts: {
                 name: 'Show shortcuts',
                 desc: 'Display the shortcuts section in the navigation pane.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Shortcut badge',
+                desc: "What to display next to shortcuts. Use 'Open shortcut 1-9' commands to open shortcuts directly.",
+                options: {
+                    index: 'Position (1-9)',
+                    count: 'Item counts',
+                    none: 'None'
+                }
             },
             showRecentNotes: {
                 name: 'Show recent notes',

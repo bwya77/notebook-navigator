@@ -259,6 +259,19 @@ export const NavigationPane = React.memo(
             hasFolderShortcut,
             hasNoteShortcut
         } = shortcuts;
+        const effectiveShortcutBadgeDisplay = settings.shortcutBadgeDisplay;
+        const shouldShowShortcutCounts = effectiveShortcutBadgeDisplay === 'count';
+        const shortcutNumberBadgesByKey = useMemo(() => {
+            if (effectiveShortcutBadgeDisplay !== 'index') {
+                return new Map<string, string>();
+            }
+
+            const badgeMap = new Map<string, string>();
+            hydratedShortcuts.slice(0, 9).forEach((shortcut, index) => {
+                badgeMap.set(shortcut.key, String(index + 1));
+            });
+            return badgeMap;
+        }, [effectiveShortcutBadgeDisplay, hydratedShortcuts]);
         const { fileData, getFileDisplayName } = useFileCache();
         // Detect Android platform for toolbar placement
         const isAndroid = Platform.isAndroidApp;
@@ -1944,7 +1957,8 @@ export const NavigationPane = React.memo(
                             }
                             return getPathBaseName(folderPath);
                         })();
-                        const folderCountInfo = canInteract && folder ? getFolderShortcutCount(folder) : ZERO_NOTE_COUNT;
+                        const folderCountInfo =
+                            canInteract && folder && shouldShowShortcutCounts ? getFolderShortcutCount(folder) : ZERO_NOTE_COUNT;
                         const folderNote = canInteract && folder && settings.enableFolderNotes ? getFolderNote(folder, settings) : null;
 
                         const dragHandlers = buildShortcutExternalHandlers(item.key);
@@ -1964,7 +1978,9 @@ export const NavigationPane = React.memo(
                             description: undefined,
                             level: item.level,
                             type: 'folder' as const,
-                            countInfo: !isMissing ? folderCountInfo : undefined,
+                            countInfo: !isMissing && shouldShowShortcutCounts ? folderCountInfo : undefined,
+                            badge: shortcutNumberBadgesByKey.get(item.key),
+                            forceShowCount: shouldShowShortcutCounts,
                             isExcluded: !isMissing ? item.isExcluded : undefined,
                             isDisabled: isMissing,
                             isMissing,
@@ -2034,6 +2050,8 @@ export const NavigationPane = React.memo(
                             description: undefined,
                             level: item.level,
                             type: 'note' as const,
+                            badge: shortcutNumberBadgesByKey.get(item.key),
+                            forceShowCount: shouldShowShortcutCounts,
                             isDisabled: isMissing,
                             isMissing,
                             onClick: () => {
@@ -2079,6 +2097,8 @@ export const NavigationPane = React.memo(
                             label: searchShortcut.name,
                             level: item.level,
                             type: 'search' as const,
+                            badge: shortcutNumberBadgesByKey.get(item.key),
+                            forceShowCount: shouldShowShortcutCounts,
                             onClick: () => handleShortcutSearchActivate(item.key, searchShortcut),
                             onContextMenu: (event: React.MouseEvent<HTMLDivElement>) =>
                                 handleShortcutContextMenu(event, {
@@ -2106,7 +2126,7 @@ export const NavigationPane = React.memo(
                     case NavigationPaneItemType.SHORTCUT_TAG: {
                         const isMissing = Boolean(item.isMissing);
                         const tagPath = isTagShortcut(item.shortcut) ? item.shortcut.tagPath : item.tagPath;
-                        const tagCountInfo = !isMissing ? getTagShortcutCount(tagPath) : ZERO_NOTE_COUNT;
+                        const tagCountInfo = !isMissing && shouldShowShortcutCounts ? getTagShortcutCount(tagPath) : ZERO_NOTE_COUNT;
 
                         const dragHandlers = buildShortcutExternalHandlers(item.key);
                         const isDragSource = shouldUseShortcutDnd && activeShortcutId === item.key;
@@ -2124,7 +2144,9 @@ export const NavigationPane = React.memo(
                             description: undefined,
                             level: item.level,
                             type: 'tag' as const,
-                            countInfo: !isMissing ? tagCountInfo : undefined,
+                            countInfo: !isMissing && shouldShowShortcutCounts ? tagCountInfo : undefined,
+                            badge: shortcutNumberBadgesByKey.get(item.key),
+                            forceShowCount: shouldShowShortcutCounts,
                             isDisabled: isMissing,
                             isMissing,
                             onClick: () => {
@@ -2430,6 +2452,8 @@ export const NavigationPane = React.memo(
                 handleShortcutContextMenu,
                 buildShortcutExternalHandlers,
                 hydratedShortcuts,
+                shortcutNumberBadgesByKey,
+                shouldShowShortcutCounts,
                 shortcutsExpanded,
                 shouldPinShortcuts,
                 recentNotesExpanded,

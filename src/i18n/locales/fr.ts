@@ -176,6 +176,7 @@ export const STRINGS_FR = {
         },
         folder: {
             newNote: 'Nouvelle note',
+            newNoteFromTemplate: 'Nouvelle note depuis un modèle',
             newFolder: 'Nouveau dossier',
             newCanvas: 'Nouveau canevas',
             newBase: 'Nouvelle base de données',
@@ -520,6 +521,7 @@ export const STRINGS_FR = {
         selectVaultProfile3: 'Changer vers le profil du coffre 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Supprimer les fichiers', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Créer une nouvelle note', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Nouvelle note depuis un modèle', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Déplacer les fichiers', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Sélectionner le fichier suivant', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Sélectionner le fichier précédent', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -587,7 +589,6 @@ export const STRINGS_FR = {
                 formatting: 'Formatage'
             },
             navigation: {
-                behavior: 'Comportement',
                 appearance: 'Apparence',
                 shortcutsAndRecent: 'Raccourcis et éléments récents'
             },
@@ -835,6 +836,15 @@ export const STRINGS_FR = {
             showShortcuts: {
                 name: 'Afficher les raccourcis',
                 desc: 'Afficher la section des raccourcis dans le panneau de navigation.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Badge de raccourci',
+                desc: "Contenu affiché à côté des raccourcis. Utilisez les commandes 'Ouvrir le raccourci 1-9' pour ouvrir les raccourcis directement.",
+                options: {
+                    index: 'Position (1-9)',
+                    count: "Nombre d'éléments",
+                    none: 'Aucun'
+                }
             },
             showRecentNotes: {
                 name: 'Afficher les notes récentes',

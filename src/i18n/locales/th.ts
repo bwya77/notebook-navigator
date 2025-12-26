@@ -176,6 +176,7 @@ export const STRINGS_TH = {
         },
         folder: {
             newNote: 'โน้ตใหม่',
+            newNoteFromTemplate: 'โน้ตใหม่จากเทมเพลต',
             newFolder: 'โฟลเดอร์ใหม่',
             newCanvas: 'Canvas ใหม่',
             newBase: 'Base ใหม่',
@@ -519,6 +520,7 @@ export const STRINGS_TH = {
         selectVaultProfile3: 'เลือกโปรไฟล์ห้องนิรภัย 3',
         deleteFile: 'ลบไฟล์',
         createNewNote: 'สร้างโน้ตใหม่',
+        createNewNoteFromTemplate: 'โน้ตใหม่จากเทมเพลต',
         moveFiles: 'ย้ายไฟล์',
         selectNextFile: 'เลือกไฟล์ถัดไป',
         selectPreviousFile: 'เลือกไฟล์ก่อนหน้า',
@@ -586,7 +588,6 @@ export const STRINGS_TH = {
                 formatting: 'การจัดรูปแบบ'
             },
             navigation: {
-                behavior: 'พฤติกรรม',
                 appearance: 'ลักษณะ',
                 shortcutsAndRecent: 'ทางลัดและรายการล่าสุด'
             },
@@ -833,6 +834,15 @@ export const STRINGS_TH = {
             showShortcuts: {
                 name: 'แสดงทางลัด',
                 desc: 'แสดงส่วนทางลัดในแผงนำทาง'
+            },
+            shortcutBadgeDisplay: {
+                name: 'ป้ายทางลัด',
+                desc: "สิ่งที่จะแสดงถัดจากทางลัด ใช้คำสั่ง 'เปิดทางลัด 1-9' เพื่อเปิดทางลัดโดยตรง",
+                options: {
+                    index: 'ตำแหน่ง (1-9)',
+                    count: 'จำนวนรายการ',
+                    none: 'ไม่มี'
+                }
             },
             showRecentNotes: {
                 name: 'แสดงโน้ตล่าสุด',

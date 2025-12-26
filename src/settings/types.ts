@@ -52,6 +52,9 @@ export type MultiSelectModifier = 'cmdCtrl' | 'optionAlt';
 /** Display options for list pane title */
 export type ListPaneTitleOption = 'header' | 'list' | 'hidden';
 
+/** Display options for shortcut row badges in the navigation pane */
+export type ShortcutBadgeDisplayMode = 'index' | 'count' | 'none';
+
 /** Default display modes for list items */
 export type ListDisplayMode = 'standard' | 'compact';
 
@@ -126,6 +129,7 @@ export interface NotebookNavigatorSettings {
     // Navigation pane tab - Shortcuts & recent items
     showSectionIcons: boolean;
     showShortcuts: boolean;
+    shortcutBadgeDisplay: ShortcutBadgeDisplayMode;
     skipAutoScroll: boolean;
     showRecentNotes: boolean;
     recentNotesCount: number;

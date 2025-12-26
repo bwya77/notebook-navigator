@@ -313,6 +313,13 @@ export class NotebookNavigatorView extends ItemView {
     }
 
     /**
+     * Creates a new note from a template in the currently selected folder
+     */
+    async createNoteFromTemplateInSelectedFolder(): Promise<void> {
+        await this.componentRef.current?.createNoteFromTemplateInSelectedFolder();
+    }
+
+    /**
      * Moves selected files to another folder using the folder suggest modal
      */
     async moveSelectedFiles(): Promise<void> {

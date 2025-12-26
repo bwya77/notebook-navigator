@@ -176,6 +176,7 @@ export const STRINGS_ZH_CN = {
         },
         folder: {
             newNote: '新笔记',
+            newNoteFromTemplate: '从模板新建笔记',
             newFolder: '新建文件夹',
             newCanvas: '新建画布',
             newBase: '新建数据库',
@@ -520,6 +521,7 @@ export const STRINGS_ZH_CN = {
         selectVaultProfile3: '切换到仓库配置文件 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: '删除文件', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: '创建新笔记', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: '从模板新建笔记', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: '移动文件', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: '选择下一个文件', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: '选择上一个文件', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -587,7 +589,6 @@ export const STRINGS_ZH_CN = {
                 formatting: '格式'
             },
             navigation: {
-                behavior: '行为',
                 appearance: '外观',
                 shortcutsAndRecent: '快捷方式和最近项目'
             },
@@ -833,6 +834,15 @@ export const STRINGS_ZH_CN = {
             showShortcuts: {
                 name: '显示快捷方式',
                 desc: '在导航窗格中显示快捷方式部分。'
+            },
+            shortcutBadgeDisplay: {
+                name: '快捷方式徽章',
+                desc: '在快捷方式旁边显示的内容。使用"打开快捷方式1-9"命令可直接打开快捷方式。',
+                options: {
+                    index: '位置 (1-9)',
+                    count: '项目计数',
+                    none: '无'
+                }
             },
             showRecentNotes: {
                 name: '显示最近笔记',

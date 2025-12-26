@@ -176,6 +176,7 @@ export const STRINGS_PT = {
         },
         folder: {
             newNote: 'Nova nota',
+            newNoteFromTemplate: 'Nova nota a partir de modelo',
             newFolder: 'Nova pasta',
             newCanvas: 'Nova tela',
             newBase: 'Nova base de dados',
@@ -519,6 +520,7 @@ export const STRINGS_PT = {
         selectVaultProfile3: 'Selecionar perfil do cofre 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Eliminar ficheiros', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Criar nova nota', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Nova nota a partir de modelo', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Mover ficheiros', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Selecionar ficheiro seguinte', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Selecionar ficheiro anterior', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_PT = {
                 formatting: 'Formatação'
             },
             navigation: {
-                behavior: 'Comportamento',
                 appearance: 'Aparência',
                 shortcutsAndRecent: 'Atalhos e itens recentes'
             },
@@ -833,6 +834,15 @@ export const STRINGS_PT = {
             showShortcuts: {
                 name: 'Mostrar atalhos',
                 desc: 'Exibir a secção de atalhos no painel de navegação.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Distintivo de atalho',
+                desc: "O que exibir ao lado dos atalhos. Use os comandos 'Abrir atalho 1-9' para abrir atalhos diretamente.",
+                options: {
+                    index: 'Posição (1-9)',
+                    count: 'Contagem de itens',
+                    none: 'Nenhum'
+                }
             },
             showRecentNotes: {
                 name: 'Mostrar notas recentes',

@@ -176,6 +176,7 @@ export const STRINGS_JA = {
         },
         folder: {
             newNote: '新規ノート',
+            newNoteFromTemplate: 'テンプレートから新規ノート',
             newFolder: '新規フォルダ',
             newCanvas: '新規キャンバス',
             newBase: '新規データベース',
@@ -520,6 +521,7 @@ export const STRINGS_JA = {
         selectVaultProfile3: '保管庫プロファイル3を選択', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'ファイルを削除', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: '新規ノートを作成', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'テンプレートから新規ノート', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'ファイルを移動', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: '次のファイルを選択', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: '前のファイルを選択', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -587,7 +589,6 @@ export const STRINGS_JA = {
                 formatting: '書式'
             },
             navigation: {
-                behavior: '動作',
                 appearance: '外観',
                 shortcutsAndRecent: 'ショートカットと最近の項目'
             },
@@ -834,6 +835,15 @@ export const STRINGS_JA = {
             showShortcuts: {
                 name: 'ショートカットを表示',
                 desc: 'ナビゲーションペインにショートカットセクションを表示します。'
+            },
+            shortcutBadgeDisplay: {
+                name: 'ショートカットバッジ',
+                desc: 'ショートカットの横に表示する内容。「ショートカット1-9を開く」コマンドでショートカットを直接開けます。',
+                options: {
+                    index: '位置 (1-9)',
+                    count: 'アイテム数',
+                    none: 'なし'
+                }
             },
             showRecentNotes: {
                 name: '最近のノートを表示',

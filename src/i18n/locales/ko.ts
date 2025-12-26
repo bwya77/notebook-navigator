@@ -175,6 +175,7 @@ export const STRINGS_KO = {
         },
         folder: {
             newNote: '새 노트',
+            newNoteFromTemplate: '템플릿으로 새 노트',
             newFolder: '새 폴더',
             newCanvas: '새 캔버스',
             newBase: '새 베이스',
@@ -519,6 +520,7 @@ export const STRINGS_KO = {
         selectVaultProfile3: '보관소 프로필 3 선택', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: '파일 삭제', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: '새 노트 만들기', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: '템플릿으로 새 노트', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: '파일 이동', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: '다음 파일 선택', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: '이전 파일 선택', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_KO = {
                 formatting: '서식'
             },
             navigation: {
-                behavior: '동작',
                 appearance: '모양',
                 shortcutsAndRecent: '바로가기 및 최근 항목'
             },
@@ -833,6 +834,15 @@ export const STRINGS_KO = {
             showShortcuts: {
                 name: '바로가기 표시',
                 desc: '탐색 창에 바로가기 섹션을 표시합니다.'
+            },
+            shortcutBadgeDisplay: {
+                name: '바로가기 배지',
+                desc: "바로가기 옆에 표시할 내용. '바로가기 1-9 열기' 명령으로 바로가기를 직접 열 수 있습니다.",
+                options: {
+                    index: '위치 (1-9)',
+                    count: '항목 수',
+                    none: '없음'
+                }
             },
             showRecentNotes: {
                 name: '최근 노트 표시',

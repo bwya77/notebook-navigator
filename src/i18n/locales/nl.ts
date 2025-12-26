@@ -177,6 +177,7 @@ export const STRINGS_NL = {
         },
         folder: {
             newNote: 'Nieuwe notitie',
+            newNoteFromTemplate: 'Nieuwe notitie uit sjabloon',
             newFolder: 'Nieuwe map',
             newCanvas: 'Nieuw canvas',
             newBase: 'Nieuwe base',
@@ -521,6 +522,7 @@ export const STRINGS_NL = {
         selectVaultProfile3: 'Kluisprofiel 3 selecteren',
         deleteFile: 'Bestanden verwijderen',
         createNewNote: 'Nieuwe notitie maken',
+        createNewNoteFromTemplate: 'Nieuwe notitie uit sjabloon',
         moveFiles: 'Bestanden verplaatsen',
         selectNextFile: 'Volgend bestand selecteren',
         selectPreviousFile: 'Vorig bestand selecteren',
@@ -588,7 +590,6 @@ export const STRINGS_NL = {
                 formatting: 'Opmaak'
             },
             navigation: {
-                behavior: 'Gedrag',
                 appearance: 'Uiterlijk',
                 shortcutsAndRecent: 'Snelkoppelingen en recente items'
             },
@@ -835,6 +836,15 @@ export const STRINGS_NL = {
             showShortcuts: {
                 name: 'Snelkoppelingen tonen',
                 desc: 'De sectie snelkoppelingen weergeven in het navigatiepaneel.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Snelkoppeling badge',
+                desc: "Wat naast snelkoppelingen weergeven. Gebruik de commando's 'Snelkoppeling 1-9 openen' om snelkoppelingen direct te openen.",
+                options: {
+                    index: 'Positie (1-9)',
+                    count: 'Aantal items',
+                    none: 'Geen'
+                }
             },
             showRecentNotes: {
                 name: 'Recente notities tonen',

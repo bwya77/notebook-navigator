@@ -176,6 +176,7 @@ export const STRINGS_ZH_TW = {
         },
         folder: {
             newNote: '新筆記',
+            newNoteFromTemplate: '從範本建立新筆記',
             newFolder: '新資料夾',
             newCanvas: '新畫布',
             newBase: '新 Base',
@@ -519,6 +520,7 @@ export const STRINGS_ZH_TW = {
         selectVaultProfile3: '切換到倉庫設定檔 3', // 指令面板：不開對話框直接啟用第三個倉庫設定檔 (英文: Select vault profile 3)
         deleteFile: '刪除檔案', // 指令面板：刪除目前活動的檔案 (英文: Delete file)
         createNewNote: '建立新筆記', // 指令面板：在目前選取的資料夾中建立新筆記 (英文: Create new note)
+        createNewNoteFromTemplate: '從範本建立新筆記', // 指令面板：在目前選取的資料夾中從範本建立新筆記 (英文: Create new note from template)
         moveFiles: '移動檔案', // 指令面板：將選取的檔案移動至另一個資料夾 (英文: Move files)
         selectNextFile: '選擇下一個檔案', // 指令面板：選取目前檢視中的下一個檔案 (英文: Select next file)
         selectPreviousFile: '選擇上一個檔案', // 指令面板：選取目前檢視中的上一個檔案 (英文: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_ZH_TW = {
                 formatting: '格式'
             },
             navigation: {
-                behavior: '行為',
                 appearance: '外觀',
                 shortcutsAndRecent: '捷徑和最近項目'
             },
@@ -832,6 +833,15 @@ export const STRINGS_ZH_TW = {
             showShortcuts: {
                 name: '顯示捷徑',
                 desc: '在導覽窗格中顯示捷徑區段。'
+            },
+            shortcutBadgeDisplay: {
+                name: '捷徑徽章',
+                desc: '在捷徑旁邊顯示的內容。使用「開啟捷徑1-9」命令可直接開啟捷徑。',
+                options: {
+                    index: '位置 (1-9)',
+                    count: '項目計數',
+                    none: '無'
+                }
             },
             showRecentNotes: {
                 name: '顯示最近筆記',

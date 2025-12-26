@@ -416,6 +416,7 @@ Set custom hotkeys for these commands in Obsidian's Hotkeys settings:
 **Note:** When creating new notes in Obsidian you can choose the `Default location for new notes` in Obsidian settings. This can be the the root folder, same folder as current file, or a specific folder. When working with Notebook Navigator, especially with the setting `Show notes from descendants` enabled, none of these options are preferred. Instead you always want to create new notes in the currently selected folder (for example if you have `Show notes from descendants` on, and have a note in a descendant folder selected, you do not want the new note to appear in the descendant folder). The same also applies to moving and deleting files. This is why you should use these commands instead of the built-in Obsidian commands when using Notebook Navigator.
 
 - `Notebook Navigator: Create new note` Create note in currently selected folder. **Suggestion:** Bind `Cmd/Ctrl+N` to this command (unbind from Obsidian's default "Create new note" first)
+- `Notebook Navigator: Create new note from template` Create note from template in currently selected folder (requires Templater)
 - `Notebook Navigator: Move files` Move selected files to another folder. Selects next file in current folder
 - `Notebook Navigator: Convert to folder note` Create a folder matching the file name and move the file inside as the folder note
 - `Notebook Navigator: Set as folder note` Rename the active file to its folder note name
@@ -463,6 +464,7 @@ Set custom hotkeys for these commands in Obsidian's Hotkeys settings:
 | `notebook-navigator:toggle-tag-sort`        | Notebook Navigator: Toggle tag sort                                                                  |
 | `notebook-navigator:collapse-expand`        | Notebook Navigator: Collapse / expand all items                                                      |
 | `notebook-navigator:new-note`               | Notebook Navigator: Create new note                                                                  |
+| `notebook-navigator:new-note-from-template` | Notebook Navigator: Create new note from template                                                    |
 | `notebook-navigator:move-files`             | Notebook Navigator: Move files                                                                       |
 | `notebook-navigator:select-next-file`       | Notebook Navigator: Select next file                                                                 |
 | `notebook-navigator:select-previous-file`   | Notebook Navigator: Select previous file                                                             |

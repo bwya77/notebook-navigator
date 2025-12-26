@@ -18,6 +18,7 @@ import { STORAGE_KEYS, type VisibilityPreferences } from '../../types';
 import { normalizeTagPath } from '../../utils/tagUtils';
 import { getFilesForFolder, getFilesForTag } from '../../utils/fileFinder';
 import { isNoteShortcut, type ShortcutEntry } from '../../types/shortcuts';
+import { getTemplaterCreateNewNoteFromTemplate } from '../../utils/templaterIntegration';
 
 /**
  * Reveals the navigator view and focuses whichever pane is currently visible
@@ -393,6 +394,31 @@ export default function registerNavigatorCommands(plugin: NotebookNavigatorPlugi
                     await view.createNoteInSelectedFolder();
                 }
             });
+        }
+    });
+
+    // Command to create a new note from template in the currently selected folder (requires Templater)
+    plugin.addCommand({
+        id: 'new-note-from-template',
+        name: strings.commands.createNewNoteFromTemplate,
+        checkCallback: (checking: boolean) => {
+            const createNewNoteFromTemplate = getTemplaterCreateNewNoteFromTemplate(plugin.app);
+            if (!createNewNoteFromTemplate) {
+                return false;
+            }
+
+            if (checking) {
+                return true;
+            }
+
+            runAsyncAction(async () => {
+                const view = await ensureNavigatorOpen(plugin);
+                if (view) {
+                    await view.createNoteFromTemplateInSelectedFolder();
+                }
+            });
+
+            return true;
         }
     });
 

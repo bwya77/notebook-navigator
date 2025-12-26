@@ -176,6 +176,7 @@ export const STRINGS_ID = {
         },
         folder: {
             newNote: 'Catatan baru',
+            newNoteFromTemplate: 'Catatan baru dari template',
             newFolder: 'Folder baru',
             newCanvas: 'Canvas baru',
             newBase: 'Base baru',
@@ -519,6 +520,7 @@ export const STRINGS_ID = {
         selectVaultProfile3: 'Pilih profil vault 3',
         deleteFile: 'Hapus file',
         createNewNote: 'Buat catatan baru',
+        createNewNoteFromTemplate: 'Catatan baru dari template',
         moveFiles: 'Pindahkan file',
         selectNextFile: 'Pilih file berikutnya',
         selectPreviousFile: 'Pilih file sebelumnya',
@@ -586,7 +588,6 @@ export const STRINGS_ID = {
                 formatting: 'Pemformatan'
             },
             navigation: {
-                behavior: 'Perilaku',
                 appearance: 'Tampilan',
                 shortcutsAndRecent: 'Pintasan & item terbaru'
             },
@@ -833,6 +834,15 @@ export const STRINGS_ID = {
             showShortcuts: {
                 name: 'Tampilkan pintasan',
                 desc: 'Tampilkan bagian pintasan di panel navigasi.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Lencana pintasan',
+                desc: "Apa yang ditampilkan di samping pintasan. Gunakan perintah 'Buka pintasan 1-9' untuk membuka pintasan secara langsung.",
+                options: {
+                    index: 'Posisi (1-9)',
+                    count: 'Jumlah item',
+                    none: 'Tidak ada'
+                }
             },
             showRecentNotes: {
                 name: 'Tampilkan catatan terbaru',

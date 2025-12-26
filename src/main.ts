@@ -259,6 +259,15 @@ export default class NotebookNavigatorPlugin extends Plugin implements ISettings
             this.settings.noteGrouping = DEFAULT_SETTINGS.noteGrouping;
         }
 
+        // Validate shortcutBadgeDisplay value and reset to default if invalid
+        if (
+            this.settings.shortcutBadgeDisplay !== 'index' &&
+            this.settings.shortcutBadgeDisplay !== 'count' &&
+            this.settings.shortcutBadgeDisplay !== 'none'
+        ) {
+            this.settings.shortcutBadgeDisplay = DEFAULT_SETTINGS.shortcutBadgeDisplay;
+        }
+
         type LegacyAppearance = FolderAppearance & {
             showDate?: boolean;
             showPreview?: boolean;

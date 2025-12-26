@@ -176,6 +176,7 @@ export const STRINGS_RU = {
         },
         folder: {
             newNote: 'Новая заметка',
+            newNoteFromTemplate: 'Новая заметка из шаблона',
             newFolder: 'Новая папка',
             newCanvas: 'Новый холст',
             newBase: 'Новая база',
@@ -519,6 +520,7 @@ export const STRINGS_RU = {
         selectVaultProfile3: 'Выбрать профиль хранилища 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Удалить файлы', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Создать новую заметку', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Новая заметка из шаблона', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Переместить файлы', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Выбрать следующий файл', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Выбрать предыдущий файл', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_RU = {
                 formatting: 'Форматирование'
             },
             navigation: {
-                behavior: 'Поведение',
                 appearance: 'Внешний вид',
                 shortcutsAndRecent: 'Ярлыки и недавние элементы'
             },
@@ -834,6 +835,15 @@ export const STRINGS_RU = {
             showShortcuts: {
                 name: 'Показывать ярлыки',
                 desc: 'Отображать раздел ярлыков в панели навигации.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Значок ярлыка',
+                desc: "Что отображать рядом с ярлыками. Используйте команды 'Открыть ярлык 1-9' для прямого открытия ярлыков.",
+                options: {
+                    index: 'Позиция (1-9)',
+                    count: 'Количество элементов',
+                    none: 'Нет'
+                }
             },
             showRecentNotes: {
                 name: 'Показывать недавние заметки',

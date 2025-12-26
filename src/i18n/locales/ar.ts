@@ -176,6 +176,7 @@ export const STRINGS_AR = {
         },
         folder: {
             newNote: 'ملاحظة جديدة',
+            newNoteFromTemplate: 'ملاحظة جديدة من قالب',
             newFolder: 'مجلد جديد',
             newCanvas: 'لوحة جديدة',
             newBase: 'قاعدة جديدة',
@@ -519,6 +520,7 @@ export const STRINGS_AR = {
         selectVaultProfile3: 'اختيار ملف الخزنة 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'حذف الملفات', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'إنشاء ملاحظة جديدة', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'ملاحظة جديدة من قالب', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'نقل الملفات', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'تحديد الملف التالي', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'تحديد الملف السابق', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_AR = {
                 formatting: 'التنسيق'
             },
             navigation: {
-                behavior: 'السلوك',
                 appearance: 'المظهر',
                 shortcutsAndRecent: 'الاختصارات والعناصر الأخيرة'
             },
@@ -833,6 +834,15 @@ export const STRINGS_AR = {
             showShortcuts: {
                 name: 'إظهار الاختصارات',
                 desc: 'عرض قسم الاختصارات في لوحة التنقل.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'شارة الاختصار',
+                desc: "ما يتم عرضه بجانب الاختصارات. استخدم أوامر 'فتح الاختصار 1-9' لفتح الاختصارات مباشرة.",
+                options: {
+                    index: 'الموضع (1-9)',
+                    count: 'عدد العناصر',
+                    none: 'لا شيء'
+                }
             },
             showRecentNotes: {
                 name: 'إظهار الملاحظات الحديثة',

@@ -176,6 +176,7 @@ export const STRINGS_IT = {
         },
         folder: {
             newNote: 'Nuova nota',
+            newNoteFromTemplate: 'Nuova nota da modello',
             newFolder: 'Nuova cartella',
             newCanvas: 'Nuova canvas',
             newBase: 'Nuovo base',
@@ -519,6 +520,7 @@ export const STRINGS_IT = {
         selectVaultProfile3: 'Seleziona profilo vault 3', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Elimina file', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Crea nuova nota', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Nuova nota da modello', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Sposta file', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Seleziona file successivo', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Seleziona file precedente', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -586,7 +588,6 @@ export const STRINGS_IT = {
                 formatting: 'Formattazione'
             },
             navigation: {
-                behavior: 'Comportamento',
                 appearance: 'Aspetto',
                 shortcutsAndRecent: 'Scorciatoie ed elementi recenti'
             },
@@ -833,6 +834,15 @@ export const STRINGS_IT = {
             showShortcuts: {
                 name: 'Mostra scorciatoie',
                 desc: 'Visualizza la sezione scorciatoie nel pannello navigazione.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Badge scorciatoia',
+                desc: "Cosa visualizzare accanto alle scorciatoie. Usa i comandi 'Apri scorciatoia 1-9' per aprire le scorciatoie direttamente.",
+                options: {
+                    index: 'Posizione (1-9)',
+                    count: 'Numero elementi',
+                    none: 'Nessuno'
+                }
             },
             showRecentNotes: {
                 name: 'Mostra note recenti',

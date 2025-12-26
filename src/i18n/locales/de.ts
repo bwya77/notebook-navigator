@@ -178,6 +178,7 @@ export const STRINGS_DE = {
         },
         folder: {
             newNote: 'Neue Notiz',
+            newNoteFromTemplate: 'Neue Notiz aus Vorlage',
             newFolder: 'Neuer Ordner',
             newCanvas: 'Neue Canvas',
             newBase: 'Neue Datenbank',
@@ -522,6 +523,7 @@ export const STRINGS_DE = {
         selectVaultProfile3: 'Tresorprofil 3 auswählen', // Command palette: Activates the third vault profile without opening the modal (English: Select vault profile 3)
         deleteFile: 'Dateien löschen', // Command palette: Deletes the currently active file (English: Delete file)
         createNewNote: 'Neue Notiz erstellen', // Command palette: Creates a new note in the currently selected folder (English: Create new note)
+        createNewNoteFromTemplate: 'Neue Notiz aus Vorlage', // Command palette: Creates a new note from a template in the currently selected folder (English: Create new note from template)
         moveFiles: 'Dateien verschieben', // Command palette: Move selected files to another folder (English: Move files)
         selectNextFile: 'Nächste Datei auswählen', // Command palette: Selects the next file in the current view (English: Select next file)
         selectPreviousFile: 'Vorherige Datei auswählen', // Command palette: Selects the previous file in the current view (English: Select previous file)
@@ -589,7 +591,6 @@ export const STRINGS_DE = {
                 formatting: 'Formatierung'
             },
             navigation: {
-                behavior: 'Verhalten',
                 appearance: 'Darstellung',
                 shortcutsAndRecent: 'Verknüpfungen & Letzte Einträge'
             },
@@ -837,6 +838,15 @@ export const STRINGS_DE = {
             showShortcuts: {
                 name: 'Lesezeichen anzeigen',
                 desc: 'Lesezeichen-Bereich im Navigationsbereich anzeigen.'
+            },
+            shortcutBadgeDisplay: {
+                name: 'Verknüpfungsabzeichen',
+                desc: "Was neben Verknüpfungen angezeigt wird. Verwenden Sie die Befehle 'Verknüpfung 1-9 öffnen', um Verknüpfungen direkt zu öffnen.",
+                options: {
+                    index: 'Position (1-9)',
+                    count: 'Elementanzahl',
+                    none: 'Keine'
+                }
             },
             showRecentNotes: {
                 name: 'Neueste Notizen anzeigen',
