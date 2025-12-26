@@ -252,33 +252,6 @@ export const STRINGS_ES = {
         fileIconRuleEditor: {
             addRuleAria: 'Añadir regla'
         },
-        interfaceIcons: {
-            title: 'Iconos de interfaz',
-            items: {
-                'nav-shortcuts': 'Atajos',
-                'nav-recent-files': 'Archivos recientes',
-                'nav-expand-all': 'Expandir todo',
-                'nav-collapse-all': 'Contraer todo',
-                'nav-tree-expand': 'Flecha de árbol: expandir',
-                'nav-tree-collapse': 'Flecha de árbol: contraer',
-                'nav-hidden-items': 'Elementos ocultos',
-                'nav-root-reorder': 'Reordenar carpetas raíz',
-                'nav-new-folder': 'Nueva carpeta',
-                'nav-show-single-pane': 'Mostrar panel único',
-                'nav-show-dual-pane': 'Mostrar paneles dobles',
-                'nav-profile-chevron': 'Flecha del menú de perfil',
-                'list-search': 'Buscar',
-                'list-descendants': 'Notas de subcarpetas',
-                'list-sort-ascending': 'Orden: ascendente',
-                'list-sort-descending': 'Orden: descendente',
-                'list-appearance': 'Cambiar apariencia',
-                'list-new-note': 'Nueva nota',
-                'nav-folder-open': 'Carpeta abierta',
-                'nav-folder-closed': 'Carpeta cerrada',
-                'nav-tag': 'Etiqueta',
-                'list-pinned': 'Elementos fijados'
-            }
-        },
         colorPicker: {
             currentColor: 'Actual',
             newColor: 'Nuevo',
@@ -612,7 +585,6 @@ export const STRINGS_ES = {
                 filtering: 'Filtrado',
                 behavior: 'Comportamiento',
                 view: 'Apariencia',
-                icons: 'Iconos',
                 desktopAppearance: 'Apariencia de escritorio',
                 formatting: 'Formato'
             },
@@ -900,7 +872,7 @@ export const STRINGS_ES = {
                 notice: 'Posición del separador restablecida. Reinicia Obsidian o vuelve a abrir Notebook Navigator para aplicar.'
             },
             multiSelectModifier: {
-                name: 'Modificador de selección múltiple (solo escritorio)',
+                name: 'Modificador de selección múltiple',
                 desc: 'Elige qué tecla modificadora activa la selección múltiple. Cuando se selecciona Option/Alt, Cmd/Ctrl clic abre notas en una nueva pestaña.',
                 options: {
                     cmdCtrl: 'Cmd/Ctrl clic',
@@ -1090,11 +1062,6 @@ export const STRINGS_ES = {
             showSectionIcons: {
                 name: 'Mostrar iconos para atajos y elementos recientes',
                 desc: 'Muestra iconos para secciones de navegación como Atajos y Archivos recientes.'
-            },
-            interfaceIcons: {
-                name: 'Iconos de interfaz',
-                desc: 'Editar iconos de barra de herramientas, carpetas, etiquetas, elementos fijados, búsqueda y ordenación.',
-                buttonText: 'Editar iconos'
             },
             showIconsColorOnly: {
                 name: 'Aplicar color solo a los iconos',

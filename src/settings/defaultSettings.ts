@@ -23,7 +23,6 @@ import { LISTPANE_MEASUREMENTS, NAVPANE_MEASUREMENTS, type PinnedNotes } from '.
 import { DEFAULT_UI_SCALE } from '../utils/uiScale';
 import type { FolderAppearance, TagAppearance } from '../hooks/useListPaneAppearance';
 import type { NotebookNavigatorSettings } from './types';
-import { sanitizeRecord } from '../utils/recordUtils';
 
 /**
  * Default settings for the plugin
@@ -53,7 +52,6 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
 
     // General tab - View
     startView: 'files',
-    interfaceIcons: sanitizeRecord<string>(undefined),
 
     // General tab - Homepage
     homepage: null,
@@ -65,8 +63,8 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
     showTooltipPath: true,
     desktopBackground: 'separate',
     desktopScale: DEFAULT_UI_SCALE,
-
     mobileScale: DEFAULT_UI_SCALE,
+    slideAnimationDuration: 250,
 
     // General tab - Formatting
     dateFormat: 'MMM d, yyyy',

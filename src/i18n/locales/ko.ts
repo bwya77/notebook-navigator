@@ -251,33 +251,6 @@ export const STRINGS_KO = {
         fileIconRuleEditor: {
             addRuleAria: '규칙 추가'
         },
-        interfaceIcons: {
-            title: '인터페이스 아이콘',
-            items: {
-                'nav-shortcuts': '바로가기',
-                'nav-recent-files': '최근 파일',
-                'nav-expand-all': '모두 펼치기',
-                'nav-collapse-all': '모두 접기',
-                'nav-tree-expand': '트리 화살표: 펼치기',
-                'nav-tree-collapse': '트리 화살표: 접기',
-                'nav-hidden-items': '숨겨진 항목',
-                'nav-root-reorder': '루트 폴더 재정렬',
-                'nav-new-folder': '새 폴더',
-                'nav-show-single-pane': '단일 창 표시',
-                'nav-show-dual-pane': '이중 창 표시',
-                'nav-profile-chevron': '프로필 메뉴 화살표',
-                'list-search': '검색',
-                'list-descendants': '하위 폴더의 노트',
-                'list-sort-ascending': '정렬 순서: 오름차순',
-                'list-sort-descending': '정렬 순서: 내림차순',
-                'list-appearance': '모양 변경',
-                'list-new-note': '새 노트',
-                'nav-folder-open': '열린 폴더',
-                'nav-folder-closed': '닫힌 폴더',
-                'nav-tag': '태그',
-                'list-pinned': '고정 항목'
-            }
-        },
         colorPicker: {
             currentColor: '현재',
             newColor: '새로운',
@@ -611,7 +584,6 @@ export const STRINGS_KO = {
                 filtering: '필터링',
                 behavior: '동작',
                 view: '모양',
-                icons: '아이콘',
                 desktopAppearance: '데스크톱 모양새',
                 formatting: '서식'
             },
@@ -899,7 +871,7 @@ export const STRINGS_KO = {
                 notice: '구분선 위치가 초기화되었습니다. Obsidian을 재시작하거나 Notebook Navigator를 다시 열어 적용하세요.'
             },
             multiSelectModifier: {
-                name: '다중 선택 수정자 (데스크톱 전용)',
+                name: '다중 선택 수정자',
                 desc: '다중 선택을 전환하는 수정자 키를 선택하세요. Option/Alt를 선택하면 Cmd/Ctrl 클릭이 새 탭에서 노트를 엽니다.',
                 options: {
                     cmdCtrl: 'Cmd/Ctrl 클릭',
@@ -1088,11 +1060,6 @@ export const STRINGS_KO = {
             showSectionIcons: {
                 name: '바로 가기 및 최근 항목 아이콘 표시',
                 desc: '바로 가기 및 최근 파일과 같은 탐색 섹션의 아이콘을 표시합니다.'
-            },
-            interfaceIcons: {
-                name: '인터페이스 아이콘',
-                desc: '도구 모음, 폴더, 태그, 고정 항목, 검색, 정렬 아이콘을 편집합니다.',
-                buttonText: '아이콘 편집'
             },
             showIconsColorOnly: {
                 name: '아이콘에만 색상 적용',

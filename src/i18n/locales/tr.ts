@@ -252,33 +252,6 @@ export const STRINGS_TR = {
         fileIconRuleEditor: {
             addRuleAria: 'Kural ekle'
         },
-        interfaceIcons: {
-            title: 'Arayüz simgeleri',
-            items: {
-                'nav-shortcuts': 'Kısayollar',
-                'nav-recent-files': 'Son dosyalar',
-                'nav-expand-all': 'Tümünü genişlet',
-                'nav-collapse-all': 'Tümünü daralt',
-                'nav-tree-expand': 'Ağaç oku: genişlet',
-                'nav-tree-collapse': 'Ağaç oku: daralt',
-                'nav-hidden-items': 'Gizli öğeler',
-                'nav-root-reorder': 'Kök klasörleri yeniden sırala',
-                'nav-new-folder': 'Yeni klasör',
-                'nav-show-single-pane': 'Tek bölme göster',
-                'nav-show-dual-pane': 'Çift bölme göster',
-                'nav-profile-chevron': 'Profil menüsü oku',
-                'list-search': 'Ara',
-                'list-descendants': 'Alt klasörlerden notlar',
-                'list-sort-ascending': 'Sıralama: artan',
-                'list-sort-descending': 'Sıralama: azalan',
-                'list-appearance': 'Görünümü değiştir',
-                'list-new-note': 'Yeni not',
-                'nav-folder-open': 'Klasör açık',
-                'nav-folder-closed': 'Klasör kapalı',
-                'nav-tag': 'Etiket',
-                'list-pinned': 'Sabitlenmiş öğeler'
-            }
-        },
         colorPicker: {
             currentColor: 'Mevcut',
             newColor: 'Yeni',
@@ -611,7 +584,6 @@ export const STRINGS_TR = {
                 filtering: 'Filtreleme',
                 behavior: 'Davranış',
                 view: 'Görünüm',
-                icons: 'Simgeler',
                 desktopAppearance: 'Masaüstü görünümü',
                 formatting: 'Biçimlendirme'
             },
@@ -899,7 +871,7 @@ export const STRINGS_TR = {
                 notice: "Ayırıcı konumu sıfırlandı. Uygulamak için Obsidian'ı yeniden başlatın veya Notebook Navigator'ı yeniden açın."
             },
             multiSelectModifier: {
-                name: 'Çoklu seçim değiştirici (yalnızca masaüstü)',
+                name: 'Çoklu seçim değiştirici',
                 desc: 'Hangi değiştirici tuşun çoklu seçimi değiştireceğini seçin. Option/Alt seçildiğinde, Cmd/Ctrl tıklaması notları yeni sekmede açar.',
                 options: {
                     cmdCtrl: 'Cmd/Ctrl tıkla',
@@ -1088,11 +1060,6 @@ export const STRINGS_TR = {
             showSectionIcons: {
                 name: 'Kısayollar ve son öğeler için simgeleri göster',
                 desc: 'Kısayollar ve Son dosyalar gibi gezinme bölümleri için simgeleri görüntüle.'
-            },
-            interfaceIcons: {
-                name: 'Arayüz simgeleri',
-                desc: 'Araç çubuğu, klasör, etiket, sabitlenmiş, arama ve sıralama simgelerini düzenleyin.',
-                buttonText: 'Simgeleri düzenle'
             },
             showIconsColorOnly: {
                 name: 'Rengi yalnızca simgelere uygula',

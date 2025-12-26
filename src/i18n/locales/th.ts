@@ -252,33 +252,6 @@ export const STRINGS_TH = {
         fileIconRuleEditor: {
             addRuleAria: 'เพิ่มกฎ'
         },
-        interfaceIcons: {
-            title: 'ไอคอนอินเทอร์เฟซ',
-            items: {
-                'nav-shortcuts': 'ทางลัด',
-                'nav-recent-files': 'ไฟล์ล่าสุด',
-                'nav-expand-all': 'ขยายทั้งหมด',
-                'nav-collapse-all': 'ยุบทั้งหมด',
-                'nav-tree-expand': 'ลูกศรต้นไม้: ขยาย',
-                'nav-tree-collapse': 'ลูกศรต้นไม้: ยุบ',
-                'nav-hidden-items': 'รายการที่ซ่อน',
-                'nav-root-reorder': 'จัดเรียงโฟลเดอร์รากใหม่',
-                'nav-new-folder': 'โฟลเดอร์ใหม่',
-                'nav-show-single-pane': 'แสดงแผงเดียว',
-                'nav-show-dual-pane': 'แสดงแผงคู่',
-                'nav-profile-chevron': 'ลูกศรเมนูโปรไฟล์',
-                'list-search': 'ค้นหา',
-                'list-descendants': 'โน้ตจากโฟลเดอร์ย่อย',
-                'list-sort-ascending': 'ลำดับ: น้อยไปมาก',
-                'list-sort-descending': 'ลำดับ: มากไปน้อย',
-                'list-appearance': 'เปลี่ยนรูปลักษณ์',
-                'list-new-note': 'โน้ตใหม่',
-                'nav-folder-open': 'โฟลเดอร์เปิด',
-                'nav-folder-closed': 'โฟลเดอร์ปิด',
-                'nav-tag': 'แท็ก',
-                'list-pinned': 'รายการที่ปักหมุด'
-            }
-        },
         colorPicker: {
             currentColor: 'ปัจจุบัน',
             newColor: 'ใหม่',
@@ -611,7 +584,6 @@ export const STRINGS_TH = {
                 filtering: 'การกรอง',
                 behavior: 'พฤติกรรม',
                 view: 'ลักษณะ',
-                icons: 'ไอคอน',
                 desktopAppearance: 'ลักษณะเดสก์ท็อป',
                 formatting: 'การจัดรูปแบบ'
             },
@@ -899,7 +871,7 @@ export const STRINGS_TH = {
                 notice: 'รีเซ็ตตำแหน่งตัวคั่นแล้ว รีสตาร์ท Obsidian หรือเปิด Notebook Navigator ใหม่เพื่อใช้งาน'
             },
             multiSelectModifier: {
-                name: 'ตัวปรับแต่งเลือกหลายรายการ (เดสก์ท็อปเท่านั้น)',
+                name: 'ตัวปรับแต่งเลือกหลายรายการ',
                 desc: 'เลือกปุ่มตัวปรับแต่งที่จะสลับการเลือกหลายรายการ เมื่อเลือก Option/Alt การคลิก Cmd/Ctrl จะเปิดโน้ตในแท็บใหม่',
                 options: {
                     cmdCtrl: 'คลิก Cmd/Ctrl',
@@ -1088,11 +1060,6 @@ export const STRINGS_TH = {
             showSectionIcons: {
                 name: 'แสดงไอคอนสำหรับทางลัดและรายการล่าสุด',
                 desc: 'แสดงไอคอนสำหรับส่วนนำทางเช่น ทางลัดและไฟล์ล่าสุด'
-            },
-            interfaceIcons: {
-                name: 'ไอคอนอินเทอร์เฟซ',
-                desc: 'แก้ไขไอคอนแถบเครื่องมือ โฟลเดอร์ แท็ก ปักหมุด ค้นหา และเรียงลำดับ',
-                buttonText: 'แก้ไขไอคอน'
             },
             showIconsColorOnly: {
                 name: 'ใช้สีกับไอคอนเท่านั้น',

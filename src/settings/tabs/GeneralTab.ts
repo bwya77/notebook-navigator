@@ -435,23 +435,21 @@ export function renderGeneralTab(context: SettingsTabContext): void {
             })
         );
 
-    if (!Platform.isMobile) {
-        behaviorGroup.addSetting(setting => {
-            setting
-                .setName(strings.settings.items.multiSelectModifier.name)
-                .setDesc(strings.settings.items.multiSelectModifier.desc)
-                .addDropdown(dropdown =>
-                    dropdown
-                        .addOption('cmdCtrl', strings.settings.items.multiSelectModifier.options.cmdCtrl)
-                        .addOption('optionAlt', strings.settings.items.multiSelectModifier.options.optionAlt)
-                        .setValue(plugin.settings.multiSelectModifier)
-                        .onChange(async (value: MultiSelectModifier) => {
-                            plugin.settings.multiSelectModifier = value;
-                            await plugin.saveSettingsAndUpdate();
-                        })
-                );
-        });
-    }
+    behaviorGroup.addSetting(setting => {
+        setting
+            .setName(strings.settings.items.multiSelectModifier.name)
+            .setDesc(strings.settings.items.multiSelectModifier.desc)
+            .addDropdown(dropdown =>
+                dropdown
+                    .addOption('cmdCtrl', strings.settings.items.multiSelectModifier.options.cmdCtrl)
+                    .addOption('optionAlt', strings.settings.items.multiSelectModifier.options.optionAlt)
+                    .setValue(plugin.settings.multiSelectModifier)
+                    .onChange(async (value: MultiSelectModifier) => {
+                        plugin.settings.multiSelectModifier = value;
+                        await plugin.saveSettingsAndUpdate();
+                    })
+            );
+    });
 
     if (!Platform.isMobile) {
         const desktopAppearanceGroup = createGroup(strings.settings.groups.general.desktopAppearance);
@@ -527,6 +525,49 @@ export function renderGeneralTab(context: SettingsTabContext): void {
                     await plugin.saveSettingsAndUpdate();
                 })
             );
+
+        const slideAnimationSetting = desktopAppearanceGroup.addSetting(setting => {
+            setting
+                .setName('Slide Animation Duration')
+                .setDesc('Duration of the sliding animation when switching between navigation and files view in single-pane mode');
+        });
+
+        const slideAnimationValueEl = slideAnimationSetting.controlEl.createDiv({ cls: 'nn-slider-value' });
+        const updateSlideAnimationLabel = (value: number) => {
+            slideAnimationValueEl.setText(`${value}ms`);
+        };
+
+        let slideAnimationSlider: SliderComponent;
+        const initialSlideAnimationDuration = plugin.settings.slideAnimationDuration;
+
+        slideAnimationSetting
+            .addSlider(slider => {
+                slideAnimationSlider = slider
+                    .setLimits(100, 800, 50)
+                    .setInstant(false)
+                    .setDynamicTooltip()
+                    .setValue(initialSlideAnimationDuration)
+                    .onChange(async value => {
+                        plugin.settings.slideAnimationDuration = value;
+                        await plugin.saveSettingsAndUpdate();
+                        updateSlideAnimationLabel(value);
+                    });
+                return slider;
+            })
+            .addExtraButton(button =>
+                button
+                    .setIcon('lucide-rotate-ccw')
+                    .setTooltip('Restore to default (250ms)')
+                    .onClick(async () => {
+                        const defaultValue = 250;
+                        slideAnimationSlider.setValue(defaultValue);
+                        plugin.settings.slideAnimationDuration = defaultValue;
+                        await plugin.saveSettingsAndUpdate();
+                        updateSlideAnimationLabel(defaultValue);
+                    })
+            );
+
+        updateSlideAnimationLabel(initialSlideAnimationDuration);
     }
 
     const viewGroup = createGroup(strings.settings.groups.general.view);
@@ -677,38 +718,8 @@ export function renderGeneralTab(context: SettingsTabContext): void {
             })
         );
 
-    renderToolbarVisibilitySetting(createSetting => viewGroup.addSetting(createSetting), plugin);
-
-    const iconsGroup = createGroup(strings.settings.groups.general.icons);
-
-    iconsGroup.addSetting(setting => {
-        setting.setName(strings.settings.items.interfaceIcons.name).setDesc(strings.settings.items.interfaceIcons.desc);
-        setting.addButton(button => {
-            button.setButtonText(strings.settings.items.interfaceIcons.buttonText).onClick(() => {
-                runAsyncAction(async () => {
-                    const metadataService = plugin.metadataService;
-                    if (!metadataService) {
-                        showNotice(strings.common.unknownError, { variant: 'warning' });
-                        return;
-                    }
-
-                    const { UXIconMapModal } = await import('../../modals/UXIconMapModal');
-                    const modal = new UXIconMapModal(context.app, {
-                        metadataService,
-                        initialMap: plugin.settings.interfaceIcons,
-                        onSave: async nextMap => {
-                            plugin.settings.interfaceIcons = nextMap;
-                            await plugin.saveSettingsAndUpdate();
-                        }
-                    });
-                    modal.open();
-                });
-            });
-        });
-    });
-
     addToggleSetting(
-        iconsGroup.addSetting,
+        viewGroup.addSetting,
         strings.settings.items.showIconsColorOnly.name,
         strings.settings.items.showIconsColorOnly.desc,
         () => plugin.settings.colorIconOnly,
@@ -716,6 +727,8 @@ export function renderGeneralTab(context: SettingsTabContext): void {
             plugin.settings.colorIconOnly = value;
         }
     );
+
+    renderToolbarVisibilitySetting(createSetting => viewGroup.addSetting(createSetting), plugin);
 
     const formattingGroup = createGroup(strings.settings.groups.general.formatting);
 

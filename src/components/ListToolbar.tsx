@@ -20,10 +20,9 @@ import { useSelectionState } from '../context/SelectionContext';
 import { useSettingsState } from '../context/SettingsContext';
 import { useUXPreferences } from '../context/UXPreferencesContext';
 import { strings } from '../i18n';
-import { ServiceIcon } from './ServiceIcon';
+import { ObsidianIcon } from './ObsidianIcon';
 import { useListActions } from '../hooks/useListActions';
 import { runAsyncAction } from '../utils/async';
-import { resolveUXIcon } from '../utils/uxIcons';
 
 interface ListToolbarProps {
     isSearchActive?: boolean;
@@ -38,15 +37,8 @@ export function ListToolbar({ isSearchActive, onSearchToggle }: ListToolbarProps
     const listVisibility = settings.toolbarVisibility.list;
 
     // Use the shared actions hook
-    const {
-        handleNewFile,
-        handleAppearanceMenu,
-        handleSortMenu,
-        handleToggleDescendants,
-        getCurrentSortOption,
-        isCustomSort,
-        hasCustomAppearance
-    } = useListActions();
+    const { handleNewFile, handleAppearanceMenu, handleSortMenu, handleToggleDescendants, getSortIcon, isCustomSort, hasCustomAppearance } =
+        useListActions();
 
     const showSearchButton = listVisibility.search;
     const showDescendantsButton = listVisibility.descendants;
@@ -77,7 +69,7 @@ export function ListToolbar({ isSearchActive, onSearchToggle }: ListToolbarProps
                                 disabled={!selectionState.selectedFolder && !selectionState.selectedTag}
                                 tabIndex={-1}
                             >
-                                <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'list-search')} />
+                                <ObsidianIcon name="lucide-search" />
                             </button>
                         ) : null}
                         {showDescendantsButton ? (
@@ -88,7 +80,7 @@ export function ListToolbar({ isSearchActive, onSearchToggle }: ListToolbarProps
                                 disabled={!selectionState.selectedFolder && !selectionState.selectedTag}
                                 tabIndex={-1}
                             >
-                                <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'list-descendants')} />
+                                <ObsidianIcon name="lucide-layers" />
                             </button>
                         ) : null}
                         {showSortButton ? (
@@ -99,12 +91,7 @@ export function ListToolbar({ isSearchActive, onSearchToggle }: ListToolbarProps
                                 disabled={!selectionState.selectedFolder && !selectionState.selectedTag}
                                 tabIndex={-1}
                             >
-                                <ServiceIcon
-                                    iconId={resolveUXIcon(
-                                        settings.interfaceIcons,
-                                        getCurrentSortOption().endsWith('-desc') ? 'list-sort-descending' : 'list-sort-ascending'
-                                    )}
-                                />
+                                <ObsidianIcon name={getSortIcon()} />
                             </button>
                         ) : null}
                         {showAppearanceButton ? (
@@ -115,7 +102,7 @@ export function ListToolbar({ isSearchActive, onSearchToggle }: ListToolbarProps
                                 disabled={!selectionState.selectedFolder && !selectionState.selectedTag}
                                 tabIndex={-1}
                             >
-                                <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'list-appearance')} />
+                                <ObsidianIcon name="lucide-palette" />
                             </button>
                         ) : null}
                     </div>
@@ -134,7 +121,7 @@ export function ListToolbar({ isSearchActive, onSearchToggle }: ListToolbarProps
                             disabled={!selectionState.selectedFolder}
                             tabIndex={-1}
                         >
-                            <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'list-new-note')} />
+                            <ObsidianIcon name="lucide-pen-box" />
                         </button>
                     </div>
                 </div>

@@ -252,33 +252,6 @@ export const STRINGS_FA = {
         fileIconRuleEditor: {
             addRuleAria: 'افزودن قانون'
         },
-        interfaceIcons: {
-            title: 'آیکون‌های رابط کاربری',
-            items: {
-                'nav-shortcuts': 'میانبرها',
-                'nav-recent-files': 'فایل‌های اخیر',
-                'nav-expand-all': 'باز کردن همه',
-                'nav-collapse-all': 'بستن همه',
-                'nav-tree-expand': 'فلش درختی: باز کردن',
-                'nav-tree-collapse': 'فلش درختی: بستن',
-                'nav-hidden-items': 'آیتم‌های مخفی',
-                'nav-root-reorder': 'مرتب‌سازی مجدد پوشه‌های ریشه',
-                'nav-new-folder': 'پوشه جدید',
-                'nav-show-single-pane': 'نمایش پنل تکی',
-                'nav-show-dual-pane': 'نمایش پنل‌های دوگانه',
-                'nav-profile-chevron': 'فلش منوی پروفایل',
-                'list-search': 'جستجو',
-                'list-descendants': 'یادداشت‌ها از زیرپوشه‌ها',
-                'list-sort-ascending': 'ترتیب: صعودی',
-                'list-sort-descending': 'ترتیب: نزولی',
-                'list-appearance': 'تغییر ظاهر',
-                'list-new-note': 'یادداشت جدید',
-                'nav-folder-open': 'پوشه باز',
-                'nav-folder-closed': 'پوشه بسته',
-                'nav-tag': 'برچسب',
-                'list-pinned': 'آیتم‌های سنجاق شده'
-            }
-        },
         colorPicker: {
             currentColor: 'فعلی',
             newColor: 'جدید',
@@ -611,7 +584,6 @@ export const STRINGS_FA = {
                 filtering: 'فیلتر کردن',
                 behavior: 'رفتار',
                 view: 'ظاهر',
-                icons: 'آیکون‌ها',
                 desktopAppearance: 'ظاهر دسکتاپ',
                 formatting: 'قالب‌بندی'
             },
@@ -899,7 +871,7 @@ export const STRINGS_FA = {
                 notice: 'موقعیت جداکننده بازنشانی شد. اوبسیدین را ری‌استارت کنید یا Notebook Navigator را دوباره باز کنید.'
             },
             multiSelectModifier: {
-                name: 'کلید تغییردهنده انتخاب چندگانه (فقط دسکتاپ)',
+                name: 'کلید تغییردهنده انتخاب چندگانه',
                 desc: 'کلید تغییردهنده‌ای که انتخاب چندگانه را فعال می‌کند را انتخاب کنید. وقتی Option/Alt انتخاب شود، کلیک Cmd/Ctrl یادداشت‌ها را در تب جدید باز می‌کند.',
                 options: {
                     cmdCtrl: 'کلیک Cmd/Ctrl',
@@ -1088,11 +1060,6 @@ export const STRINGS_FA = {
             showSectionIcons: {
                 name: 'نمایش آیکون برای میانبرها و آیتم‌های اخیر',
                 desc: 'آیکون‌ها را برای بخش‌های ناوبری مانند میانبرها و فایل‌های اخیر نمایش دهید.'
-            },
-            interfaceIcons: {
-                name: 'آیکون‌های رابط کاربری',
-                desc: 'ویرایش آیکون‌های نوار ابزار، پوشه، برچسب، سنجاق شده، جستجو و مرتب‌سازی.',
-                buttonText: 'ویرایش آیکون‌ها'
             },
             showIconsColorOnly: {
                 name: 'اعمال رنگ فقط به آیکون‌ها',

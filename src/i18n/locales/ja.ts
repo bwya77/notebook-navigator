@@ -252,33 +252,6 @@ export const STRINGS_JA = {
         fileIconRuleEditor: {
             addRuleAria: 'ルールを追加'
         },
-        interfaceIcons: {
-            title: 'インターフェースアイコン',
-            items: {
-                'nav-shortcuts': 'ショートカット',
-                'nav-recent-files': '最近のファイル',
-                'nav-expand-all': 'すべて展開',
-                'nav-collapse-all': 'すべて折りたたむ',
-                'nav-tree-expand': 'ツリー矢印: 展開',
-                'nav-tree-collapse': 'ツリー矢印: 折りたたみ',
-                'nav-hidden-items': '非表示項目',
-                'nav-root-reorder': 'ルートフォルダの並べ替え',
-                'nav-new-folder': '新規フォルダ',
-                'nav-show-single-pane': 'シングルペインを表示',
-                'nav-show-dual-pane': 'デュアルペインを表示',
-                'nav-profile-chevron': 'プロファイルメニュー矢印',
-                'list-search': '検索',
-                'list-descendants': 'サブフォルダからのノート',
-                'list-sort-ascending': '並べ替え: 昇順',
-                'list-sort-descending': '並べ替え: 降順',
-                'list-appearance': '外観を変更',
-                'list-new-note': '新規ノート',
-                'nav-folder-open': 'フォルダ（開）',
-                'nav-folder-closed': 'フォルダ（閉）',
-                'nav-tag': 'タグ',
-                'list-pinned': 'ピン留め項目'
-            }
-        },
         colorPicker: {
             currentColor: '現在',
             newColor: '新規',
@@ -612,7 +585,6 @@ export const STRINGS_JA = {
                 filtering: 'フィルター',
                 behavior: '動作',
                 view: '外観',
-                icons: 'アイコン',
                 desktopAppearance: 'デスクトップの外観',
                 formatting: '書式'
             },
@@ -900,7 +872,7 @@ export const STRINGS_JA = {
                 notice: 'セパレーターの位置がリセットされました。Obsidianを再起動するか、Notebook Navigatorを開き直して適用してください。'
             },
             multiSelectModifier: {
-                name: '複数選択モディファイア (デスクトップのみ)',
+                name: '複数選択モディファイア',
                 desc: '複数選択を切り替えるモディファイアキーを選択します。Option/Altが選択されている場合、Cmd/Ctrlクリックでノートを新しいタブで開きます。',
                 options: {
                     cmdCtrl: 'Cmd/Ctrl クリック',
@@ -1091,11 +1063,6 @@ export const STRINGS_JA = {
             showSectionIcons: {
                 name: 'ショートカットと最近の項目のアイコンを表示',
                 desc: 'ショートカットや最近使用したファイルなどのナビゲーションセクションのアイコンを表示します。'
-            },
-            interfaceIcons: {
-                name: 'インターフェースアイコン',
-                desc: 'ツールバー、フォルダ、タグ、ピン留め、検索、並べ替えのアイコンを編集します。',
-                buttonText: 'アイコンを編集'
             },
             showIconsColorOnly: {
                 name: 'アイコンのみに色を適用',

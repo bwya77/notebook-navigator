@@ -252,33 +252,6 @@ export const STRINGS_ZH_CN = {
         fileIconRuleEditor: {
             addRuleAria: '添加规则'
         },
-        interfaceIcons: {
-            title: '界面图标',
-            items: {
-                'nav-shortcuts': '快捷方式',
-                'nav-recent-files': '最近文件',
-                'nav-expand-all': '全部展开',
-                'nav-collapse-all': '全部折叠',
-                'nav-tree-expand': '树形箭头: 展开',
-                'nav-tree-collapse': '树形箭头: 折叠',
-                'nav-hidden-items': '隐藏项目',
-                'nav-root-reorder': '重新排列根文件夹',
-                'nav-new-folder': '新建文件夹',
-                'nav-show-single-pane': '显示单窗格',
-                'nav-show-dual-pane': '显示双窗格',
-                'nav-profile-chevron': '配置菜单箭头',
-                'list-search': '搜索',
-                'list-descendants': '子文件夹中的笔记',
-                'list-sort-ascending': '排序: 升序',
-                'list-sort-descending': '排序: 降序',
-                'list-appearance': '更改外观',
-                'list-new-note': '新建笔记',
-                'nav-folder-open': '文件夹打开',
-                'nav-folder-closed': '文件夹关闭',
-                'nav-tag': '标签',
-                'list-pinned': '固定项目'
-            }
-        },
         colorPicker: {
             currentColor: '当前',
             newColor: '新颜色',
@@ -612,7 +585,6 @@ export const STRINGS_ZH_CN = {
                 filtering: '过滤',
                 behavior: '行为',
                 view: '外观',
-                icons: '图标',
                 desktopAppearance: '桌面外观',
                 formatting: '格式'
             },
@@ -899,7 +871,7 @@ export const STRINGS_ZH_CN = {
                 notice: '分隔符位置已重置。重启 Obsidian 或重新打开 Notebook Navigator 以应用。'
             },
             multiSelectModifier: {
-                name: '多选修饰键（仅桌面端）',
+                name: '多选修饰键',
                 desc: '选择哪个修饰键切换多选模式。选择 Option/Alt 时，Cmd/Ctrl 点击会在新标签页中打开笔记。',
                 options: {
                     cmdCtrl: 'Cmd/Ctrl 点击',
@@ -1089,11 +1061,6 @@ export const STRINGS_ZH_CN = {
             showSectionIcons: {
                 name: '显示快捷方式和最近项目的图标',
                 desc: '显示导航分区（如快捷方式和最近文件）的图标。'
-            },
-            interfaceIcons: {
-                name: '界面图标',
-                desc: '编辑工具栏、文件夹、标签、固定、搜索和排序图标。',
-                buttonText: '编辑图标'
             },
             showIconsColorOnly: {
                 name: '仅对图标应用颜色',

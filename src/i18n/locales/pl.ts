@@ -253,33 +253,6 @@ export const STRINGS_PL = {
         fileIconRuleEditor: {
             addRuleAria: 'Dodaj regułę'
         },
-        interfaceIcons: {
-            title: 'Ikony interfejsu',
-            items: {
-                'nav-shortcuts': 'Skróty',
-                'nav-recent-files': 'Ostatnie pliki',
-                'nav-expand-all': 'Rozwiń wszystkie',
-                'nav-collapse-all': 'Zwiń wszystkie',
-                'nav-tree-expand': 'Strzałka drzewa: rozwiń',
-                'nav-tree-collapse': 'Strzałka drzewa: zwiń',
-                'nav-hidden-items': 'Ukryte elementy',
-                'nav-root-reorder': 'Zmień kolejność folderów głównych',
-                'nav-new-folder': 'Nowy folder',
-                'nav-show-single-pane': 'Pokaż pojedynczy panel',
-                'nav-show-dual-pane': 'Pokaż podwójne panele',
-                'nav-profile-chevron': 'Strzałka menu profilu',
-                'list-search': 'Szukaj',
-                'list-descendants': 'Notatki z podfolderów',
-                'list-sort-ascending': 'Kolejność: rosnąco',
-                'list-sort-descending': 'Kolejność: malejąco',
-                'list-appearance': 'Zmień wygląd',
-                'list-new-note': 'Nowa notatka',
-                'nav-folder-open': 'Folder otwarty',
-                'nav-folder-closed': 'Folder zamknięty',
-                'nav-tag': 'Tag',
-                'list-pinned': 'Przypięte elementy'
-            }
-        },
         colorPicker: {
             currentColor: 'Obecny',
             newColor: 'Nowy',
@@ -613,7 +586,6 @@ export const STRINGS_PL = {
                 filtering: 'Filtrowanie',
                 behavior: 'Zachowanie',
                 view: 'Wygląd',
-                icons: 'Ikony',
                 desktopAppearance: 'Wygląd na komputerze',
                 formatting: 'Formatowanie'
             },
@@ -901,7 +873,7 @@ export const STRINGS_PL = {
                 notice: 'Pozycja separatora została zresetowana. Uruchom ponownie Obsidian lub otwórz ponownie Notebook Navigator, aby zastosować.'
             },
             multiSelectModifier: {
-                name: 'Modyfikator wielokrotnego wyboru (tylko desktop)',
+                name: 'Modyfikator wielokrotnego wyboru',
                 desc: 'Wybierz, który klawisz modyfikatora przełącza wielokrotny wybór. Gdy wybrano Option/Alt, Cmd/Ctrl klik otwiera notatki w nowej karcie.',
                 options: {
                     cmdCtrl: 'Cmd/Ctrl klik',
@@ -1091,11 +1063,6 @@ export const STRINGS_PL = {
             showSectionIcons: {
                 name: 'Pokaż ikony skrótów i ostatnich elementów',
                 desc: 'Wyświetl ikony dla sekcji nawigacji takich jak Skróty i Ostatnie pliki.'
-            },
-            interfaceIcons: {
-                name: 'Ikony interfejsu',
-                desc: 'Edytuj ikony paska narzędzi, folderów, tagów, przypiętych elementów, wyszukiwania i sortowania.',
-                buttonText: 'Edytuj ikony'
             },
             showIconsColorOnly: {
                 name: 'Zastosuj kolor tylko do ikon',

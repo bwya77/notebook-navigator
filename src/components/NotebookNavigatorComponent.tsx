@@ -813,6 +813,10 @@ export const NotebookNavigatorComponent = React.memo(
                 containerRef.current.style.setProperty('--nn-setting-nav-indent', `${settings.navIndent}px`);
                 containerRef.current.style.setProperty('--nn-nav-root-spacing', `${settings.rootLevelSpacing}px`);
 
+                // Slide animation settings
+                containerRef.current.style.setProperty('--nn-slide-duration', `${settings.slideAnimationDuration}ms`);
+                containerRef.current.style.setProperty('--nn-slide-easing', 'ease-in-out');
+
                 // Calculate compact list padding and font sizes based on configured item height
                 const { titleLineHeight } = getListPaneMeasurements(isMobile);
                 const compactMetrics = calculateCompactListMetrics({
@@ -838,6 +842,7 @@ export const NotebookNavigatorComponent = React.memo(
             settings.rootLevelSpacing,
             settings.compactItemHeight,
             settings.compactItemHeightScaleText,
+            settings.slideAnimationDuration,
             isMobile
         ]);
 

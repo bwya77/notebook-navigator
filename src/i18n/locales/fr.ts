@@ -252,33 +252,6 @@ export const STRINGS_FR = {
         fileIconRuleEditor: {
             addRuleAria: 'Ajouter une règle'
         },
-        interfaceIcons: {
-            title: "Icônes de l'interface",
-            items: {
-                'nav-shortcuts': 'Raccourcis',
-                'nav-recent-files': 'Fichiers récents',
-                'nav-expand-all': 'Tout déplier',
-                'nav-collapse-all': 'Tout replier',
-                'nav-tree-expand': "Chevron d'arbre : déplier",
-                'nav-tree-collapse': "Chevron d'arbre : replier",
-                'nav-hidden-items': 'Éléments cachés',
-                'nav-root-reorder': 'Réorganiser les dossiers racine',
-                'nav-new-folder': 'Nouveau dossier',
-                'nav-show-single-pane': 'Afficher panneau unique',
-                'nav-show-dual-pane': 'Afficher les panneaux doubles',
-                'nav-profile-chevron': 'Chevron du menu profil',
-                'list-search': 'Recherche',
-                'list-descendants': 'Notes des sous-dossiers',
-                'list-sort-ascending': 'Ordre de tri : croissant',
-                'list-sort-descending': 'Ordre de tri : décroissant',
-                'list-appearance': "Modifier l'apparence",
-                'list-new-note': 'Nouvelle note',
-                'nav-folder-open': 'Dossier ouvert',
-                'nav-folder-closed': 'Dossier fermé',
-                'nav-tag': 'Étiquette',
-                'list-pinned': 'Éléments épinglés'
-            }
-        },
         colorPicker: {
             currentColor: 'Actuelle',
             newColor: 'Nouvelle',
@@ -612,7 +585,6 @@ export const STRINGS_FR = {
                 filtering: 'Filtrage',
                 behavior: 'Comportement',
                 view: 'Apparence',
-                icons: 'Icônes',
                 desktopAppearance: 'Apparence sur ordinateur',
                 formatting: 'Formatage'
             },
@@ -901,7 +873,7 @@ export const STRINGS_FR = {
                 notice: 'Position du séparateur réinitialisée. Redémarrez Obsidian ou rouvrez Notebook Navigator pour appliquer.'
             },
             multiSelectModifier: {
-                name: 'Modificateur de sélection multiple (ordinateur uniquement)',
+                name: 'Modificateur de sélection multiple',
                 desc: 'Choisissez quelle touche modificatrice active la sélection multiple. Quand Option/Alt est sélectionné, Cmd/Ctrl clic ouvre les notes dans un nouvel onglet.',
                 options: {
                     cmdCtrl: 'Cmd/Ctrl clic',
@@ -1092,11 +1064,6 @@ export const STRINGS_FR = {
             showSectionIcons: {
                 name: 'Afficher les icônes pour les raccourcis et les éléments récents',
                 desc: 'Afficher les icônes pour les sections de navigation comme Raccourcis et Fichiers récents.'
-            },
-            interfaceIcons: {
-                name: "Icônes de l'interface",
-                desc: "Modifier les icônes de barre d'outils, dossiers, étiquettes, éléments épinglés, recherche et tri.",
-                buttonText: 'Modifier les icônes'
             },
             showIconsColorOnly: {
                 name: 'Appliquer la couleur uniquement aux icônes',

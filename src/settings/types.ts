@@ -104,7 +104,6 @@ export interface NotebookNavigatorSettings {
 
     // General tab - View
     startView: 'navigation' | 'files';
-    interfaceIcons: Record<string, string>;
 
     // General tab - Homepage
     homepage: string | null;
@@ -117,6 +116,7 @@ export interface NotebookNavigatorSettings {
     desktopBackground: BackgroundMode;
     desktopScale: number;
     mobileScale: number;
+    slideAnimationDuration: number;
 
     // General tab - Formatting
     dateFormat: string;

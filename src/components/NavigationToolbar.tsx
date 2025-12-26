@@ -20,12 +20,11 @@ import { useSelectionState } from '../context/SelectionContext';
 import { useSettingsState } from '../context/SettingsContext';
 import { useUXPreferences } from '../context/UXPreferencesContext';
 import { strings } from '../i18n';
-import { ServiceIcon } from './ServiceIcon';
+import { ObsidianIcon } from './ObsidianIcon';
 import { useNavigationActions } from '../hooks/useNavigationActions';
 import { useUIState } from '../context/UIStateContext';
 import { hasHiddenItemSources } from '../utils/exclusionUtils';
 import { runAsyncAction } from '../utils/async';
-import { resolveUXIcon } from '../utils/uxIcons';
 
 interface NavigationToolbarProps {
     onTreeUpdateComplete?: () => void;
@@ -89,7 +88,7 @@ export function NavigationToolbar({
                                 onClick={onTogglePinnedShortcuts}
                                 tabIndex={-1}
                             >
-                                <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'nav-shortcuts')} />
+                                <ObsidianIcon name="lucide-bookmark" />
                             </button>
                         ) : null}
                         {showExpandCollapseButton ? (
@@ -108,12 +107,7 @@ export function NavigationToolbar({
                                 }}
                                 tabIndex={-1}
                             >
-                                <ServiceIcon
-                                    iconId={resolveUXIcon(
-                                        settings.interfaceIcons,
-                                        shouldCollapseItems() ? 'nav-collapse-all' : 'nav-expand-all'
-                                    )}
-                                />
+                                <ObsidianIcon name={shouldCollapseItems() ? 'lucide-chevrons-down-up' : 'lucide-chevrons-up-down'} />
                             </button>
                         ) : null}
                         {showHiddenItemsButton ? (
@@ -131,7 +125,7 @@ export function NavigationToolbar({
                                 disabled={!hasHiddenItems}
                                 tabIndex={-1}
                             >
-                                <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'nav-hidden-items')} />
+                                <ObsidianIcon name="lucide-eye" />
                             </button>
                         ) : null}
                         {showRootReorderButton ? (
@@ -144,7 +138,7 @@ export function NavigationToolbar({
                                 disabled={rootReorderDisabled}
                                 tabIndex={-1}
                             >
-                                <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'nav-root-reorder')} />
+                                <ObsidianIcon name="lucide-list-tree" />
                             </button>
                         ) : null}
                     </div>
@@ -163,7 +157,7 @@ export function NavigationToolbar({
                             disabled={!selectionState.selectedFolder}
                             tabIndex={-1}
                         >
-                            <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'nav-new-folder')} />
+                            <ObsidianIcon name="lucide-folder-plus" />
                         </button>
                     </div>
                 </div>

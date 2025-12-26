@@ -252,33 +252,6 @@ export const STRINGS_ID = {
         fileIconRuleEditor: {
             addRuleAria: 'Tambah aturan'
         },
-        interfaceIcons: {
-            title: 'Ikon antarmuka',
-            items: {
-                'nav-shortcuts': 'Pintasan',
-                'nav-recent-files': 'File terbaru',
-                'nav-expand-all': 'Perluas semua',
-                'nav-collapse-all': 'Tutup semua',
-                'nav-tree-expand': 'Panah pohon: perluas',
-                'nav-tree-collapse': 'Panah pohon: tutup',
-                'nav-hidden-items': 'Item tersembunyi',
-                'nav-root-reorder': 'Atur ulang folder akar',
-                'nav-new-folder': 'Folder baru',
-                'nav-show-single-pane': 'Tampilkan panel tunggal',
-                'nav-show-dual-pane': 'Tampilkan panel ganda',
-                'nav-profile-chevron': 'Panah menu profil',
-                'list-search': 'Cari',
-                'list-descendants': 'Catatan dari subfolder',
-                'list-sort-ascending': 'Urutan: menaik',
-                'list-sort-descending': 'Urutan: menurun',
-                'list-appearance': 'Ubah tampilan',
-                'list-new-note': 'Catatan baru',
-                'nav-folder-open': 'Folder terbuka',
-                'nav-folder-closed': 'Folder tertutup',
-                'nav-tag': 'Tag',
-                'list-pinned': 'Item tersemat'
-            }
-        },
         colorPicker: {
             currentColor: 'Saat ini',
             newColor: 'Baru',
@@ -611,7 +584,6 @@ export const STRINGS_ID = {
                 filtering: 'Penyaringan',
                 behavior: 'Perilaku',
                 view: 'Tampilan',
-                icons: 'Ikon',
                 desktopAppearance: 'Tampilan desktop',
                 formatting: 'Pemformatan'
             },
@@ -899,7 +871,7 @@ export const STRINGS_ID = {
                 notice: 'Posisi pemisah diatur ulang. Mulai ulang Obsidian atau buka kembali Notebook Navigator untuk menerapkan.'
             },
             multiSelectModifier: {
-                name: 'Modifier multi-pilih (desktop saja)',
+                name: 'Modifier multi-pilih',
                 desc: 'Pilih tombol modifier mana yang mengalihkan multi-pilih. Ketika Option/Alt dipilih, klik Cmd/Ctrl membuka catatan di tab baru.',
                 options: {
                     cmdCtrl: 'Klik Cmd/Ctrl',
@@ -1089,11 +1061,6 @@ export const STRINGS_ID = {
             showSectionIcons: {
                 name: 'Tampilkan ikon untuk pintasan dan item terbaru',
                 desc: 'Tampilkan ikon untuk bagian navigasi seperti Pintasan dan File terbaru.'
-            },
-            interfaceIcons: {
-                name: 'Ikon antarmuka',
-                desc: 'Edit ikon toolbar, folder, tag, item tersemat, pencarian, dan pengurutan.',
-                buttonText: 'Edit ikon'
             },
             showIconsColorOnly: {
                 name: 'Terapkan warna ke ikon saja',

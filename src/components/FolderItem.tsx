@@ -50,7 +50,7 @@
  */
 
 import React, { useRef, useEffect, useMemo, useCallback } from 'react';
-import { TFolder, TFile, setTooltip } from 'obsidian';
+import { TFolder, TFile, setTooltip, setIcon } from 'obsidian';
 import { useServices } from '../context/ServicesContext';
 import { useSettingsState } from '../context/SettingsContext';
 import { useUXPreferences } from '../context/UXPreferencesContext';
@@ -65,7 +65,6 @@ import { shouldDisplayFile } from '../utils/fileTypeUtils';
 import type { NoteCountInfo } from '../types/noteCounts';
 import { buildNoteCountDisplay } from '../utils/noteCountFormatting';
 import { useActiveProfile } from '../context/SettingsContext';
-import { resolveUXIcon } from '../utils/uxIcons';
 
 interface FolderItemProps {
     folder: TFolder;
@@ -196,10 +195,11 @@ export const FolderItem = React.memo(function FolderItem({
         if (folder.path === '/') {
             return hasChildren && isExpanded ? 'open-vault' : 'vault';
         }
-        return hasChildren && isExpanded
-            ? resolveUXIcon(settings.interfaceIcons, 'nav-folder-open')
-            : resolveUXIcon(settings.interfaceIcons, 'nav-folder-closed');
-    }, [folder.path, hasChildren, icon, isExpanded, settings.interfaceIcons]);
+        if (hasChildren && isExpanded) {
+            return 'lucide-folder-open';
+        }
+        return 'lucide-folder-closed';
+    }, [icon, folder.path, hasChildren, isExpanded]);
     const customBackground = backgroundColor;
 
     const hasFolderNote = useMemo(() => {
@@ -312,11 +312,9 @@ export const FolderItem = React.memo(function FolderItem({
 
     useEffect(() => {
         if (chevronRef.current) {
-            const iconService = getIconService();
-            const iconId = resolveUXIcon(settings.interfaceIcons, isExpanded ? 'nav-tree-collapse' : 'nav-tree-expand');
-            iconService.renderIcon(chevronRef.current, iconId);
+            setIcon(chevronRef.current, isExpanded ? 'lucide-chevron-down' : 'lucide-chevron-right');
         }
-    }, [iconVersion, isExpanded, settings.interfaceIcons]);
+    }, [isExpanded]);
 
     // Add this useEffect for the folder icon
     useEffect(() => {
@@ -332,14 +330,11 @@ export const FolderItem = React.memo(function FolderItem({
                 iconService.renderIcon(iconRef.current, vaultIconName);
             } else {
                 // Default icon - show open folder only if has children AND is expanded
-                const iconName =
-                    hasChildren && isExpanded
-                        ? resolveUXIcon(settings.interfaceIcons, 'nav-folder-open')
-                        : resolveUXIcon(settings.interfaceIcons, 'nav-folder-closed');
+                const iconName = hasChildren && isExpanded ? 'lucide-folder-open' : 'lucide-folder-closed';
                 iconService.renderIcon(iconRef.current, iconName);
             }
         }
-    }, [hasChildren, icon, iconVersion, isExpanded, folder.path, settings.showFolderIcons, settings.interfaceIcons]);
+    }, [isExpanded, icon, hasChildren, settings.showFolderIcons, folder.path, iconVersion]);
 
     // Enable context menu
     const folderMenuConfig = disableContextMenu
