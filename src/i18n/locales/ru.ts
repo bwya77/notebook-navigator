@@ -252,6 +252,33 @@ export const STRINGS_RU = {
         fileIconRuleEditor: {
             addRuleAria: 'Добавить правило'
         },
+        interfaceIcons: {
+            title: 'Иконки интерфейса',
+            items: {
+                'nav-shortcuts': 'Ярлыки',
+                'nav-recent-files': 'Недавние файлы',
+                'nav-expand-all': 'Развернуть все',
+                'nav-collapse-all': 'Свернуть все',
+                'nav-tree-expand': 'Стрелка дерева: развернуть',
+                'nav-tree-collapse': 'Стрелка дерева: свернуть',
+                'nav-hidden-items': 'Скрытые элементы',
+                'nav-root-reorder': 'Изменить порядок корневых папок',
+                'nav-new-folder': 'Новая папка',
+                'nav-show-single-pane': 'Показать одну панель',
+                'nav-show-dual-pane': 'Показать двойную панель',
+                'nav-profile-chevron': 'Стрелка меню профиля',
+                'list-search': 'Поиск',
+                'list-descendants': 'Заметки из подпапок',
+                'list-sort-ascending': 'Порядок сортировки: по возрастанию',
+                'list-sort-descending': 'Порядок сортировки: по убыванию',
+                'list-appearance': 'Изменить вид',
+                'list-new-note': 'Новая заметка',
+                'nav-folder-open': 'Папка открыта',
+                'nav-folder-closed': 'Папка закрыта',
+                'nav-tag': 'Тег',
+                'list-pinned': 'Закреплённые элементы'
+            }
+        },
         colorPicker: {
             currentColor: 'Текущий',
             newColor: 'Новый',
@@ -584,6 +611,7 @@ export const STRINGS_RU = {
                 filtering: 'Фильтрация',
                 behavior: 'Поведение',
                 view: 'Внешний вид',
+                icons: 'Иконки',
                 desktopAppearance: 'Внешний вид на компьютере',
                 formatting: 'Форматирование'
             },
@@ -872,7 +900,7 @@ export const STRINGS_RU = {
                 notice: 'Положение разделителя сброшено. Перезапустите Obsidian или переоткройте Notebook Navigator для применения.'
             },
             multiSelectModifier: {
-                name: 'Модификатор множественного выбора',
+                name: 'Модификатор множественного выбора (только компьютер)',
                 desc: 'Выберите, какая клавиша-модификатор переключает множественный выбор. При выборе Option/Alt, клик с Cmd/Ctrl открывает заметки в новой вкладке.',
                 options: {
                     cmdCtrl: 'Клик с Cmd/Ctrl',
@@ -1062,6 +1090,11 @@ export const STRINGS_RU = {
             showSectionIcons: {
                 name: 'Показывать иконки для ярлыков и недавних',
                 desc: 'Отображать иконки для разделов навигации, таких как Ярлыки и Недавние файлы.'
+            },
+            interfaceIcons: {
+                name: 'Иконки интерфейса',
+                desc: 'Редактировать иконки панели инструментов, папок, тегов, закреплённых, поиска и сортировки.',
+                buttonText: 'Редактировать иконки'
             },
             showIconsColorOnly: {
                 name: 'Применять цвет только к иконкам',

@@ -252,6 +252,33 @@ export const STRINGS_IT = {
         fileIconRuleEditor: {
             addRuleAria: 'Aggiungi regola'
         },
+        interfaceIcons: {
+            title: "Icone dell'interfaccia",
+            items: {
+                'nav-shortcuts': 'Scorciatoie',
+                'nav-recent-files': 'File recenti',
+                'nav-expand-all': 'Espandi tutto',
+                'nav-collapse-all': 'Comprimi tutto',
+                'nav-tree-expand': 'Freccia albero: espandi',
+                'nav-tree-collapse': 'Freccia albero: comprimi',
+                'nav-hidden-items': 'Elementi nascosti',
+                'nav-root-reorder': 'Riordina cartelle radice',
+                'nav-new-folder': 'Nuova cartella',
+                'nav-show-single-pane': 'Mostra pannello singolo',
+                'nav-show-dual-pane': 'Mostra doppio pannello',
+                'nav-profile-chevron': 'Freccia menu profilo',
+                'list-search': 'Cerca',
+                'list-descendants': 'Note dalle sottocartelle',
+                'list-sort-ascending': 'Ordine: crescente',
+                'list-sort-descending': 'Ordine: decrescente',
+                'list-appearance': 'Cambia aspetto',
+                'list-new-note': 'Nuova nota',
+                'nav-folder-open': 'Cartella aperta',
+                'nav-folder-closed': 'Cartella chiusa',
+                'nav-tag': 'Tag',
+                'list-pinned': 'Elementi fissati'
+            }
+        },
         colorPicker: {
             currentColor: 'Attuale',
             newColor: 'Nuovo',
@@ -584,6 +611,7 @@ export const STRINGS_IT = {
                 filtering: 'Filtri',
                 behavior: 'Comportamento',
                 view: 'Aspetto',
+                icons: 'Icone',
                 desktopAppearance: 'Aspetto desktop',
                 formatting: 'Formattazione'
             },
@@ -871,7 +899,7 @@ export const STRINGS_IT = {
                 notice: 'Posizione separatore ripristinata. Riavvia Obsidian o riapri Notebook Navigator per applicare.'
             },
             multiSelectModifier: {
-                name: 'Modificatore selezione multipla',
+                name: 'Modificatore selezione multipla (solo desktop)',
                 desc: 'Scegli quale tasto modificatore attiva la selezione multipla. Quando Option/Alt è selezionato, Cmd/Ctrl click apre le note in una nuova scheda.',
                 options: {
                     cmdCtrl: 'Click Cmd/Ctrl',
@@ -1061,6 +1089,11 @@ export const STRINGS_IT = {
             showSectionIcons: {
                 name: 'Mostra icone per scorciatoie e elementi recenti',
                 desc: 'Visualizza icone per sezioni navigazione come Scorciatoie e File recenti.'
+            },
+            interfaceIcons: {
+                name: "Icone dell'interfaccia",
+                desc: 'Modifica icone di barra strumenti, cartelle, tag, elementi fissati, ricerca e ordinamento.',
+                buttonText: 'Modifica icone'
             },
             showIconsColorOnly: {
                 name: 'Applica colore solo alle icone',

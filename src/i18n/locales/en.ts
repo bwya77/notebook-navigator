@@ -252,6 +252,33 @@ export const STRINGS_EN = {
         fileIconRuleEditor: {
             addRuleAria: 'Add rule'
         },
+        interfaceIcons: {
+            title: 'Interface icons',
+            items: {
+                'nav-shortcuts': 'Shortcuts',
+                'nav-recent-files': 'Recent files',
+                'nav-expand-all': 'Expand all',
+                'nav-collapse-all': 'Collapse all',
+                'nav-tree-expand': 'Tree chevron: expand',
+                'nav-tree-collapse': 'Tree chevron: collapse',
+                'nav-hidden-items': 'Hidden items',
+                'nav-root-reorder': 'Reorder root folders',
+                'nav-new-folder': 'New folder',
+                'nav-show-single-pane': 'Show single pane',
+                'nav-show-dual-pane': 'Show dual panes',
+                'nav-profile-chevron': 'Profile menu chevron',
+                'list-search': 'Search',
+                'list-descendants': 'Notes from subfolders',
+                'list-sort-ascending': 'Sort order: ascending',
+                'list-sort-descending': 'Sort order: descending',
+                'list-appearance': 'Change appearance',
+                'list-new-note': 'New note',
+                'nav-folder-open': 'Folder open',
+                'nav-folder-closed': 'Folder closed',
+                'nav-tag': 'Tag',
+                'list-pinned': 'Pinned items'
+            }
+        },
         colorPicker: {
             currentColor: 'Current',
             newColor: 'New',
@@ -584,6 +611,7 @@ export const STRINGS_EN = {
                 filtering: 'Filtering',
                 behavior: 'Behavior',
                 view: 'Appearance',
+                icons: 'Icons',
                 desktopAppearance: 'Desktop appearance',
                 formatting: 'Formatting'
             },
@@ -871,7 +899,7 @@ export const STRINGS_EN = {
                 notice: 'Separator position reset. Restart Obsidian or reopen Notebook Navigator to apply.'
             },
             multiSelectModifier: {
-                name: 'Multi-select modifier',
+                name: 'Multi-select modifier (desktop only)',
                 desc: 'Choose which modifier key toggles multi-selection. When Option/Alt is selected, Cmd/Ctrl click opens notes in a new tab.',
                 options: {
                     cmdCtrl: 'Cmd/Ctrl click',
@@ -1059,6 +1087,11 @@ export const STRINGS_EN = {
             showSectionIcons: {
                 name: 'Show icons for shortcuts and recent items',
                 desc: 'Display icons for navigation sections like Shortcuts and Recent files.'
+            },
+            interfaceIcons: {
+                name: 'Interface icons',
+                desc: 'Edit toolbar, folder, tag, pinned, search, and sort icons.',
+                buttonText: 'Edit icons'
             },
             showIconsColorOnly: {
                 name: 'Apply color to icons only',

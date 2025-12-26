@@ -104,6 +104,7 @@ export interface NotebookNavigatorSettings {
 
     // General tab - View
     startView: 'navigation' | 'files';
+    interfaceIcons: Record<string, string>;
 
     // General tab - Homepage
     homepage: string | null;

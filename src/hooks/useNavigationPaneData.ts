@@ -79,6 +79,7 @@ import {
     buildTagSeparatorKey,
     parseNavigationSeparatorKey
 } from '../utils/navigationSeparators';
+import { resolveUXIcon } from '../utils/uxIcons';
 import type { MetadataService } from '../services/MetadataService';
 import { useSettingsDerived, type ActiveProfileState } from '../context/SettingsContext';
 
@@ -756,7 +757,7 @@ export function useNavigationPaneData({
                 data: {
                     id: SHORTCUTS_VIRTUAL_FOLDER_ID,
                     name: strings.navigationPane.shortcutsHeader,
-                    icon: 'lucide-bookmark'
+                    icon: resolveUXIcon(settings.interfaceIcons, 'nav-shortcuts')
                 }
             }
         ];
@@ -872,7 +873,7 @@ export function useNavigationPaneData({
         });
 
         return items;
-    }, [hydratedShortcuts, tagTree, hiddenFolders, showHiddenItems, settings.showShortcuts, shortcutsExpanded]);
+    }, [hydratedShortcuts, tagTree, hiddenFolders, showHiddenItems, settings.showShortcuts, settings.interfaceIcons, shortcutsExpanded]);
 
     // Build list of recent notes items with proper hierarchy
     const recentNotesItems = useMemo(() => {
@@ -898,7 +899,7 @@ export function useNavigationPaneData({
                 data: {
                     id: RECENT_NOTES_VIRTUAL_FOLDER_ID,
                     name: recentHeaderName,
-                    icon: 'lucide-history'
+                    icon: resolveUXIcon(settings.interfaceIcons, 'nav-recent-files')
                 }
             }
         ];
@@ -925,7 +926,15 @@ export function useNavigationPaneData({
         });
 
         return items;
-    }, [app, settings.recentNotesCount, settings.showRecentNotes, recentNotes, fileVisibility, recentNotesExpanded]);
+    }, [
+        app,
+        settings.recentNotesCount,
+        settings.showRecentNotes,
+        settings.interfaceIcons,
+        recentNotes,
+        fileVisibility,
+        recentNotesExpanded
+    ]);
 
     const shouldPinRecentNotes = pinShortcuts && settings.pinRecentNotesWithShortcuts && settings.showRecentNotes;
 

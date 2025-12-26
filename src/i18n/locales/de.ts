@@ -254,6 +254,33 @@ export const STRINGS_DE = {
         fileIconRuleEditor: {
             addRuleAria: 'Regel hinzufügen'
         },
+        interfaceIcons: {
+            title: 'Oberflächensymbole',
+            items: {
+                'nav-shortcuts': 'Verknüpfungen',
+                'nav-recent-files': 'Zuletzt verwendete Dateien',
+                'nav-expand-all': 'Alle erweitern',
+                'nav-collapse-all': 'Alle einklappen',
+                'nav-tree-expand': 'Baumpfeil: erweitern',
+                'nav-tree-collapse': 'Baumpfeil: einklappen',
+                'nav-hidden-items': 'Ausgeblendete Elemente',
+                'nav-root-reorder': 'Stammordner neu anordnen',
+                'nav-new-folder': 'Neuer Ordner',
+                'nav-show-single-pane': 'Einspaltige Ansicht anzeigen',
+                'nav-show-dual-pane': 'Zweispaltige Ansicht anzeigen',
+                'nav-profile-chevron': 'Profilmenü-Pfeil',
+                'list-search': 'Suche',
+                'list-descendants': 'Notizen aus Unterordnern',
+                'list-sort-ascending': 'Sortierung: aufsteigend',
+                'list-sort-descending': 'Sortierung: absteigend',
+                'list-appearance': 'Darstellung ändern',
+                'list-new-note': 'Neue Notiz',
+                'nav-folder-open': 'Ordner geöffnet',
+                'nav-folder-closed': 'Ordner geschlossen',
+                'nav-tag': 'Tag',
+                'list-pinned': 'Angeheftete Elemente'
+            }
+        },
         colorPicker: {
             currentColor: 'Aktuell',
             newColor: 'Neu',
@@ -587,6 +614,7 @@ export const STRINGS_DE = {
                 filtering: 'Filterung',
                 behavior: 'Verhalten',
                 view: 'Darstellung',
+                icons: 'Symbole',
                 desktopAppearance: 'Desktop-Darstellung',
                 formatting: 'Formatierung'
             },
@@ -875,7 +903,7 @@ export const STRINGS_DE = {
                 notice: 'Trennelementposition zurückgesetzt. Starten Sie Obsidian neu oder öffnen Sie Notebook Navigator erneut, um die Änderungen anzuwenden.'
             },
             multiSelectModifier: {
-                name: 'Mehrfachauswahl-Modifikator',
+                name: 'Mehrfachauswahl-Modifikator (nur Desktop)',
                 desc: 'Wählen Sie, welche Modifikatortaste die Mehrfachauswahl umschaltet. Wenn Option/Alt ausgewählt ist, öffnet Cmd/Strg-Klick Notizen in einem neuen Tab.',
                 options: {
                     cmdCtrl: 'Cmd/Strg-Klick',
@@ -1064,6 +1092,11 @@ export const STRINGS_DE = {
             showSectionIcons: {
                 name: 'Icons für Shortcuts und kürzliche Elemente anzeigen',
                 desc: 'Icons für Navigationsbereiche wie Shortcuts und Zuletzt verwendete Dateien anzeigen.'
+            },
+            interfaceIcons: {
+                name: 'Oberflächensymbole',
+                desc: 'Symbole für Symbolleiste, Ordner, Tags, angeheftete Elemente, Suche und Sortierung bearbeiten.',
+                buttonText: 'Symbole bearbeiten'
             },
             showIconsColorOnly: {
                 name: 'Farbe nur auf Symbole anwenden',

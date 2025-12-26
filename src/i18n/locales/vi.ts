@@ -252,6 +252,33 @@ export const STRINGS_VI = {
         fileIconRuleEditor: {
             addRuleAria: 'Thêm quy tắc'
         },
+        interfaceIcons: {
+            title: 'Biểu tượng giao diện',
+            items: {
+                'nav-shortcuts': 'Phím tắt',
+                'nav-recent-files': 'Tệp gần đây',
+                'nav-expand-all': 'Mở rộng tất cả',
+                'nav-collapse-all': 'Thu gọn tất cả',
+                'nav-tree-expand': 'Mũi tên cây: mở rộng',
+                'nav-tree-collapse': 'Mũi tên cây: thu gọn',
+                'nav-hidden-items': 'Mục ẩn',
+                'nav-root-reorder': 'Sắp xếp lại thư mục gốc',
+                'nav-new-folder': 'Thư mục mới',
+                'nav-show-single-pane': 'Hiện một ngăn',
+                'nav-show-dual-pane': 'Hiện hai ngăn',
+                'nav-profile-chevron': 'Mũi tên menu hồ sơ',
+                'list-search': 'Tìm kiếm',
+                'list-descendants': 'Ghi chú từ thư mục con',
+                'list-sort-ascending': 'Thứ tự: tăng dần',
+                'list-sort-descending': 'Thứ tự: giảm dần',
+                'list-appearance': 'Thay đổi giao diện',
+                'list-new-note': 'Ghi chú mới',
+                'nav-folder-open': 'Thư mục mở',
+                'nav-folder-closed': 'Thư mục đóng',
+                'nav-tag': 'Thẻ',
+                'list-pinned': 'Mục đã ghim'
+            }
+        },
         colorPicker: {
             currentColor: 'Hiện tại',
             newColor: 'Mới',
@@ -584,6 +611,7 @@ export const STRINGS_VI = {
                 filtering: 'Lọc',
                 behavior: 'Hành vi',
                 view: 'Giao diện',
+                icons: 'Biểu tượng',
                 desktopAppearance: 'Giao diện máy tính',
                 formatting: 'Định dạng'
             },
@@ -871,7 +899,7 @@ export const STRINGS_VI = {
                 notice: 'Đã đặt lại vị trí thanh phân cách. Khởi động lại Obsidian hoặc mở lại Notebook Navigator để áp dụng.'
             },
             multiSelectModifier: {
-                name: 'Phím bổ trợ chọn nhiều',
+                name: 'Phím bổ trợ chọn nhiều (chỉ máy tính)',
                 desc: 'Chọn phím bổ trợ để bật/tắt chọn nhiều. Khi chọn Option/Alt, nhấn Cmd/Ctrl mở ghi chú trong tab mới.',
                 options: {
                     cmdCtrl: 'Nhấn Cmd/Ctrl',
@@ -1060,6 +1088,11 @@ export const STRINGS_VI = {
             showSectionIcons: {
                 name: 'Hiện biểu tượng cho lối tắt và mục gần đây',
                 desc: 'Hiển thị biểu tượng cho các phần điều hướng như Lối tắt và Tệp gần đây.'
+            },
+            interfaceIcons: {
+                name: 'Biểu tượng giao diện',
+                desc: 'Chỉnh sửa biểu tượng thanh công cụ, thư mục, thẻ, đã ghim, tìm kiếm và sắp xếp.',
+                buttonText: 'Chỉnh sửa biểu tượng'
             },
             showIconsColorOnly: {
                 name: 'Chỉ áp dụng màu cho biểu tượng',

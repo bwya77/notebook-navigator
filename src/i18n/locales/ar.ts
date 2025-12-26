@@ -252,6 +252,33 @@ export const STRINGS_AR = {
         fileIconRuleEditor: {
             addRuleAria: 'إضافة قاعدة'
         },
+        interfaceIcons: {
+            title: 'أيقونات الواجهة',
+            items: {
+                'nav-shortcuts': 'الاختصارات',
+                'nav-recent-files': 'الملفات الأخيرة',
+                'nav-expand-all': 'توسيع الكل',
+                'nav-collapse-all': 'طي الكل',
+                'nav-tree-expand': 'سهم الشجرة: توسيع',
+                'nav-tree-collapse': 'سهم الشجرة: طي',
+                'nav-hidden-items': 'العناصر المخفية',
+                'nav-root-reorder': 'إعادة ترتيب المجلدات الجذرية',
+                'nav-new-folder': 'مجلد جديد',
+                'nav-show-single-pane': 'إظهار لوحة واحدة',
+                'nav-show-dual-pane': 'إظهار لوحتين',
+                'nav-profile-chevron': 'سهم قائمة الملف الشخصي',
+                'list-search': 'بحث',
+                'list-descendants': 'ملاحظات من المجلدات الفرعية',
+                'list-sort-ascending': 'ترتيب الفرز: تصاعدي',
+                'list-sort-descending': 'ترتيب الفرز: تنازلي',
+                'list-appearance': 'تغيير المظهر',
+                'list-new-note': 'ملاحظة جديدة',
+                'nav-folder-open': 'مجلد مفتوح',
+                'nav-folder-closed': 'مجلد مغلق',
+                'nav-tag': 'وسم',
+                'list-pinned': 'العناصر المثبتة'
+            }
+        },
         colorPicker: {
             currentColor: 'الحالي',
             newColor: 'جديد',
@@ -584,6 +611,7 @@ export const STRINGS_AR = {
                 filtering: 'التصفية',
                 behavior: 'السلوك',
                 view: 'المظهر',
+                icons: 'الأيقونات',
                 desktopAppearance: 'مظهر سطح المكتب',
                 formatting: 'التنسيق'
             },
@@ -871,7 +899,7 @@ export const STRINGS_AR = {
                 notice: 'تم إعادة تعيين موضع الفاصل. أعد تشغيل Obsidian أو أعد فتح متصفح الدفتر للتطبيق.'
             },
             multiSelectModifier: {
-                name: 'معدل التحديد المتعدد',
+                name: 'معدل التحديد المتعدد (سطح المكتب فقط)',
                 desc: 'اختر مفتاح التعديل الذي يبدل التحديد المتعدد. عند اختيار Option/Alt، النقر مع Cmd/Ctrl يفتح الملاحظات في علامة تبويب جديدة.',
                 options: {
                     cmdCtrl: 'النقر مع Cmd/Ctrl',
@@ -1060,6 +1088,11 @@ export const STRINGS_AR = {
             showSectionIcons: {
                 name: 'إظهار أيقونات للاختصارات والعناصر الحديثة',
                 desc: 'عرض أيقونات لأقسام التنقل مثل الاختصارات والملفات الحديثة.'
+            },
+            interfaceIcons: {
+                name: 'أيقونات الواجهة',
+                desc: 'تحرير أيقونات شريط الأدوات والمجلدات والوسوم والعناصر المثبتة والبحث والفرز.',
+                buttonText: 'تحرير الأيقونات'
             },
             showIconsColorOnly: {
                 name: 'تطبيق اللون على الأيقونات فقط',

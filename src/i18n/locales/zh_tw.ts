@@ -252,6 +252,33 @@ export const STRINGS_ZH_TW = {
         fileIconRuleEditor: {
             addRuleAria: '新增規則'
         },
+        interfaceIcons: {
+            title: '介面圖示',
+            items: {
+                'nav-shortcuts': '捷徑',
+                'nav-recent-files': '最近檔案',
+                'nav-expand-all': '全部展開',
+                'nav-collapse-all': '全部摺疊',
+                'nav-tree-expand': '樹狀箭頭: 展開',
+                'nav-tree-collapse': '樹狀箭頭: 摺疊',
+                'nav-hidden-items': '隱藏項目',
+                'nav-root-reorder': '重新排列根資料夾',
+                'nav-new-folder': '新建資料夾',
+                'nav-show-single-pane': '顯示單一窗格',
+                'nav-show-dual-pane': '顯示雙窗格',
+                'nav-profile-chevron': '設定檔選單箭頭',
+                'list-search': '搜尋',
+                'list-descendants': '子資料夾中的筆記',
+                'list-sort-ascending': '排序: 升冪',
+                'list-sort-descending': '排序: 降冪',
+                'list-appearance': '變更外觀',
+                'list-new-note': '新建筆記',
+                'nav-folder-open': '資料夾開啟',
+                'nav-folder-closed': '資料夾關閉',
+                'nav-tag': '標籤',
+                'list-pinned': '釘選項目'
+            }
+        },
         colorPicker: {
             currentColor: '目前',
             newColor: '新增',
@@ -584,6 +611,7 @@ export const STRINGS_ZH_TW = {
                 filtering: '篩選',
                 behavior: '行為',
                 view: '外觀',
+                icons: '圖示',
                 desktopAppearance: '桌面外觀',
                 formatting: '格式'
             },
@@ -870,7 +898,7 @@ export const STRINGS_ZH_TW = {
                 notice: '分隔符位置已重置。重新啟動 Obsidian 或重新開啟 Notebook Navigator 以套用。'
             },
             multiSelectModifier: {
-                name: '多重選取修飾鍵',
+                name: '多重選取修飾鍵 (僅限桌面版)',
                 desc: '選擇哪個修飾鍵切換多重選取。選擇 Option/Alt 時，Cmd/Ctrl 點擊會在一個新分頁中開啟筆記。',
                 options: {
                     cmdCtrl: 'Cmd/Ctrl 點擊',
@@ -1059,6 +1087,11 @@ export const STRINGS_ZH_TW = {
             showSectionIcons: {
                 name: '顯示捷徑和最近項目的圖示',
                 desc: '顯示導覽區段（如捷徑和最近檔案）的圖示。'
+            },
+            interfaceIcons: {
+                name: '介面圖示',
+                desc: '編輯工具列、資料夾、標籤、釘選、搜尋和排序圖示。',
+                buttonText: '編輯圖示'
             },
             showIconsColorOnly: {
                 name: '僅對圖示套用顏色',

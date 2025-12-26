@@ -435,21 +435,23 @@ export function renderGeneralTab(context: SettingsTabContext): void {
             })
         );
 
-    behaviorGroup.addSetting(setting => {
-        setting
-            .setName(strings.settings.items.multiSelectModifier.name)
-            .setDesc(strings.settings.items.multiSelectModifier.desc)
-            .addDropdown(dropdown =>
-                dropdown
-                    .addOption('cmdCtrl', strings.settings.items.multiSelectModifier.options.cmdCtrl)
-                    .addOption('optionAlt', strings.settings.items.multiSelectModifier.options.optionAlt)
-                    .setValue(plugin.settings.multiSelectModifier)
-                    .onChange(async (value: MultiSelectModifier) => {
-                        plugin.settings.multiSelectModifier = value;
-                        await plugin.saveSettingsAndUpdate();
-                    })
-            );
-    });
+    if (!Platform.isMobile) {
+        behaviorGroup.addSetting(setting => {
+            setting
+                .setName(strings.settings.items.multiSelectModifier.name)
+                .setDesc(strings.settings.items.multiSelectModifier.desc)
+                .addDropdown(dropdown =>
+                    dropdown
+                        .addOption('cmdCtrl', strings.settings.items.multiSelectModifier.options.cmdCtrl)
+                        .addOption('optionAlt', strings.settings.items.multiSelectModifier.options.optionAlt)
+                        .setValue(plugin.settings.multiSelectModifier)
+                        .onChange(async (value: MultiSelectModifier) => {
+                            plugin.settings.multiSelectModifier = value;
+                            await plugin.saveSettingsAndUpdate();
+                        })
+                );
+        });
+    }
 
     if (!Platform.isMobile) {
         const desktopAppearanceGroup = createGroup(strings.settings.groups.general.desktopAppearance);
@@ -675,8 +677,38 @@ export function renderGeneralTab(context: SettingsTabContext): void {
             })
         );
 
+    renderToolbarVisibilitySetting(createSetting => viewGroup.addSetting(createSetting), plugin);
+
+    const iconsGroup = createGroup(strings.settings.groups.general.icons);
+
+    iconsGroup.addSetting(setting => {
+        setting.setName(strings.settings.items.interfaceIcons.name).setDesc(strings.settings.items.interfaceIcons.desc);
+        setting.addButton(button => {
+            button.setButtonText(strings.settings.items.interfaceIcons.buttonText).onClick(() => {
+                runAsyncAction(async () => {
+                    const metadataService = plugin.metadataService;
+                    if (!metadataService) {
+                        showNotice(strings.common.unknownError, { variant: 'warning' });
+                        return;
+                    }
+
+                    const { UXIconMapModal } = await import('../../modals/UXIconMapModal');
+                    const modal = new UXIconMapModal(context.app, {
+                        metadataService,
+                        initialMap: plugin.settings.interfaceIcons,
+                        onSave: async nextMap => {
+                            plugin.settings.interfaceIcons = nextMap;
+                            await plugin.saveSettingsAndUpdate();
+                        }
+                    });
+                    modal.open();
+                });
+            });
+        });
+    });
+
     addToggleSetting(
-        viewGroup.addSetting,
+        iconsGroup.addSetting,
         strings.settings.items.showIconsColorOnly.name,
         strings.settings.items.showIconsColorOnly.desc,
         () => plugin.settings.colorIconOnly,
@@ -684,8 +716,6 @@ export function renderGeneralTab(context: SettingsTabContext): void {
             plugin.settings.colorIconOnly = value;
         }
     );
-
-    renderToolbarVisibilitySetting(createSetting => viewGroup.addSetting(createSetting), plugin);
 
     const formattingGroup = createGroup(strings.settings.groups.general.formatting);
 
