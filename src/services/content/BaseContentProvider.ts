@@ -27,8 +27,8 @@ interface ContentJob {
  * Provides common functionality for queue management and batch processing
  */
 export abstract class BaseContentProvider implements IContentProvider {
-    protected readonly QUEUE_BATCH_SIZE = 100;
-    protected readonly PARALLEL_LIMIT = 10;
+    protected readonly QUEUE_BATCH_SIZE: number = 100;
+    protected readonly PARALLEL_LIMIT: number = 10;
 
     protected queue: ContentJob[] = [];
     protected isProcessing = false;
@@ -48,6 +48,20 @@ export abstract class BaseContentProvider implements IContentProvider {
         protected app: App,
         protected readCache: ContentReadCache | null = null
     ) {}
+
+    /**
+     * Yields to the event loop to prevent blocking the main thread during batch processing.
+     * Uses requestAnimationFrame when available, falls back to setTimeout.
+     */
+    protected async yieldToEventLoop(): Promise<void> {
+        const raf = globalThis.requestAnimationFrame;
+        if (typeof raf === 'function') {
+            await new Promise<void>(resolve => raf(() => resolve()));
+            return;
+        }
+
+        await new Promise<void>(resolve => globalThis.setTimeout(resolve, 0));
+    }
 
     protected readFileContent(file: TFile): Promise<string> {
         if (this.readCache) {
@@ -210,6 +224,9 @@ export abstract class BaseContentProvider implements IContentProvider {
                         } => r !== null
                     )
                 );
+
+                // Yield to event loop between parallel batches to keep UI responsive
+                await this.yieldToEventLoop();
             }
 
             // Batch update database

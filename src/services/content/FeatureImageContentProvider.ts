@@ -8,7 +8,16 @@
  * See the LICENSE file in the repository root.
  */
 
-import { CachedMetadata, FrontMatterCache, normalizePath, RequestUrlParam, RequestUrlResponse, requestUrl, TFile } from 'obsidian';
+import {
+    CachedMetadata,
+    FrontMatterCache,
+    normalizePath,
+    Platform,
+    RequestUrlParam,
+    RequestUrlResponse,
+    requestUrl,
+    TFile
+} from 'obsidian';
 import { ContentType } from '../../interfaces/IContentProvider';
 import { NotebookNavigatorSettings } from '../../settings';
 import { FileData } from '../../storage/IndexedDBStorage';
@@ -18,14 +27,20 @@ import { isImageExtension, isImageFile, isPdfFile } from '../../utils/fileTypeUt
 import { BaseContentProvider } from './BaseContentProvider';
 import { renderExcalidrawThumbnail } from './excalidraw/excalidrawThumbnail';
 import { renderPdfCoverThumbnail } from './pdf/pdfCoverThumbnail';
+import { createRenderLimiter } from './thumbnail/thumbnailRuntimeUtils';
 
 const MAX_THUMBNAIL_WIDTH = 256;
 const MAX_THUMBNAIL_HEIGHT = 144;
 const THUMBNAIL_OUTPUT_MIME = 'image/webp';
+// iOS Safari has issues with WebP encoding in some contexts, so use PNG as fallback
+const IOS_THUMBNAIL_OUTPUT_MIME = 'image/png';
 const THUMBNAIL_OUTPUT_QUALITY = 0.75;
 // Per-request timeout for external image fetches.
 // YouTube thumbnails try multiple candidates, so total time can exceed this value.
 const EXTERNAL_REQUEST_TIMEOUT_MS = 10000;
+// Maximum lifetime for an external request before releasing the concurrency slot.
+// `requestUrl()` does not accept an AbortSignal, so timed-out requests can continue running in the background.
+const EXTERNAL_REQUEST_MAX_LIFETIME_MS = 60000;
 
 const SUPPORTED_IMAGE_MIME_TYPES = new Set([
     'image/jpeg',
@@ -65,6 +80,12 @@ type FrontmatterImageTarget = { kind: 'wiki' | 'md' | 'plain'; target: string };
  */
 export class FeatureImageContentProvider extends BaseContentProvider {
     private readonly combinedImageRegex = createCombinedImageRegex();
+
+    protected readonly PARALLEL_LIMIT: number = 10;
+
+    private readonly externalRequestLimiter = createRenderLimiter(6);
+    private readonly thumbnailCanvasLimiter = createRenderLimiter(6);
+    private thumbnailCanvasPool: (HTMLCanvasElement | OffscreenCanvas)[] = [];
 
     /**
      * Returns a response header value using a case-insensitive lookup.
@@ -539,7 +560,7 @@ export class FeatureImageContentProvider extends BaseContentProvider {
                 return await renderPdfCoverThumbnail(this.app, reference.file, {
                     maxWidth: MAX_THUMBNAIL_WIDTH,
                     maxHeight: MAX_THUMBNAIL_HEIGHT,
-                    mimeType: THUMBNAIL_OUTPUT_MIME,
+                    mimeType: Platform.isIosApp ? IOS_THUMBNAIL_OUTPUT_MIME : THUMBNAIL_OUTPUT_MIME,
                     quality: THUMBNAIL_OUTPUT_QUALITY
                 });
             }
@@ -588,17 +609,47 @@ export class FeatureImageContentProvider extends BaseContentProvider {
         }
     }
 
+    /**
+     * Fetches a URL with a timeout and concurrency limit to prevent overwhelming the network.
+     */
     private async requestUrlWithTimeout(request: RequestUrlParam, timeoutMs: number): Promise<RequestUrlResponse | null> {
+        // Acquire limiter slot to control concurrent external requests
+        const releaseLimiter = await this.externalRequestLimiter.acquire();
+        let limiterReleased = false;
+        let hardReleaseId: ReturnType<typeof globalThis.setTimeout> | null = null;
+
+        const safeReleaseLimiter = () => {
+            if (limiterReleased) {
+                return;
+            }
+            limiterReleased = true;
+            if (hardReleaseId !== null) {
+                globalThis.clearTimeout(hardReleaseId);
+                hardReleaseId = null;
+            }
+            releaseLimiter();
+        };
+
+        hardReleaseId = globalThis.setTimeout(() => safeReleaseLimiter(), EXTERNAL_REQUEST_MAX_LIFETIME_MS);
+
         let timeoutId: ReturnType<typeof globalThis.setTimeout> | null = null;
-        const requestPromise = requestUrl(request);
         const timeoutPromise = new Promise<null>(resolve => {
             timeoutId = globalThis.setTimeout(() => resolve(null), timeoutMs);
         });
 
         try {
             // `requestUrl` does not accept an AbortSignal, so we use Promise.race with a timer and ignore late results.
-            const responseOrNull = await Promise.race([requestPromise.then(response => response).catch(() => null), timeoutPromise]);
+            const rawPromise = requestUrl(request);
+            const requestPromise = rawPromise
+                .then(response => response)
+                .catch(() => null)
+                .finally(() => safeReleaseLimiter());
+
+            const responseOrNull = await Promise.race([requestPromise, timeoutPromise]);
             return responseOrNull ?? null;
+        } catch {
+            safeReleaseLimiter();
+            return null;
         } finally {
             if (timeoutId !== null) {
                 globalThis.clearTimeout(timeoutId);
@@ -768,26 +819,32 @@ export class FeatureImageContentProvider extends BaseContentProvider {
             return null;
         }
 
-        const canvas = this.createCanvas(width, height);
-        const ctx = canvas.getContext('2d');
-
-        if (!ctx) {
+        const canvasResult = await this.acquireThumbnailCanvas(width, height);
+        if (!canvasResult) {
             return null;
         }
 
-        ctx.clearRect(0, 0, width, height);
-        if ('imageSmoothingQuality' in ctx) {
-            ctx.imageSmoothingQuality = 'high';
-        }
-        ctx.drawImage(source, 0, 0, width, height);
+        const { canvas, ctx, release } = canvasResult;
 
-        // Encode to WebP first; fall back to PNG when WebP encoding fails.
-        const primary = await this.canvasToBlob(canvas, THUMBNAIL_OUTPUT_MIME, THUMBNAIL_OUTPUT_QUALITY);
-        if (primary) {
-            return primary;
-        }
+        try {
+            ctx.clearRect(0, 0, width, height);
+            if ('imageSmoothingQuality' in ctx) {
+                ctx.imageSmoothingQuality = 'high';
+            }
+            ctx.drawImage(source, 0, 0, width, height);
 
-        return this.canvasToBlob(canvas, 'image/png');
+            const outputMimeType = Platform.isIosApp ? IOS_THUMBNAIL_OUTPUT_MIME : THUMBNAIL_OUTPUT_MIME;
+
+            // Encode to the primary thumbnail mime type; fall back to PNG when encoding fails.
+            const primary = await this.canvasToBlob(canvas, outputMimeType, THUMBNAIL_OUTPUT_QUALITY);
+            if (primary) {
+                return primary;
+            }
+
+            return this.canvasToBlob(canvas, 'image/png');
+        } finally {
+            release();
+        }
     }
 
     private createCanvas(width: number, height: number): HTMLCanvasElement | OffscreenCanvas {
@@ -830,6 +887,47 @@ export class FeatureImageContentProvider extends BaseContentProvider {
             img.onerror = () => reject(new Error('Failed to load image'));
             img.src = url;
         });
+    }
+
+    /**
+     * Acquires a canvas from the pool for thumbnail rendering with concurrency limiting.
+     * Returns a canvas, context, and release function that must be called when done.
+     */
+    private async acquireThumbnailCanvas(
+        width: number,
+        height: number
+    ): Promise<{
+        canvas: HTMLCanvasElement | OffscreenCanvas;
+        ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+        release: () => void;
+    } | null> {
+        const releaseLimiter = await this.thumbnailCanvasLimiter.acquire();
+        let released = false;
+
+        // Reuse pooled canvas or create new one if pool is empty
+        const canvas = this.thumbnailCanvasPool.pop() ?? this.createCanvas(Math.max(1, width), Math.max(1, height));
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            // Return canvas to pool and release limiter on context failure
+            this.thumbnailCanvasPool.push(canvas);
+            releaseLimiter();
+            return null;
+        }
+
+        // Release function returns canvas to pool and frees limiter slot
+        const release = () => {
+            if (released) {
+                return;
+            }
+            released = true;
+            this.thumbnailCanvasPool.push(canvas);
+            releaseLimiter();
+        };
+
+        return { canvas, ctx, release };
     }
 
     private isOffscreenCanvas(canvas: HTMLCanvasElement | OffscreenCanvas): canvas is OffscreenCanvas {
