@@ -1,180 +1,105 @@
-# Notebook Navigator License Agreement
-
-**Version 1.2**
+Notebook Navigator License Agreement
+Version 1.1
 
 Copyright (c) 2025-2026 Johan Sanneblad
 All rights reserved.
 
-"Notebook Navigator" is a trademark of Johan Sanneblad. This License does not grant any rights to use the Licensor's trademarks except as expressly stated below.
+"Notebook Navigator" is a trademark of Johan Sanneblad.
 
----
+By using, copying, modifying, publishing source, or otherwise interacting with the Software, you agree to this License Agreement.
 
-## Quick FAQ (Non-Binding Summary)
+1. Definitions
 
-**Can I use and modify this plugin?**
-Yes, including in a company for internal business use.
+1.1 "Software" means the Notebook Navigator plugin, including its source code, documentation, and any associated files made available by the Licensor under this License Agreement.
 
-**Can I publish a source fork?**
-Yes, if it is clearly unofficial and includes this license.
+1.2 "Licensor" means Johan Sanneblad.
 
-**Can users install forks?**
-Yes, via BRAT or by building from source, while the project is actively maintained.
+1.3 "You" means the individual or legal entity exercising rights under this License Agreement.
 
-**Can I list a fork in the Obsidian Community Plugins directory?**
-No, while the project is actively maintained (even if renamed).
+1.4 "Organization" means You and Your employees and contractors acting on Your behalf, solely for Your internal business purposes.
 
-**Can I sell this plugin or use it in a paid product or paid service?**
-No, not without written permission.
+1.5 "Internal Use" means use of the Software within Your Organization, including commercial use, where the Software (or any Derivative Work) is not made available to any person or entity outside the Organization.
 
-**If the original plugin is abandoned (no commits for 12 months)?**
-Forks may be listed and distributed under Section 6, but still only for free.
+1.6 "Personal Use" means use of the Software by an individual for personal, non-Organization purposes.
 
-*This FAQ is provided for convenience only. The full license terms below are legally binding.*
+1.7 "Derivative Work" means any modification of, or work based on, the Software.
 
----
+1.8 "Publish Source" means to make the Software's source code (or source code of a Derivative Work) available in a public repository for viewing and collaboration, excluding any Installable Form.
 
-## 1. Definitions
+1.9 "Installable Form" means any compiled, bundled, packaged, or ready-to-run form of the Software or a Derivative Work, including, without limitation:
+(a) Obsidian plugin release assets and files such as `main.js`, `manifest.json`, and `styles.css`;
+(b) any zip, tar, or similar archives intended for installation;
+(c) any GitHub Releases assets;
+(d) any binaries, bundles, or build outputs intended for third-party installation;
+(e) any upload to a package registry or app/plugin store (including npm or similar registries) that enables third parties to install the Software or a Derivative Work.
 
-**1.1** "Software" means the Notebook Navigator plugin, including its source code, documentation, and associated files made available by the Licensor.
+1.10 "Distribute" means to provide, convey, publish, or make available the Software or any Derivative Work in Installable Form to any third party outside Your Organization. For clarity, Publish Source as permitted by Section 3 is not Distribution.
 
-**1.2** "Licensor" means Johan Sanneblad.
+1.11 "Fork" means a copy of the Software repository made in a version control system.
 
-**1.3** "You" means any individual or legal entity exercising rights under this License Agreement.
+1.12 "Obsidian Plugin Directory" means the Obsidian Community Plugins directory and any official listings used by Obsidian to index and install community plugins.
 
-**1.4** "Fork" means a copy of the Software repository or a repository derived from it in a version control system.
+1.13 "Official Release Assets" means Installable Form published by the Licensor for the unmodified Software, including the release assets intended to be installed by end users.
 
-**1.5** "Derivative Work" means any modification of, or work based on, the Software.
+2. License Grant
 
-**1.6** "Source Code" means the human-readable form of the Software or a Derivative Work.
+2.1 Subject to the restrictions in this License Agreement, the Licensor grants You a non-exclusive, worldwide, royalty-free license to:
+(a) use the Software for any purpose, including commercial purposes, as Internal Use or Personal Use;
+(b) copy the Software as needed for Internal Use or Personal Use;
+(c) modify the Software and create Derivative Works for Internal Use or Personal Use.
 
-**1.7** "Source Publication" means making Source Code available to others, including via a public repository hosting service.
+2.2 You may share copies of the Software and Derivative Works within Your Organization as needed for Internal Use.
 
-**1.8** "Installable Form" means any compiled, bundled, packaged, or ready-to-run form of the Software or a Derivative Work, including Obsidian plugin files (for example main.js, manifest.json, styles.css), release assets, archives, or similar artifacts intended for installation or direct use.
+3. Public Forks and Source Publication (Permitted)
 
-**1.9** "Installable Distribution" means making Installable Form available to others for download, installation, or execution.
+3.1 You may create and host public Forks and Publish Source of the Software and Derivative Works for Personal Use or Internal Use, provided that:
+(a) the repository includes an unmodified copy of this License Agreement; and
+(b) you do not Distribute the Software or any Derivative Work in Installable Form to any third party.
 
-**1.10** "Obsidian Plugin Directory" means the official Obsidian Community Plugins directory or any successor or equivalent listing.
+3.2 Developer build documentation is permitted. For clarity, documentation describing how to build from source is allowed, including in a public repository. However, you may not provide prebuilt artifacts, installation packages, or other Installable Form to third parties.
 
-**1.11** "BRAT Installation" means installation directly from a public source repository or its releases using BRAT (Beta Reviewers Auto-update Tool) or a similar developer-focused tool.
+3.3 Trademark and naming. Any public Fork must not use the "Notebook Navigator" name, logo, or trademark in a way that suggests it is the original or endorsed by the Licensor. You must clearly indicate that the Fork is a fork and not the official version.
 
-**1.12** "Default Branch" means the default branch of the Licensor's official repository for the Software.
+4. Distribution and Third-Party Product/Service Restrictions (Not Allowed)
 
-**1.13** "Actively Maintained" means at least one commit has been pushed to the Default Branch within the last twelve (12) months.
+4.1 No third-party Distribution. Except as expressly permitted in Section 5, You may not Distribute the Software or any Derivative Work in Installable Form to any third party.
 
-**1.14** "Maintenance Lapse" means that no commits have been pushed to the Default Branch for a continuous period of twelve (12) months.
+4.2 No third-party products or services. You may not use the Software or any Derivative Work to create, enhance, or provide a product or service that is made available to third parties (whether paid or free) if that product or service includes any part of the Software or is derived from it. This includes, without limitation, shipping it as part of a closed source application, offering it as part of a hosted service, or embedding it in a commercial product for customers.
 
-**1.15** "Lapse Trigger Date" means the first date on which a Maintenance Lapse has occurred.
+4.3 No listing of forks in the Obsidian Plugin Directory. You may not submit, list, or otherwise make available any Fork or Derivative Work through the Obsidian Plugin Directory.
 
-**1.16** "Commercial Distribution" means any of the following, whether directly or indirectly:
+5. Explicit Permission for Obsidian and Official Distribution
 
-- (a) selling, licensing for a fee, or otherwise distributing the Software or a Derivative Work in Installable Form;
-- (b) including the Software or a Derivative Work in, or bundling it with, a product or service for which You charge fees (including subscriptions, SaaS, paid support, paid access, or paywalled features);
-- (c) providing the Software or a Derivative Work to customers, clients, or third parties as part of a paid engagement or deliverable (even if the fee is described as consulting, integration, or setup);
-- (d) operating a hosted or managed offering where third parties receive access to the Software or a Derivative Work in exchange for payment.
+5.1 Obsidian distribution permitted. Notwithstanding Sections 4.1 and 4.3, Obsidian (and only Obsidian) is permitted to:
+(a) list the unmodified Software in the Obsidian Plugin Directory; and
+(b) Distribute unmodified Official Release Assets to end users for the purpose of installing and updating the plugin.
 
-For clarity, "Commercial Distribution" does not include internal use within Your organization where no third party is granted access and no fee is charged for access to the Software itself.
+5.2 Unmodified releases by the Licensor. The Licensor may Distribute Official Release Assets without restriction.
 
----
+6. Contributions to the Official Repository
 
-## 2. License Grant
+6.1 If You submit a contribution (including pull requests, patches, or suggestions) to the Licensor's official repository, You grant the Licensor a perpetual, worldwide, royalty-free, irrevocable license to use, reproduce, modify, distribute, and sublicense that contribution as part of the Software or otherwise.
 
-**2.1** Subject to this License Agreement, You may use, copy, and modify the Software for any purpose, including internal commercial use.
+7. Third-Party Components
 
-**2.2** This license is non-exclusive, worldwide, and royalty-free.
+7.1 The Software may include or depend on third-party components with separate license terms. Those components are licensed to You under their respective licenses. This License Agreement applies only to the Software as defined in Section 1.1.
 
----
+8. Termination
 
-## 3. Source Publication and Forks
+8.1 This License Agreement is effective until terminated. It automatically terminates if You breach any term. Upon termination, You must cease use of the Software and delete all copies of the Software and any Derivative Works under Your control, except copies retained solely for legal compliance.
 
-**3.1** You may create Forks and publish Source Code of the Software or Derivative Works in public repositories, provided that:
+9. Disclaimer of Warranty
 
-- (a) the repository includes an unmodified copy of this License Agreement;
-- (b) You do not remove or alter copyright notices, attribution, or license notices in the Source Code;
-- (c) the Fork is clearly identified as unofficial and not endorsed by the Licensor; and
-- (d) You do not use the "Notebook Navigator" name, logo, or trademarks except to truthfully state that the work is derived from the Software (for example, "Fork of Notebook Navigator"), and only in a manner that does not imply endorsement.
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
 
-**3.2** Source Publication includes normal repository hosting behavior, including host-generated source archives (for example, automatic zip or tar downloads). Such Source Code archives are permitted.
+10. Limitation of Liability
 
----
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL THE LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THIS LICENSE AGREEMENT.
 
-## 4. Installable Distribution While Actively Maintained
-
-**4.1** While the Software is Actively Maintained, You may provide Installable Form of the Software or a Derivative Work only:
-
-- (a) via BRAT Installation; or
-- (b) by allowing end users to build and install from Source Code themselves.
-
-**4.2** While the Software is Actively Maintained, You must not:
-
-- (a) submit, list, or distribute any Fork or Derivative Work through the Obsidian Plugin Directory (even if renamed and even if You avoid the Licensor's trademarks); or
-- (b) distribute Installable Form via app stores, marketplaces, package registries (for example npm), or similar public distribution channels, except as allowed by Section 4.1.
-
----
-
-## 5. Commercial Restrictions
-
-**5.1** You must not engage in Commercial Distribution of the Software or any Fork or Derivative Work without the Licensor's prior written permission.
-
-**5.2** You must not charge any fee for third-party access to, installation of, or use of the Software or a Derivative Work.
-
----
-
-## 6. Maintenance Lapse
-
-**6.1** If a Maintenance Lapse occurs at any time, then from the Lapse Trigger Date onward, the permissions in this Section 6 apply permanently, even if the Licensor later resumes maintenance.
-
-**6.2** From the Lapse Trigger Date onward, You may make Installable Distribution of a Fork or Derivative Work available more broadly, including submission to the Obsidian Plugin Directory, provided that:
-
-- (a) the Fork is clearly identified as unofficial and not endorsed by the Licensor;
-- (b) the Fork does not use the "Notebook Navigator" name, logo, or trademarks except to truthfully state it is derived from the Software, and only in a manner that does not imply endorsement; and
-- (c) the Fork includes an unmodified copy of this License Agreement.
-
-**6.3** Any distribution under this Section 6 must be free of charge and must not involve Commercial Distribution.
-
----
-
-## 7. Contributions
-
-**7.1** If You submit contributions to the Licensor's official repository, You grant the Licensor a perpetual, worldwide, royalty-free, irrevocable license to use, reproduce, modify, distribute, and sublicense those contributions.
-
----
-
-## 8. Third-Party Components
-
-**8.1** Third-party components remain under their own licenses. This License applies only to the Software as defined in Section 1.1.
-
----
-
-## 9. Termination
-
-**9.1** This License terminates automatically if You breach its terms. Upon termination, You must cease Source Publication and Installable Distribution under this License.
-
----
-
-## 10. Disclaimer of Warranty
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
-
----
-
-## 11. Limitation of Liability
-
-TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY CLAIM OR DAMAGES.
-
----
-
-## 12. Governing Law and Venue
+11. Governing Law and Venue
 
 This License Agreement is governed by the laws of Sweden. Any dispute shall be resolved exclusively by Swedish courts.
 
----
+12. Commercial Licensing and Exceptions
 
-## 13. Severability
-
-If any provision is held invalid or unenforceable, the remaining provisions remain in effect.
-
----
-
-## 14. Entire Agreement
-
-This License Agreement is the entire agreement regarding the Software, except separate permissions granted in writing by the Licensor.
+If You want to Distribute the Software or a Derivative Work in Installable Form, ship it with a product, offer it as part of a service, or list a fork in any plugin directory, contact the Licensor to obtain a separate commercial license or written permission.
