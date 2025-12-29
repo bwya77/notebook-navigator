@@ -70,7 +70,7 @@ const RELEASE_NOTES: ReleaseNote[] = [
         showOnUpdate: true,
         new: [],
         improved: [
-            '==Updated license agreement to 1.2==: https://github.com/johansan/notebook-navigator/blob/main/LICENSE. Free forks are welcome and can be shared via BRAT. If Notebook Navigator has no official release for 12 months, community forks can be published to the Obsidian Community Plugin Directory.'
+            '==License is back to GPL 3== after discussions with the Obsidian team.'
         ],
         changed: [],
         fixed: [
