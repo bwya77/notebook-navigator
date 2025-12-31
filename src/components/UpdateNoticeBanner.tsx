@@ -53,6 +53,11 @@ export function UpdateNoticeBanner({ notice, onDismiss }: UpdateNoticeBannerProp
         setVisibleNotice(null);
     }, [visibleNotice, onDismiss]);
 
+    const handleOpenUpdatePage = useCallback(() => {
+        window.open('obsidian://show-plugin?id=notebook-navigator');
+        handleDismiss();
+    }, [handleDismiss]);
+
     // Manages automatic fade-out animation and dismissal timing
     const { isVisible, isFading } = useAutoDismissFade({
         isActive: visibleNotice !== null,
@@ -67,11 +72,17 @@ export function UpdateNoticeBanner({ notice, onDismiss }: UpdateNoticeBannerProp
     const className = `nn-update-banner${isFading ? ' fade-out' : ''}`;
 
     return (
-        <div className={className} role="status">
+        <button
+            type="button"
+            className={className}
+            onClick={handleOpenUpdatePage}
+            aria-label={strings.common.updateBannerTitle}
+            title={strings.common.updateBannerInstruction}
+        >
             <div className="nn-update-banner__text">
                 <span className="nn-update-banner__label">{strings.common.updateBannerTitle}</span>
                 <span className="nn-update-banner__instruction">{strings.common.updateBannerInstruction}</span>
             </div>
-        </div>
+        </button>
     );
 }

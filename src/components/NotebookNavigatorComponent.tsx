@@ -149,7 +149,7 @@ export const NotebookNavigatorComponent = React.memo(
         const uiDispatch = useUIDispatch();
         const { addFolderShortcut, addNoteShortcut, addTagShortcut } = useShortcuts();
         const { stopAllProcessing, rebuildCache } = useFileCache();
-        const { notice: updateNotice, markAsDisplayed } = useUpdateNotice();
+        const { bannerNotice, updateAvailableVersion, markAsDisplayed } = useUpdateNotice();
         // Keep stable references to avoid stale closures in imperative handles
         const stopProcessingRef = useRef(stopAllProcessing);
         useEffect(() => {
@@ -890,9 +890,9 @@ export const NotebookNavigatorComponent = React.memo(
                         // The actual keyboard handling is done in NavigationPane and ListPane
                     }}
                 >
-                    <UpdateNoticeBanner notice={updateNotice} onDismiss={markAsDisplayed} />
+                    {settings.checkForUpdatesOnStart && <UpdateNoticeBanner notice={bannerNotice} onDismiss={markAsDisplayed} />}
                     {/* Floating indicator button that appears when a new version is available */}
-                    <UpdateNoticeIndicator notice={updateNotice} isEnabled={settings.checkForUpdatesOnStart} />
+                    <UpdateNoticeIndicator updateVersion={updateAvailableVersion} isEnabled={settings.checkForUpdatesOnStart} />
                     {/* KEYBOARD EVENT FLOW:
                 1. Both NavigationPane and ListPane receive the same containerRef
                 2. Each pane sets up keyboard listeners on this shared container

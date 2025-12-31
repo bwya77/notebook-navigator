@@ -394,15 +394,27 @@ body {
     color: var(--text-on-accent);
     padding: 10px 16px;
     border-radius: 10px;
+    border: none;
+    cursor: pointer;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    font: inherit;
+    text-align: left;
     opacity: 1;
     transition:
         opacity 0.4s ease,
         transform 0.4s ease;
+}
+
+.nn-update-banner:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--background-primary),
+        0 0 0 4px var(--interactive-accent),
+        0 8px 18px rgba(0, 0, 0, 0.18);
 }
 
 .nn-update-banner.fade-out {

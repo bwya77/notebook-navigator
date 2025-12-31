@@ -19,10 +19,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useServices } from '../context/ServicesContext';
 import type { ReleaseUpdateNotice } from '../services/ReleaseCheckService';
+import { compareVersions } from '../releaseNotes';
 
 /** State returned by the useUpdateNotice hook */
 interface UpdateNoticeState {
-    notice: ReleaseUpdateNotice | null;
+    bannerNotice: ReleaseUpdateNotice | null;
+    updateAvailableVersion: string | null;
     markAsDisplayed: (version: string) => Promise<void>;
 }
 
@@ -31,14 +33,14 @@ interface UpdateNoticeState {
  */
 export function useUpdateNotice(): UpdateNoticeState {
     const { plugin } = useServices();
-    const [notice, setNotice] = useState<ReleaseUpdateNotice | null>(() => plugin.getPendingUpdateNotice());
+    const [bannerNotice, setBannerNotice] = useState<ReleaseUpdateNotice | null>(() => plugin.getPendingUpdateNotice());
 
     // Subscribe to update notice changes
     useEffect(() => {
         // Generate unique listener ID to avoid conflicts
         const id = `update-notice-${Date.now()}-${Math.random().toString(36).slice(2)}`;
         const listener = (value: ReleaseUpdateNotice | null) => {
-            setNotice(value);
+            setBannerNotice(value);
         };
 
         plugin.registerUpdateNoticeListener(id, listener);
@@ -47,6 +49,19 @@ export function useUpdateNotice(): UpdateNoticeState {
             plugin.unregisterUpdateNoticeListener(id);
         };
     }, [plugin]);
+
+    const updateAvailableVersion = (() => {
+        if (!plugin.settings.checkForUpdatesOnStart) {
+            return null;
+        }
+
+        const latestKnownRelease = plugin.getLatestKnownRelease();
+        if (!latestKnownRelease) {
+            return null;
+        }
+
+        return compareVersions(latestKnownRelease, plugin.manifest.version) > 0 ? latestKnownRelease : null;
+    })();
 
     // Callback to mark a specific version as having been displayed to the user
     const markAsDisplayed = useCallback(
@@ -57,7 +72,8 @@ export function useUpdateNotice(): UpdateNoticeState {
     );
 
     return {
-        notice,
+        bannerNotice,
+        updateAvailableVersion,
         markAsDisplayed
     };
 }

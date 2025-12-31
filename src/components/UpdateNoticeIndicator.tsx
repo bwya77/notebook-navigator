@@ -18,14 +18,13 @@
 
 // Imports
 import { useCallback } from 'react';
-import type { ReleaseUpdateNotice } from '../services/ReleaseCheckService';
 import { strings } from '../i18n';
 import { ObsidianIcon } from './ObsidianIcon';
 import { useAutoDismissFade } from '../hooks/useAutoDismissFade';
 
 // Types/Interfaces
 interface UpdateNoticeIndicatorProps {
-    notice: ReleaseUpdateNotice | null;
+    updateVersion: string | null;
     isEnabled: boolean;
 }
 
@@ -33,14 +32,13 @@ interface UpdateNoticeIndicatorProps {
 /**
  * Floating indicator button that appears when a new plugin version is available
  */
-export function UpdateNoticeIndicator({ notice, isEnabled }: UpdateNoticeIndicatorProps) {
+export function UpdateNoticeIndicator({ updateVersion, isEnabled }: UpdateNoticeIndicatorProps) {
     // Hooks (state, context, refs)
-    const noticeVersion = notice?.version ?? null;
-    const shouldShowIndicator = isEnabled && notice !== null;
+    const shouldShowIndicator = isEnabled && updateVersion !== null;
     // Controls auto-dismiss timing and fade animation state
     const { isVisible, isFading } = useAutoDismissFade({
         isActive: shouldShowIndicator,
-        resetKey: noticeVersion
+        resetKey: updateVersion
     });
 
     // Callbacks / handlers
