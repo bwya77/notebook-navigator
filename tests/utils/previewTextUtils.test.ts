@@ -259,6 +259,40 @@ describe('PreviewTextUtils.extractPreviewText', () => {
 
         expect(preview).toBe('Alpha Beta');
     });
+
+    it('strips embeds from previewProperties values', () => {
+        const settings = createSettings({ previewProperties: ['summary'] });
+        const frontmatter = { summary: '![[image.png]] Caption' };
+        const preview = PreviewTextUtils.extractPreviewText('Fallback content', settings, frontmatter);
+        expect(preview).toBe('Caption');
+    });
+
+    it('falls back to note content when previewProperties value becomes empty', () => {
+        const settings = createSettings({ previewProperties: ['summary'] });
+        const frontmatter = { summary: '![[image.png]]' };
+        const preview = PreviewTextUtils.extractPreviewText('Fallback content', settings, frontmatter);
+        expect(preview).toBe('Fallback content');
+    });
+
+    it('does not leak clipped wiki embed syntax into previews', () => {
+        const longFileName = 'vlcsnap-'.padEnd(1100, 'a');
+        const content = `---\ncreated: 2024-03-17 19:43:18\n---\n![[${longFileName}.png]]\n`;
+        const preview = PreviewTextUtils.extractPreviewText(content, skipCodeSettings);
+        expect(preview).toBe('');
+    });
+
+    it('does not leak clipped footnotes into previews', () => {
+        const embedFiller = '![[image.png]]\n'.repeat(60);
+        const content = `---\ncreated: 2024-03-17 19:43:18\n---\n${embedFiller}^[${'x'.repeat(200)}]\n`;
+        const preview = PreviewTextUtils.extractPreviewText(content, skipCodeSettings);
+        expect(preview).toBe('');
+    });
+
+    it('removes internal wiki links from preview text', () => {
+        const content = 'Alpha [[Datorer/Obsidian/Make shortcuts selected]] mid [[Page|Display]] Beta';
+        const preview = PreviewTextUtils.extractPreviewText(content, skipCodeSettings);
+        expect(preview).toBe('Alpha mid Beta');
+    });
 });
 
 describe('PreviewTextUtils.normalizeExcerpt', () => {
@@ -290,5 +324,10 @@ describe('PreviewTextUtils.normalizeExcerpt', () => {
     it('returns undefined when content is empty after cleanup', () => {
         const excerpt = PreviewTextUtils.normalizeExcerpt(' <div></div> ');
         expect(excerpt).toBeUndefined();
+    });
+
+    it('keeps wiki embeds in excerpts', () => {
+        const excerpt = PreviewTextUtils.normalizeExcerpt('![[image.png]] Caption');
+        expect(excerpt).toBe('![[image.png]] Caption');
     });
 });

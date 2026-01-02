@@ -283,10 +283,11 @@ export function useListPaneData({
                         }));
 
                     const terms = hit.foundWords.filter(word => typeof word === 'string' && word.length > 0);
+                    // Omnisearch excerpts are normalized on every search update; keep this cheap.
+                    // HTML stripping is intentionally disabled regardless of stripHtmlInPreview to avoid
+                    // additional per-keystroke processing on large excerpts.
                     const excerpt =
-                        typeof hit.excerpt === 'string'
-                            ? PreviewTextUtils.normalizeExcerpt(hit.excerpt, { stripHtml: settings.stripHtmlInPreview })
-                            : undefined; // Normalize provider excerpts to match preview formatting rules
+                        typeof hit.excerpt === 'string' ? PreviewTextUtils.normalizeExcerpt(hit.excerpt, { stripHtml: false }) : undefined;
 
                     meta.set(hit.path, {
                         score: hit.score,
@@ -307,7 +308,7 @@ export function useListPaneData({
         return () => {
             disposed = true;
         };
-    }, [useOmnisearch, omnisearchService, trimmedQuery, basePathSet, settings.stripHtmlInPreview]);
+    }, [useOmnisearch, omnisearchService, trimmedQuery, basePathSet]);
 
     // Rebuild the entire map when the baseFiles list or name provider changes
     useEffect(() => {

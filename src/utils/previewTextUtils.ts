@@ -131,6 +131,10 @@ const BASE_PATTERNS = [
     /==((?:(?!==).)+)==/.source,
     // Group 21: Links
     // Example: [Google](https://google.com) → Google
+    // Note: This only matches complete links that include the closing ')'. If a link is clipped mid-token
+    // (e.g. "[Title](very-long-url" at the end of the clipped source), it will not match and the raw
+    // characters may remain in the preview. We only special-case a few high-noise tokens in
+    // stripTrailingIncompleteEmbeds().
     /\[([^\]]+)\]\([^)]+\)/.source,
     // Group 22: Wiki links with display
     // Example: [[Some Page|Display Text]] → Display Text
@@ -365,6 +369,96 @@ function stripHtmlOutsideCode(
     };
 }
 
+/** Clips text and context ranges to the specified length */
+function clipTextAndContext(text: string, context: CodeRangeContext, sliceEnd: number): { text: string; context: CodeRangeContext } {
+    const clippedEnd = Math.min(text.length, sliceEnd);
+    const clippedText = text.slice(0, clippedEnd);
+    const clippedInline = context.inlineCodeRanges.filter(range => range.end <= clippedEnd).map(range => ({ ...range }));
+    const clippedFenced = context.fencedCodeRanges.filter(range => range.end <= clippedEnd).map(range => ({ ...range }));
+
+    return {
+        text: clippedText,
+        context: {
+            inlineCodeRanges: clippedInline,
+            fencedCodeRanges: clippedFenced
+        }
+    };
+}
+
+/**
+ * Removes trailing markdown syntax that may be clipped mid-token and leak into previews.
+ *
+ * This is applied after clipping the source to a max length, so the end of the string may contain
+ * incomplete tokens that are no longer removable by the main markdown stripping regex. The primary
+ * cases are high-noise constructs that frequently appear at the top of notes:
+ * - Wiki embeds: "![[...]]" (clipped as "![[..."), or wiki links: "[[...]]" (clipped as "[[...")
+ * - Markdown images: "![alt](url)" (clipped as "![alt](url")
+ * - Inline footnotes: "^[...]" and footnote references: "[^...]"
+ *
+ * Note: This does not handle incomplete markdown links like "[Title](url" because they typically
+ * collapse to link text when complete (BASE_PATTERNS group 21). If needed, add a targeted trailing
+ * cleanup similar to the embed/link cases above.
+ */
+function stripTrailingIncompleteEmbeds(result: { text: string; context: CodeRangeContext }): { text: string; context: CodeRangeContext } {
+    const { text, context } = result;
+    if (!text.includes('![') && !text.includes('[[') && !text.includes('^[') && !text.includes('[^')) {
+        return result;
+    }
+
+    const isStartInCode = (startIndex: number) =>
+        findRangeContainingIndex(startIndex, context.inlineCodeRanges) !== null ||
+        findRangeContainingIndex(startIndex, context.fencedCodeRanges) !== null;
+
+    let sliceEnd = text.length;
+
+    const wikiEmbedStart = text.lastIndexOf('![[', sliceEnd);
+    if (wikiEmbedStart !== -1 && !isStartInCode(wikiEmbedStart)) {
+        const wikiEmbedClose = text.indexOf(']]', wikiEmbedStart + 3);
+        if (wikiEmbedClose === -1) {
+            sliceEnd = wikiEmbedStart;
+        }
+    }
+
+    const candidate = text.slice(0, sliceEnd);
+    const wikiLinkStart = candidate.lastIndexOf('[[');
+    if (wikiLinkStart !== -1 && (wikiLinkStart === 0 || candidate[wikiLinkStart - 1] !== '!') && !isStartInCode(wikiLinkStart)) {
+        const wikiLinkClose = candidate.indexOf(']]', wikiLinkStart + 2);
+        if (wikiLinkClose === -1) {
+            sliceEnd = Math.min(sliceEnd, wikiLinkStart);
+        }
+    }
+
+    const markdownImageStart = candidate.lastIndexOf('![');
+    if (markdownImageStart !== -1 && !candidate.startsWith('![[', markdownImageStart)) {
+        const markdownImageClose = candidate.indexOf(')', markdownImageStart + 2);
+        if (markdownImageClose === -1) {
+            sliceEnd = Math.min(sliceEnd, markdownImageStart);
+        }
+    }
+
+    const inlineFootnoteStart = candidate.lastIndexOf('^[');
+    if (inlineFootnoteStart !== -1 && !isStartInCode(inlineFootnoteStart)) {
+        const inlineFootnoteClose = candidate.indexOf(']', inlineFootnoteStart + 2);
+        if (inlineFootnoteClose === -1) {
+            sliceEnd = Math.min(sliceEnd, inlineFootnoteStart);
+        }
+    }
+
+    const referenceFootnoteStart = candidate.lastIndexOf('[^');
+    if (referenceFootnoteStart !== -1 && !isStartInCode(referenceFootnoteStart)) {
+        const referenceFootnoteClose = candidate.indexOf(']', referenceFootnoteStart + 2);
+        if (referenceFootnoteClose === -1) {
+            sliceEnd = Math.min(sliceEnd, referenceFootnoteStart);
+        }
+    }
+
+    if (sliceEnd === text.length) {
+        return result;
+    }
+
+    return clipTextAndContext(text, context, sliceEnd);
+}
+
 /** Clips text to target length, extending to include any code block the boundary falls within */
 function clipIncludingCode(
     text: string,
@@ -390,17 +484,7 @@ function clipIncludingCode(
         sliceEnd = Math.min(hardLimit, containingFenced.end);
     }
 
-    const clippedText = text.slice(0, sliceEnd);
-    const clippedInline = context.inlineCodeRanges.filter(range => range.end <= sliceEnd).map(range => ({ ...range }));
-    const clippedFenced = context.fencedCodeRanges.filter(range => range.end <= sliceEnd).map(range => ({ ...range }));
-
-    return {
-        text: clippedText,
-        context: {
-            inlineCodeRanges: clippedInline,
-            fencedCodeRanges: clippedFenced
-        }
-    };
+    return clipTextAndContext(text, context, sliceEnd);
 }
 
 /** Decodes HTML entities outside code segments and remaps code ranges. */
@@ -776,6 +860,13 @@ export class PreviewTextUtils {
                 return '';
             }
 
+            // Wiki links (remove entirely, including alias text)
+            // This intentionally overrides the wiki-link capture groups in BASE_PATTERNS so previews never
+            // show internal link text such as "[[Page]]" or "[[Page|Alias]]".
+            if (match.startsWith('[[') && match.endsWith(']]')) {
+                return '';
+            }
+
             // Find first defined capture group - that's our content to keep
             for (let i = 0; i < captureLength; i++) {
                 const capture = args[i];
@@ -787,7 +878,13 @@ export class PreviewTextUtils {
             return match;
         });
 
-        return restorePlaceholders(stripped, inlineSegments, fencedSegments, inlineBase, fencedBase);
+        // Wiki links can survive the initial pass when other markdown patterns unwrap formatting
+        // and return the wrapped content.
+        // Example: "**[[Page]]**" matches the bold pattern first, returning "[[Page]]".
+        // This post-pass removes any remaining wiki-link tokens before restoring protected code segments.
+        const withoutWikiLinks = stripped.replace(/\[\[[^\]]*?\]\]/g, '');
+
+        return restorePlaceholders(withoutWikiLinks, inlineSegments, fencedSegments, inlineBase, fencedBase);
     }
 
     /**
@@ -906,8 +1003,16 @@ export class PreviewTextUtils {
                       })
                     : propertyValue;
                 const decodedProperty = this.decodeHtmlEntitiesPreservingCode(htmlStripped, { preserveFencedCode: true });
-                // Collapse whitespace to keep preview rows compact regardless of source formatting
-                const normalized = collapseWhitespace(decodedProperty);
+
+                const strippedProperty = this.stripMarkdownSyntax(
+                    decodedProperty,
+                    settings.skipHeadingsInPreview,
+                    settings.skipCodeBlocksInPreview
+                );
+
+                const withoutTaskCheckboxes = strippedProperty.replace(/^\s*(?:[-*+]\s+|\d+\.\s+)?\[(?: |x|X|\/|-)?\]\]?\s*/gm, '');
+                const withoutHorizontalRules = withoutTaskCheckboxes.replace(/^\s*([*_-])(?:\s*\1){2,}\s*$/gm, '');
+                const normalized = collapseWhitespace(withoutHorizontalRules);
                 if (!normalized) {
                     continue;
                 }
@@ -978,11 +1083,16 @@ export class PreviewTextUtils {
             return '';
         }
 
+        const cleanedStep = stripTrailingIncompleteEmbeds(decodedStep);
+        if (!cleanedStep.text.trim()) {
+            return '';
+        }
+
         const stripped = this.stripMarkdownSyntax(
-            decodedStep.text,
+            cleanedStep.text,
             settings.skipHeadingsInPreview,
             settings.skipCodeBlocksInPreview,
-            decodedStep.context
+            cleanedStep.context
         );
 
         // Remove leading task checkbox markers while keeping task text
