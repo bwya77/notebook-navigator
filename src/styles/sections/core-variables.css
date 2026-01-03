@@ -146,7 +146,6 @@ body {
     --nn-theme-nav-bg: var(--background-secondary);
     /* Overlay stack (header/banner/pinned shortcuts) rendered above the tree rows */
     --nn-theme-nav-overlay-opacity: 85;
-    --nn-theme-nav-overlay-filter: blur(3px) saturate(160%);
     --nn-theme-nav-separator-color: var(--text-muted);
     --nn-theme-nav-separator-background: linear-gradient(
         90deg,

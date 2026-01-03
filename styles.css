@@ -173,7 +173,6 @@ body {
     --nn-theme-nav-bg: var(--background-secondary);
     /* Overlay stack (header/banner/pinned shortcuts) rendered above the tree rows */
     --nn-theme-nav-overlay-opacity: 85;
-    --nn-theme-nav-overlay-filter: blur(3px) saturate(160%);
     --nn-theme-nav-separator-color: var(--text-muted);
     --nn-theme-nav-separator-background: linear-gradient(
         90deg,
@@ -1473,8 +1472,8 @@ body {
      * The opacity is user-adjustable via Style Settings.
      */
     background: color-mix(in srgb, var(--nn-theme-nav-bg) calc(var(--nn-theme-nav-overlay-opacity, 85) * 1%), transparent);
-    -webkit-backdrop-filter: var(--nn-theme-nav-overlay-filter, blur(3px) saturate(160%));
-    backdrop-filter: var(--nn-theme-nav-overlay-filter, blur(3px) saturate(160%));
+    -webkit-backdrop-filter: blur(3px) saturate(160%);
+    backdrop-filter: blur(3px) saturate(160%);
     /* The scroller applies horizontal padding for rows; offset it so the overlay aligns to the pane edge. */
     margin-left: calc(-1 * var(--nn-scroller-padding));
     margin-right: calc(-1 * var(--nn-scroller-padding));
