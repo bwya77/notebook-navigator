@@ -252,44 +252,42 @@ Set custom hotkeys for these commands in Obsidian's Hotkeys settings:
 
 <br>
 
-## 7 About
-
-Notebook Navigator is built and maintained by [Johan Sanneblad](https://www.linkedin.com/in/johansan/). Johan has a PhD
-in Software Development and has worked with innovation development for companies such as Apple, Electronic Arts, Google, Microsoft, Lego, SKF, Volvo Cars, Volvo Group and Yamaha.
-
-Feel free to connect with me on [LinkedIn](https://www.linkedin.com/in/johansan/).
-
-<br>
-
-## 8 Network Usage Disclosure
+## 7 Network Usage Disclosure
 
 Notebook Navigator runs locally, but some features make HTTP requests from Obsidian.
 
-### 8.1 Release update checks (Optional)
+### 7.1 Release update checks (Optional)
 
 - **Setting:** "Check for new version on start"
 - **Request:** `https://api.github.com/repos/johansan/notebook-navigator/releases/latest`
 - **Frequency:** At most once per 24 hours, on startup
 - **Data:** Sends standard HTTP metadata; does not include vault content
 
-### 8.2 Icon pack downloads (Optional)
+### 7.2 Icon pack downloads (Optional)
 
 - **Setting:** Enable an icon pack in the Icon Packs tab
 - **Requests:** `https://raw.githubusercontent.com/johansan/notebook-navigator/main/icon-assets/...` (manifest, font, metadata)
 - **Storage:** Stored locally in IndexedDB
 
-### 8.3 External images and YouTube thumbnails
+### 7.3 External images and YouTube thumbnails
 
 - **Feature images (Optional):** Controlled by the "Download external images" setting. Downloads remote images and YouTube thumbnails for feature images and stores them locally in IndexedDB.
 - **Welcome modal (First launch):** Loads a static thumbnail from `https://raw.githubusercontent.com/johansan/notebook-navigator/main/images/youtube-thumbnail.jpg`.
 - **What’s new modal (On update / when opened):** Loads YouTube thumbnails from `https://img.youtube.com/vi/<id>/...` for release notes that include a YouTube link.
 
-### 8.4 Privacy and data handling
+### 7.4 Privacy and data handling
 
 - Notebook Navigator does not send note content, file names, or tags to a Notebook Navigator server.
 - Requests to GitHub, YouTube, and any external image host are made directly from your device and include standard HTTP metadata (IP address, user-agent, and similar).
 - Downloaded icon packs and images are stored locally (IndexedDB). Recent notes/files and UI state are stored locally (Obsidian local storage).
-  <br>
+
+<br>
+
+## 8 Contact
+
+Notebook Navigator is built and maintained by [Johan Sanneblad](https://www.linkedin.com/in/johansan/). Johan has a PhD in Software Development and has worked with innovation development for companies such as Apple, Electronic Arts, Google, Microsoft, Lego, SKF, Volvo Cars, Volvo Group and Yamaha.
+
+Feel free to connect with me on [LinkedIn](https://www.linkedin.com/in/johansan/).
 
 <br>
 
