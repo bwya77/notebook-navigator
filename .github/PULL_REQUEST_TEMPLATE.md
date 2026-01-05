@@ -8,6 +8,19 @@
 
 ---
 
+## Code Policy
+
+Before submitting, ensure your PR does NOT include:
+
+- [ ] Global DOM event listeners (e.g., `document.addEventListener`)
+- [ ] Monkey patching or overriding Obsidian's native behavior
+- [ ] Reliance on internal Obsidian CSS class names not part of the public API
+- [ ] Modifications to `manifest.json`, `package.json`, or `versions.json` version numbers
+
+PRs containing these patterns will not be accepted. See the [Contributing Guidelines](https://github.com/johansan/notebook-navigator/wiki) for full details.
+
+---
+
 ## AI Assistance Disclosure
 
 <!-- This section is required for all pull requests -->
