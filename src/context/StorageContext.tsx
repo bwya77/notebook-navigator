@@ -41,6 +41,7 @@
 
 import { createContext, useContext, useState, useEffect, useRef, ReactNode, useMemo, useCallback } from 'react';
 import { App, TAbstractFile, TFile, debounce, EventRef } from 'obsidian';
+import type { Debouncer } from 'obsidian';
 import { TIMEOUTS } from '../types/obsidian-extended';
 import { ProcessedMetadata, extractMetadata } from '../utils/metadataExtractor';
 import { ContentProviderRegistry } from '../services/content/ContentProviderRegistry';
@@ -266,6 +267,15 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
     const rebuildFileCacheRef = useRef<ReturnType<typeof debounce> | null>(null);
     const buildFileCacheFnRef = useRef<((isInitialLoad?: boolean) => Promise<void>) | null>(null);
 
+    // Holds the latest rebuildTagTree implementation for debounced callbacks.
+    const rebuildTagTreeFnRef = useRef<(() => Map<string, TagTreeNode>) | null>(null);
+
+    // Debounces full tag tree rebuilds during bursts of tag updates.
+    const tagTreeRebuildDebouncerRef = useRef<Debouncer<[], void> | null>(null);
+
+    // Skips tag tree rebuild effects immediately after storage becomes ready.
+    const tagTreeRebuildReadyGateRef = useRef(false);
+
     const cacheRebuildNoticeRef = useRef<ReturnType<typeof showNotice> | null>(null);
     const cacheRebuildIntervalRef = useRef<number | null>(null);
     const featureImageSettingsRunIdRef = useRef(0);
@@ -278,6 +288,10 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
     // State tracking whether storage system and IndexedDB are fully initialized
     const [isStorageReady, setIsStorageReady] = useState(false);
     const [isIndexedDBReady, setIsIndexedDBReady] = useState(false);
+
+    // Mirrors isStorageReady for callbacks that may run after renders.
+    const isStorageReadyRef = useRef(false);
+    isStorageReadyRef.current = isStorageReady;
 
     // Flag preventing duplicate initial cache building during startup
     const hasBuiltInitialCache = useRef(false);
@@ -572,6 +586,71 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
         return tagTree;
     }, [showHiddenItems, tagTreeService, getVisibleMarkdownFiles]);
 
+    // Exposes the latest rebuildTagTree implementation to the debounced scheduler.
+    rebuildTagTreeFnRef.current = rebuildTagTree;
+
+    type ScheduleTagTreeRebuildOptions = {
+        // Executes a pending rebuild immediately.
+        flush?: boolean;
+    };
+
+    // Cancels any pending scheduled tag tree rebuild.
+    const cancelTagTreeRebuildDebouncer = useCallback((options?: { reset?: boolean }) => {
+        const debouncer = tagTreeRebuildDebouncerRef.current;
+        if (!debouncer) {
+            return;
+        }
+
+        try {
+            debouncer.cancel();
+        } catch {
+            // ignore
+        }
+
+        if (options?.reset) {
+            tagTreeRebuildDebouncerRef.current = null;
+        }
+    }, []);
+
+    // Requests a tag tree rebuild through a shared debouncer.
+    const scheduleTagTreeRebuild = useCallback((options?: ScheduleTagTreeRebuildOptions) => {
+        if (stoppedRef.current || !isStorageReadyRef.current) {
+            return;
+        }
+
+        if (!latestSettingsRef.current.showTags) {
+            return;
+        }
+
+        if (!tagTreeRebuildDebouncerRef.current) {
+            tagTreeRebuildDebouncerRef.current = debounce(
+                () => {
+                    if (stoppedRef.current || !isStorageReadyRef.current) {
+                        return;
+                    }
+
+                    if (!latestSettingsRef.current.showTags) {
+                        return;
+                    }
+
+                    rebuildTagTreeFnRef.current?.();
+                },
+                TIMEOUTS.DEBOUNCE_TAG_TREE,
+                true
+            );
+        }
+
+        tagTreeRebuildDebouncerRef.current();
+
+        if (options?.flush) {
+            try {
+                tagTreeRebuildDebouncerRef.current.run();
+            } catch {
+                // ignore
+            }
+        }
+    }, []);
+
     /**
      * Effect: Rebuild tag tree when hidden items visibility changes
      *
@@ -582,15 +661,26 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
      * - This ensures tag counts stay accurate when showing/hiding excluded folders
      */
     useEffect(() => {
-        if (!isStorageReady) return;
+        if (!isStorageReady) {
+            // Resets the ready gate so the next ready transition is ignored.
+            tagTreeRebuildReadyGateRef.current = false;
+            return;
+        }
+
+        if (!tagTreeRebuildReadyGateRef.current) {
+            // Initial cache build creates the tag tree before storage is marked ready.
+            tagTreeRebuildReadyGateRef.current = true;
+            return;
+        }
+
         if (settings.showTags) {
-            rebuildTagTree();
+            scheduleTagTreeRebuild();
         }
     }, [
         showHiddenItems,
         settings.showTags,
         isStorageReady,
-        rebuildTagTree,
+        scheduleTagTreeRebuild,
         hiddenFolders,
         hiddenFiles,
         hiddenTags,
@@ -1016,6 +1106,9 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
             }
         }
 
+        // Cancels tag rebuilds scheduled before the database reset.
+        cancelTagTreeRebuildDebouncer();
+
         // Clean up any active wait disposers for metadata loading
         if (waitDisposerRef.current) {
             try {
@@ -1051,6 +1144,7 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
         clearNoteCountCache();
 
         // Mark storage as not ready while rebuilding
+        isStorageReadyRef.current = false;
         setIsStorageReady(false);
         api?.setStorageReady(false);
         hasBuiltInitialCache.current = false;
@@ -1085,6 +1179,7 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
         stoppedRef.current = previousStopped;
     }, [
         api,
+        cancelTagTreeRebuildDebouncer,
         clearCacheRebuildNotice,
         disposeFeatureImageMetadataWaitDisposers,
         disposeMetadataWaitDisposers,
@@ -1436,22 +1531,43 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
      * The subscription is only active when storage is ready and tags are enabled.
      */
     useEffect(() => {
-        if (!isStorageReady) return;
+        if (!isStorageReady || !settings.showTags) {
+            return;
+        }
 
         const db = getDBInstance();
         const unsubscribe = db.onContentChange(changes => {
             if (stoppedRef.current) return;
-            // Check if any changes include tags
-            const hasTagChanges = changes.some(change => change.changes.tags !== undefined);
+            let hasTagChanges = false;
+            let shouldFlush = false;
+            let activeFilePath: string | null = null;
+            let activeFileResolved = false;
 
-            if (hasTagChanges && settings.showTags) {
-                // Rebuild tag tree when tags change
-                rebuildTagTree();
+            for (const change of changes) {
+                if (change.changes.tags === undefined) {
+                    continue;
+                }
+                hasTagChanges = true;
+
+                if (!activeFileResolved) {
+                    activeFilePath = app.workspace.getActiveFile()?.path ?? null;
+                    activeFileResolved = true;
+                }
+
+                if (activeFilePath && change.path === activeFilePath) {
+                    // Flushes the debounce delay when the active file changes tags.
+                    shouldFlush = true;
+                    break;
+                }
+            }
+
+            if (hasTagChanges) {
+                scheduleTagTreeRebuild({ flush: shouldFlush });
             }
         });
 
         return unsubscribe;
-    }, [isStorageReady, settings.showTags, rebuildTagTree]);
+    }, [app.workspace, isStorageReady, settings.showTags, scheduleTagTreeRebuild]);
 
     /**
      * Main Effect: Initialize storage system and monitor vault changes
@@ -1517,6 +1633,7 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
                     rebuildTagTree();
 
                     // Step 4: Mark storage as ready
+                    isStorageReadyRef.current = true;
                     setIsStorageReady(true);
 
                     // Notify API that storage is ready
@@ -1598,7 +1715,7 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
                                 if (toRemove.length > 0) {
                                     await removeFilesFromCache(toRemove);
                                     if (settings.showTags) {
-                                        rebuildTagTree();
+                                        scheduleTagTreeRebuild();
                                     }
                                 }
                             } catch (error: unknown) {
@@ -1919,6 +2036,8 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
                 }
                 pendingSyncTimeoutId.current = null;
             }
+            // Resets the debouncer so it cannot fire after teardown.
+            cancelTagTreeRebuildDebouncer({ reset: true });
             // Cancel any pending metadata wait
             if (waitDisposerRef.current) {
                 try {
@@ -1938,12 +2057,14 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
     }, [
         app,
         api,
+        cancelTagTreeRebuildDebouncer,
         clearPendingSettingsChangeTimer,
         disposeFeatureImageMetadataWaitDisposers,
         disposeMetadataWaitDisposers,
         isIndexedDBReady,
         getIndexableFiles,
         rebuildTagTree,
+        scheduleTagTreeRebuild,
         settings,
         startCacheRebuildNotice,
         waitForMetadataCache,
@@ -2003,9 +2124,9 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
                         await recordFileChanges([...toAdd, ...toUpdate], cachedFiles, pendingRenameDataRef.current);
                     }
 
-                    // Always rebuild tag tree so folder exclusion rule changes take effect immediately
+                    // Always request a tag tree rebuild so folder exclusion rules are applied
                     if (settings.showTags) {
-                        rebuildTagTree();
+                        scheduleTagTreeRebuild();
                     }
 
                     // Queue content generation for newly added/updated items if needed
@@ -2078,7 +2199,7 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
             });
         } else if (excludedFileNamePatternsChanged) {
             if (settings.showTags) {
-                rebuildTagTree();
+                scheduleTagTreeRebuild();
             }
         }
 
@@ -2089,7 +2210,7 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
         hiddenFiles,
         hiddenFileNamePatterns,
         handleSettingsChanges,
-        rebuildTagTree,
+        scheduleTagTreeRebuild,
         getIndexableFiles,
         queueMetadataContentWhenReady,
         queueIndexableFilesForContentGeneration,
@@ -2149,6 +2270,8 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
                     // ignore
                 }
                 rebuildFileCacheRef.current = null;
+                // Clears any pending rebuild scheduled by UI or database events.
+                cancelTagTreeRebuildDebouncer({ reset: true });
                 // Cancel any pending metadata cache wait
                 if (waitDisposerRef.current) {
                     try {
@@ -2165,6 +2288,7 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
             }
         };
     }, [
+        cancelTagTreeRebuildDebouncer,
         clearPendingSettingsChangeTimer,
         contextValue,
         disposeFeatureImageMetadataWaitDisposers,
