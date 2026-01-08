@@ -1,45 +1,17 @@
-## Description
+# Thank you for your interest in contributing
 
-<!-- Describe your changes -->
+Hey there,
 
-## Related Issues
+Notebook Navigator is currently under heavy development and I am adding new features and optimizing the current architecture at a rapid pace.
 
-<!-- Link any related issues: Fixes #123, Closes #456 -->
+This means that I currently do not have the time to review PRs, since it's not just about checking the code quality and if it fits into the current architecture, it's also about checking if your code fits with the architecture I have planned in 3-6 months. 
 
----
+**Summary: Pull requests are not being accepted right now.**
 
-## Code Policy
+## Other ways to help
 
-Before submitting, ensure your PR does NOT include:
+- **Found a bug?** [Open an issue](https://github.com/johansan/notebook-navigator/issues) - bug reports are always welcome.
+- **Feature idea?** [Open an issue](https://github.com/johansan/notebook-navigator/issues) - I read and reply to everything.
+- **Want to help?** Testing and feedback are the most useful things right now.
 
-- [ ] Global DOM event listeners (e.g., `document.addEventListener`)
-- [ ] Monkey patching or overriding Obsidian's native behavior
-- [ ] Reliance on internal Obsidian CSS class names not part of the public API
-- [ ] Modifications to `manifest.json`, `package.json`, or `versions.json` version numbers
-
-PRs containing these patterns will not be accepted. See the [Contributing Guidelines](https://github.com/johansan/notebook-navigator/wiki) for full details.
-
----
-
-## AI Assistance Disclosure
-
-<!-- This section is required for all pull requests -->
-
-- [ ] I used AI assistance for this PR
-
-### If you used AI assistance, complete the following:
-
-**Tools used:**
-<!-- e.g., Claude Code, OpenAI Codex, GitHub Copilot, Cursor -->
-
-
-**Model and variant:**
-<!-- e.g., Claude Opus 4.5, GPT-5.2-medium, GPT-5.2-codex-xhigh -->
-
-
-**Number of review iterations:**
-<!-- How many times did you review and iterate on the AI-generated code? -->
-
-
-**Manual review confirmation (REQUIRED if AI was used):**
-- [ ] I have manually reviewed every single line of code in this PR
+Thank you for your understanding!
