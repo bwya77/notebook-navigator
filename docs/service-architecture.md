@@ -34,6 +34,8 @@ must be guarded while the plugin is still initializing. `IconService` is a globa
 `getIconService()`. `StorageContext` owns the background content pipeline through `ContentProviderRegistry` and does not
 publish the registry via `ServicesContext`.
 
+See `docs/metadata-pipeline.md` for the cache rebuild flow and the content provider processing pipeline.
+
 ## Service Hierarchy
 
 ### ServicesContext
@@ -102,14 +104,14 @@ graph TB
     ContentRegistry["ContentProviderRegistry<br/>Provider coordinator"]
 
     subgraph "Content Providers"
-        PreviewProvider["PreviewContentProvider<br/>Note previews"]
-        ImageProvider["FeatureImageContentProvider<br/>Feature images"]
+        MarkdownPipelineProvider["MarkdownPipelineContentProvider<br/>Preview + custom property + markdown feature images"]
+        FileThumbnailsProvider["FeatureImageContentProvider<br/>Non-markdown thumbnails (PDF covers)"]
         MetadataProvider["MetadataContentProvider<br/>Frontmatter fields + hidden state"]
         TagProvider["TagContentProvider<br/>Tag extraction"]
     end
 
-    ContentRegistry --> PreviewProvider
-    ContentRegistry --> ImageProvider
+    ContentRegistry --> MarkdownPipelineProvider
+    ContentRegistry --> FileThumbnailsProvider
     ContentRegistry --> MetadataProvider
     ContentRegistry --> TagProvider
 ```
@@ -299,35 +301,33 @@ Coordinates background content providers that populate IndexedDB mirrors used by
 
 ```typescript
 registerProvider(provider: IContentProvider): void
-getProvider(type: ContentType): IContentProvider | undefined
+getProvider(type: ContentProviderType): IContentProvider | undefined
 getAllProviders(): IContentProvider[]
 getAllRelevantSettings(): (keyof NotebookNavigatorSettings)[]
-handleSettingsChange(oldSettings: NotebookNavigatorSettings, newSettings: NotebookNavigatorSettings): Promise<void>
+handleSettingsChange(oldSettings: NotebookNavigatorSettings, newSettings: NotebookNavigatorSettings): Promise<ContentProviderType[]>
 queueFilesForAllProviders(
   files: TFile[],
   settings: NotebookNavigatorSettings,
-  options?: { include?: ContentType[]; exclude?: ContentType[] }
+  options?: { include?: ContentProviderType[]; exclude?: ContentProviderType[] }
 ): void
 stopAllProcessing(): void
 ```
 
 **Content Providers:**
 
-- **PreviewContentProvider** (`src/services/content/PreviewContentProvider.ts`)
-  - Generates preview snippets for markdown files, respecting skipping settings and Excalidraw detection.
-  - Uses queue dedupe to avoid redundant work and keeps 100-file batches with a parallel limit of 10.
+- **MarkdownPipelineContentProvider** (`src/services/content/MarkdownPipelineContentProvider.ts`)
+  - Generates markdown-derived content in a single pass (preview text, custom property, markdown feature images).
+  - Uses Obsidian's metadata cache for frontmatter and frontmatter position offsets.
 
 - **FeatureImageContentProvider** (`src/services/content/FeatureImageContentProvider.ts`)
-  - Resolves feature images from frontmatter or first embedded image.
-  - Validates vault paths and clears cache on settings changes.
+  - Generates thumbnails for non-markdown files (PDF cover thumbnails).
 
 - **MetadataContentProvider** (`src/services/content/MetadataContentProvider.ts`)
-  - Extracts configured frontmatter fields and hidden state for excluded files.
-  - Tracks hidden-state computations between `needsProcessing` and `processFile`.
+  - Extracts configured frontmatter metadata fields and hidden state based on vault profile exclusions.
 
 - **TagContentProvider** (`src/services/content/TagContentProvider.ts`)
-  - Extracts tags from frontmatter and inline text using Obsidian metadata cache.
-  - Deduplicates case variants and normalizes stored values.
+  - Extracts tags from Obsidian's metadata cache (`getAllTags(metadata)`).
+  - Deduplicates case variants and stores values without the `#` prefix.
 
 ## Plugin-Managed Services
 
@@ -652,13 +652,14 @@ interface ITagTreeProvider {
 
 ```typescript
 interface IContentProvider {
-  getContentType(): ContentType;
+  getContentType(): ContentProviderType;
   getRelevantSettings(): (keyof NotebookNavigatorSettings)[];
   shouldRegenerate(oldSettings: NotebookNavigatorSettings, newSettings: NotebookNavigatorSettings): boolean;
-  clearContent(): Promise<void>;
+  clearContent(context?: ContentProviderClearContext): Promise<void>;
   queueFiles(files: TFile[]): void;
   startProcessing(settings: NotebookNavigatorSettings): void;
   stopProcessing(): void;
+  waitForIdle(): Promise<void>;
   onSettingsChanged(settings: NotebookNavigatorSettings): void;
 }
 ```

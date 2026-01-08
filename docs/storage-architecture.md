@@ -30,8 +30,7 @@ mirror, vault-scoped localStorage, synchronized settings in `data.json`, and a d
 
 ### 1. IndexedDB (Persistent Local Storage)
 
-**Purpose**: Stores all file metadata and generated content locally on the device. This is the primary database for
-caching vault information to enable fast searches and filtering without repeatedly reading files from disk.
+**Purpose**: Stores file metadata and generated content locally on the device. Data is derived from the vault and can be rebuilt.
 
 **Location**: Browser's IndexedDB storage (device-specific)
 
@@ -39,13 +38,14 @@ caching vault information to enable fast searches and filtering without repeated
 
 **Data Stored**:
 
-- File modification times (mtime)
-- Extracted tags from Markdown content and frontmatter
-- Generated preview text (first ~500 characters)
-- Feature image references from frontmatter or embedded image fallback
-- Frontmatter metadata overrides (display name, created timestamp, modified timestamp)
-- Frontmatter icon and color overrides
-- Hidden flag when file matches exclusion patterns
+- File modification time (`mtime`)
+- Provider processed mtimes (`markdownPipelineMtime`, `tagsMtime`, `metadataMtime`, `fileThumbnailsMtime`)
+- Tags (`tags`)
+- Preview status + preview store entries (`previewStatus`)
+- Feature image key/status + blob store entries (`featureImageKey`, `featureImageStatus`)
+- Custom property value (`customProperty`)
+- Frontmatter metadata (`metadata.name`, `metadata.created`, `metadata.modified`, `metadata.icon`, `metadata.color`)
+- Hidden flag (`metadata.hidden`)
 
 **Key Characteristics**:
 
@@ -68,10 +68,24 @@ caching vault information to enable fast searches and filtering without repeated
 
 ```typescript
 export interface FileData {
+  // Vault mtime for the file path
   mtime: number;
+
+  // Provider processed mtimes (used to detect stale provider output)
+  markdownPipelineMtime: number;
+  tagsMtime: number;
+  metadataMtime: number;
+  fileThumbnailsMtime: number;
+
+  // Generated content (null means not generated yet)
   tags: string[] | null;
-  preview: string | null;
-  featureImage: string | null;
+  customProperty: string | null;
+
+  // Preview text and feature images are tracked via status fields (payloads are stored separately)
+  previewStatus: 'unprocessed' | 'none' | 'has';
+  featureImage: Blob | null;
+  featureImageStatus: 'unprocessed' | 'none' | 'has';
+  featureImageKey: string | null;
   metadata: {
     name?: string;
     created?: number;
@@ -318,14 +332,14 @@ interface IconAssetRecord {
 4. **Local Storage** read for pane layout, selections, UX preferences, and recent data
 5. StorageContext diffs vault files and writes additions, updates, and removals to **IndexedDB**
 6. Tag tree rebuilt from the synchronized database
-7. Content providers queue pending previews, tags, metadata, and feature images while UI renders from the memory cache
+7. Content providers queue pending file-derived content (preview, tags, metadata, feature images, custom property) while UI renders from the memory cache
 
 ### File Change (During Session)
 
 1. Obsidian emits vault event (create, delete, rename, modify)
 2. StorageContext diffs vault files and updates **IndexedDB** (adds new files, removes deleted entries, preserves
    renamed data)
-3. **ContentProviderRegistry** queues affected files for previews, tags, feature images, and metadata
+3. **ContentProviderRegistry** queues affected files for content regeneration
 4. Providers write updates through **IndexedDBStorage**, keeping the memory cache in sync and notifying listeners
 5. React components re-render with the refreshed in-memory data
 

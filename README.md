@@ -118,6 +118,8 @@ The tutorial has subtitles in 21 languages, same as Notebook Navigator.
 - [**Startup Process**](docs/startup-process.md) - Plugin initialization sequence. Cold boot vs warm boot flows,
   metadata cache resolution, deferred cleanup, and content generation pipeline. Includes Mermaid diagrams.
 
+- [**Metadata Pipeline**](docs/metadata-pipeline.md) - Cache rebuild sequence, provider pipeline stages, and completion signals. Includes Mermaid diagrams.
+
 - [**Storage Architecture**](docs/storage-architecture.md) - Guide to storage containers (IndexedDB, Local Storage,
   Memory Cache, Settings). Data flow patterns and usage guidelines.
 

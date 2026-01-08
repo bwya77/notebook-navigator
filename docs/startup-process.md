@@ -310,22 +310,21 @@ Content is generated asynchronously in the background by the ContentProviderRegi
 
 1. **File Detection**: Each provider checks if files need processing
    - TagContentProvider: Checks if tags are null or file modified
-   - PreviewContentProvider: Checks if preview is null or file modified
-   - FeatureImageContentProvider: Checks if featureImage is null or file modified
+   - MarkdownPipelineContentProvider: Checks status fields (preview, custom property, markdown feature images) or file modified
+   - FeatureImageContentProvider: Checks non-markdown thumbnail status/key or file modified
    - MetadataContentProvider: Checks if metadata is null or file modified
 
 2. **Queue Management**: Files are queued based on enabled settings
    - ContentProviderRegistry manages the queue
    - Processes files in batches to avoid blocking UI
    - Uses deferred scheduling for background processing
-   - `queueMetadataContentWhenReady()` delays metadata-dependent providers until Obsidian's metadata cache has entries
+   - `queueMetadataContentWhenReady()` delays metadata-dependent providers (markdown pipeline, tags, metadata) until Obsidian's metadata cache has entries
 
 3. **Processing**: Each provider processes files independently
-   - TagContentProvider: Extracts tags from app.metadataCache.getFileCache()
-   - PreviewContentProvider: Reads file content via app.vault.cachedRead()
-   - FeatureImageContentProvider: Checks frontmatter properties via app.metadataCache.getFileCache(), falls back to
-     checking embedded images using app.metadataCache.getFirstLinkpathDest()
-   - MetadataContentProvider: Extracts custom frontmatter fields from app.metadataCache.getFileCache()
+   - TagContentProvider: Extracts tags from Obsidian's metadata cache (`getAllTags(metadata)`)
+   - MarkdownPipelineContentProvider: Uses metadata cache for frontmatter/offsets, reads markdown content when needed, runs preview/custom property/feature image processors
+   - FeatureImageContentProvider: Generates thumbnails for non-markdown files (PDF cover thumbnails)
+   - MetadataContentProvider: Extracts configured frontmatter fields and hidden state from Obsidian's metadata cache
 
 4. **Database Updates**: Results stored in IndexedDB
    - Each provider returns updates to IndexedDBStorage
