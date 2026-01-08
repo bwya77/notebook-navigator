@@ -692,6 +692,24 @@ settings:
         default-dark: '#'
     -
     -
+        id: nn-theme-file-selected-custom-property-color
+        title: Selected custom property text color
+        description: Text color for custom property pill when selected.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+    -
+        id: nn-theme-file-selected-custom-property-bg
+        title: Selected custom property background
+        description: Background color for custom property pill when selected.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+    -
         id: nn-theme-file-selected-inactive-preview-color
         title: Selected file preview color (inactive)
         description: Content preview color when file is selected and pane is inactive.
@@ -731,6 +749,24 @@ settings:
         id: nn-theme-file-selected-inactive-tag-bg
         title: Selected file tag background (inactive)
         description: Tag background color when file is selected and pane is inactive.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+    -
+        id: nn-theme-file-selected-inactive-custom-property-color
+        title: Selected custom property text color (inactive)
+        description: Text color for custom property pill when file is selected and pane is inactive.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+    -
+        id: nn-theme-file-selected-inactive-custom-property-bg
+        title: Selected custom property background (inactive)
+        description: Background color for custom property pill when file is selected and pane is inactive.
         type: variable-themed-color
         format: hex
         default-light: '#'

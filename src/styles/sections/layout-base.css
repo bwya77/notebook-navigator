@@ -60,6 +60,8 @@
     --nn-selected-file-parent-color: var(--nn-theme-file-selected-parent-color);
     --nn-selected-file-tag-color: var(--nn-theme-file-selected-tag-color);
     --nn-selected-file-tag-bg: var(--nn-theme-file-selected-tag-bg);
+    --nn-selected-file-custom-property-color: var(--nn-theme-file-selected-custom-property-color);
+    --nn-selected-file-custom-property-bg: var(--nn-theme-file-selected-custom-property-bg);
     --nn-selected-navitem-bg-color: var(--nn-theme-navitem-selected-bg-solid, var(--nn-theme-navitem-selected-bg));
     --nn-selected-navitem-name-color: var(--nn-theme-navitem-selected-name-color);
     --nn-selected-navitem-chevron-color: var(--nn-theme-navitem-selected-chevron-color);
@@ -76,6 +78,8 @@
     --nn-selected-file-parent-color: var(--nn-theme-file-selected-inactive-parent-color);
     --nn-selected-file-tag-color: var(--nn-theme-file-selected-inactive-tag-color);
     --nn-selected-file-tag-bg: var(--nn-theme-file-selected-inactive-tag-bg);
+    --nn-selected-file-custom-property-color: var(--nn-theme-file-selected-inactive-custom-property-color);
+    --nn-selected-file-custom-property-bg: var(--nn-theme-file-selected-inactive-custom-property-bg);
 }
 
 .nn-split-container:is([data-navigator-focused='false'], [data-focus-pane='files'], [data-focus-pane='search']) {

@@ -215,11 +215,11 @@ body {
     --nn-theme-file-name-color: var(--text-normal);
     --nn-theme-file-preview-color: var(--text-muted);
     --nn-theme-file-feature-border-radius: 4px;
-    --nn-theme-file-date-color: var(--text-normal);
-    --nn-theme-file-parent-color: var(--text-muted);
-    --nn-theme-file-tag-color: var(--text-muted);
+    --nn-theme-file-date-color: var(--text-faint);
+    --nn-theme-file-parent-color: var(--text-faint);
+    --nn-theme-file-tag-color: var(--text-faint);
     --nn-theme-file-tag-custom-color-text-color: var(--nn-theme-navitem-name-color);
-    --nn-theme-file-tag-bg: var(--background-modifier-border);
+    --nn-theme-file-tag-bg: transparent;
     --nn-theme-file-custom-property-color: var(--nn-theme-file-tag-color);
     --nn-theme-file-custom-property-bg: var(--nn-theme-file-tag-bg);
     --nn-theme-file-tag-border-radius: 10px;
@@ -231,6 +231,8 @@ body {
     --nn-theme-file-selected-parent-color: var(--nn-theme-file-parent-color);
     --nn-theme-file-selected-tag-color: var(--nn-theme-file-tag-color);
     --nn-theme-file-selected-tag-bg: var(--nn-theme-file-tag-bg);
+    --nn-theme-file-selected-custom-property-color: var(--nn-theme-file-custom-property-color);
+    --nn-theme-file-selected-custom-property-bg: var(--nn-theme-file-custom-property-bg);
     --nn-theme-file-selected-inactive-bg: var(--background-modifier-hover);
     --nn-theme-file-selected-inactive-name-color: var(--nn-theme-file-selected-name-color);
     --nn-theme-file-selected-inactive-preview-color: var(--nn-theme-file-selected-preview-color);
@@ -238,6 +240,8 @@ body {
     --nn-theme-file-selected-inactive-parent-color: var(--nn-theme-file-selected-parent-color);
     --nn-theme-file-selected-inactive-tag-color: var(--nn-theme-file-selected-tag-color);
     --nn-theme-file-selected-inactive-tag-bg: var(--nn-theme-file-selected-tag-bg);
+    --nn-theme-file-selected-inactive-custom-property-color: var(--nn-theme-file-selected-custom-property-color);
+    --nn-theme-file-selected-inactive-custom-property-bg: var(--nn-theme-file-selected-custom-property-bg);
 
     /* -- File Item Text Styling -- */
     --nn-theme-list-group-header-font-weight: 600;

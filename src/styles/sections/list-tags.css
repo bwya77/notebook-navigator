@@ -81,9 +81,14 @@
 }
 
 /* Selected file tag styles - only for tags without custom colors */
-.nn-file.nn-selected .nn-file-tag:not([data-has-color='true']):not([data-has-background='true']) {
+.nn-file.nn-selected .nn-file-tag:not(.nn-file-custom-property):not([data-has-color='true']):not([data-has-background='true']) {
     background-color: var(--nn-selected-file-tag-bg);
     color: var(--nn-selected-file-tag-color);
+}
+
+.nn-file.nn-selected .nn-file-tag.nn-file-custom-property {
+    background-color: var(--nn-selected-file-custom-property-bg);
+    color: var(--nn-selected-file-custom-property-color);
 }
 
 /* Selected file text colors */
