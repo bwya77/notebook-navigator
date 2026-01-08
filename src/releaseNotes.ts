@@ -86,9 +86,7 @@ const RELEASE_NOTES: ReleaseNote[] = [
             'Internal: Major rewrite of the metadata processing chain. It is now a single sequential pipeline per file instead of multiple parallel providers. It reads markdown content at most once per file per run and writes just one merged database update per file. This should make the cache system handle vaults of virtually any size without memory spikes.'
         ],
         changed: [],
-        fixed: [
-            'The rebuild cache process dialog now reappears after restarting Obsidian.'
-        ]
+        fixed: ['The rebuild cache process dialog now reappears after restarting Obsidian.']
     },
     {
         version: '2.0.4',
