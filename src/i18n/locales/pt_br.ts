@@ -643,6 +643,7 @@ export const STRINGS_PT_BR = {
                 previewText: 'Texto de pré-visualização',
                 featureImage: 'Imagem de destaque',
                 tags: 'Etiquetas',
+                customProperty: 'Custom property',
                 date: 'Data',
                 parentFolder: 'Pasta superior'
             }
@@ -1022,6 +1023,24 @@ export const STRINGS_PT_BR = {
             showFileTagsInCompactMode: {
                 name: 'Mostrar tags de arquivo no modo simples',
                 desc: 'Exibir tags quando data, visualização e imagem estão ocultas.'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: 'Formato de data',

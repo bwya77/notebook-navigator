@@ -68,7 +68,7 @@ import { openFileInContext } from '../utils/openFileInContext';
 import { FILE_VISIBILITY, getExtensionSuffix, isImageFile, shouldDisplayFile } from '../utils/fileTypeUtils';
 import { resolveFileDragIconId, resolveFileIconId } from '../utils/fileIconUtils';
 import { getDateField, naturalCompare } from '../utils/sortUtils';
-import { shouldShowFeatureImageArea } from '../utils/listPaneMeasurements';
+import { shouldShowCustomPropertyRow, shouldShowFeatureImageArea } from '../utils/listPaneMeasurements';
 import { getIconService, useIconServiceVersion } from '../services/icons';
 import type { SearchResultMeta } from '../types/search';
 import { createHiddenTagVisibility } from '../utils/tagPrefixMatcher';
@@ -78,6 +78,7 @@ import { getTagSearchModifierOperator } from '../utils/tagUtils';
 import type { InclusionOperator } from '../utils/filterSearch';
 
 const FEATURE_IMAGE_MAX_ASPECT_RATIO = 16 / 9;
+const FEATURE_IMAGE_REGEN_THROTTLE_MS = 10000;
 const sortTagsAlphabetically = (tags: string[]): void => {
     tags.sort((firstTag, secondTag) => naturalCompare(firstTag, secondTag));
 };
@@ -292,7 +293,8 @@ export const FileItem = React.memo(function FileItem({
     const includeDescendantNotes = uxPreferences.includeDescendantNotes;
     const showHiddenItems = uxPreferences.showHiddenItems;
     const appearanceSettings = useListPaneAppearance();
-    const { getFileDisplayName, getDB, getFileCreatedTime, getFileModifiedTime, hasPreview } = useFileCache();
+    const { getFileDisplayName, getDB, getFileCreatedTime, getFileModifiedTime, hasPreview, regenerateFeatureImageForFile } =
+        useFileCache();
     const { navigateToTag } = useTagNavigation();
     const metadataService = useMetadataService();
     const { addNoteShortcut, hasNoteShortcut, noteShortcutKeysByPath, removeShortcut } = useShortcuts();
@@ -310,6 +312,7 @@ export const FileItem = React.memo(function FileItem({
         const record = db.getFile(file.path);
         const featureImageKey = record?.featureImageKey ?? null;
         const featureImageStatus: FeatureImageStatus = record?.featureImageStatus ?? 'unprocessed';
+        const customProperty = record?.customProperty ?? null;
 
         let imageUrl: string | null = null;
         if (appearanceSettings.showImage && isImageFile(file)) {
@@ -320,7 +323,7 @@ export const FileItem = React.memo(function FileItem({
             }
         }
 
-        return { preview, tags: tagList, imageUrl, featureImageKey, featureImageStatus };
+        return { preview, tags: tagList, imageUrl, featureImageKey, featureImageStatus, customProperty };
     }, [appearanceSettings.showImage, appearanceSettings.showPreview, app, file, getDB]);
 
     // === State ===
@@ -336,6 +339,7 @@ export const FileItem = React.memo(function FileItem({
     const [featureImageKey, setFeatureImageKey] = useState<string | null>(initialData.featureImageKey);
     const [featureImageStatus, setFeatureImageStatus] = useState<FeatureImageStatus>(initialData.featureImageStatus);
     const [featureImageUrl, setFeatureImageUrl] = useState<string | null>(initialData.imageUrl);
+    const [customProperty, setCustomProperty] = useState<string | null>(initialData.customProperty);
     const [featureImageAspectRatio, setFeatureImageAspectRatio] = useState<number | null>(null);
     const [isFeatureImageHidden, setIsFeatureImageHidden] = useState(false);
     const [metadataVersion, setMetadataVersion] = useState(0);
@@ -349,6 +353,7 @@ export const FileItem = React.memo(function FileItem({
     const openInNewTabIconRef = useRef<HTMLDivElement>(null);
     const fileIconRef = useRef<HTMLSpanElement>(null);
     const featureImageObjectUrlRef = useRef<string | null>(null);
+    const lastFeatureImageRegenRef = useRef<{ key: string; at: number } | null>(null);
     // Unique ID for linking screen reader description to the file item
     const hiddenDescriptionId = useId();
 
@@ -645,6 +650,29 @@ export const FileItem = React.memo(function FileItem({
         );
     }, [categorizedTags, getTagDisplayName, handleTagClick, shouldShowFileTags, tagColorData]);
 
+    const customPropertyLabel = customProperty ?? '';
+    const shouldShowCustomProperty = useMemo(() => {
+        return shouldShowCustomPropertyRow({
+            customPropertyType: settings.customPropertyType,
+            showCustomPropertyInCompactMode: settings.showCustomPropertyInCompactMode,
+            isCompactMode,
+            file,
+            customProperty: customPropertyLabel
+        });
+    }, [customPropertyLabel, file, isCompactMode, settings.customPropertyType, settings.showCustomPropertyInCompactMode]);
+
+    const renderCustomProperty = useCallback(() => {
+        if (!shouldShowCustomProperty) {
+            return null;
+        }
+
+        return (
+            <div className="nn-file-custom-property-row">
+                <span className="nn-file-tag nn-file-custom-property">{customPropertyLabel}</span>
+            </div>
+        );
+    }, [customPropertyLabel, shouldShowCustomProperty]);
+
     // Format display date based on current sort
     const displayDate = useMemo(() => {
         if (!appearanceSettings.showDate || !sortOption) return '';
@@ -820,7 +848,8 @@ export const FileItem = React.memo(function FileItem({
             preview,
             tags: initialTags,
             featureImageKey: initialFeatureImageKey,
-            featureImageStatus: initialFeatureImageStatus
+            featureImageStatus: initialFeatureImageStatus,
+            customProperty: initialCustomProperty
         } = loadFileData();
 
         // Only update state if values actually changed to prevent unnecessary re-renders
@@ -828,6 +857,7 @@ export const FileItem = React.memo(function FileItem({
         setTags(prev => (areStringArraysEqual(prev, initialTags) ? prev : initialTags));
         setFeatureImageKey(prev => (prev === initialFeatureImageKey ? prev : initialFeatureImageKey));
         setFeatureImageStatus(prev => (prev === initialFeatureImageStatus ? prev : initialFeatureImageStatus));
+        setCustomProperty(prev => (prev === initialCustomProperty ? prev : initialCustomProperty));
 
         const db = getDB();
         const unsubscribe = db.onFileContentChange(file.path, (changes: FileContentChange['changes']) => {
@@ -848,6 +878,11 @@ export const FileItem = React.memo(function FileItem({
             if (changes.tags !== undefined) {
                 const nextTags = [...(changes.tags ?? [])];
                 setTags(prev => (areStringArraysEqual(prev, nextTags) ? prev : nextTags));
+            }
+            // Update custom property when it changes
+            if (changes.customProperty !== undefined) {
+                const nextCustomProperty = changes.customProperty ?? null;
+                setCustomProperty(prev => (prev === nextCustomProperty ? prev : nextCustomProperty));
             }
             // Trigger metadata refresh when frontmatter changes
             if (changes.metadata !== undefined) {
@@ -928,6 +963,13 @@ export const FileItem = React.memo(function FileItem({
             }
             if (!blob) {
                 setFeatureImageUrl(null);
+                const now = Date.now();
+                const last = lastFeatureImageRegenRef.current;
+                const shouldTrigger = !last || last.key !== expectedKey || now - last.at >= FEATURE_IMAGE_REGEN_THROTTLE_MS;
+                if (shouldTrigger) {
+                    lastFeatureImageRegenRef.current = { key: expectedKey, at: now };
+                    void regenerateFeatureImageForFile(file);
+                }
                 return;
             }
             // Create an object URL for the blob and store it for cleanup.
@@ -939,7 +981,7 @@ export const FileItem = React.memo(function FileItem({
         return () => {
             isActive = false;
         };
-    }, [appearanceSettings.showImage, app, featureImageKey, featureImageStatus, file, getDB]);
+    }, [appearanceSettings.showImage, app, featureImageKey, featureImageStatus, file, getDB, regenerateFeatureImageForFile]);
 
     useEffect(() => {
         if (!featureImageUrl || settings.forceSquareFeatureImage) {
@@ -1330,6 +1372,7 @@ export const FileItem = React.memo(function FileItem({
                                 ) : null}
                             </div>
                             {renderTags()}
+                            {renderCustomProperty()}
                         </div>
                     ) : (
                         // ========== NORMAL MODE ==========
@@ -1355,6 +1398,7 @@ export const FileItem = React.memo(function FileItem({
 
                                         {/* Tags */}
                                         {renderTags()}
+                                        {renderCustomProperty()}
 
                                         {/* Parent folder - gets its own line */}
                                         {renderParentFolder()}
@@ -1373,6 +1417,7 @@ export const FileItem = React.memo(function FileItem({
                                             <>
                                                 {/* Tags (show even when no preview text) */}
                                                 {renderTags()}
+                                                {renderCustomProperty()}
                                                 {/* Date + Parent folder share the second line (compact layout) */}
                                                 <div className="nn-file-second-line">
                                                     {settings.showFileDate && <div className="nn-file-date">{displayDate}</div>}
@@ -1398,6 +1443,7 @@ export const FileItem = React.memo(function FileItem({
 
                                                 {/* Tags row */}
                                                 {renderTags()}
+                                                {renderCustomProperty()}
 
                                                 {/* Date + Parent folder share the metadata line */}
                                                 <div className="nn-file-second-line">

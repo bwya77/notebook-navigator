@@ -17,14 +17,14 @@
  */
 
 import { TFile } from 'obsidian';
-import { ContentType } from '../../interfaces/IContentProvider';
+import { type ContentProviderType } from '../../interfaces/IContentProvider';
 import { NotebookNavigatorSettings } from '../../settings';
 import { FileData } from '../../storage/IndexedDBStorage';
 import { getDBInstance } from '../../storage/fileOperations';
 import { extractMetadataFromCache } from '../../utils/metadataExtractor';
 import { shouldExcludeFile } from '../../utils/fileFilters';
 import { getActiveHiddenFiles } from '../../utils/vaultProfiles';
-import { BaseContentProvider } from './BaseContentProvider';
+import { BaseContentProvider, type ContentProviderProcessResult } from './BaseContentProvider';
 
 // Compares two arrays for same members regardless of order
 function haveSameMembers(left: string[], right: string[]): boolean {
@@ -53,7 +53,7 @@ export class MetadataContentProvider extends BaseContentProvider {
         }
     }
 
-    getContentType(): ContentType {
+    getContentType(): ContentProviderType {
         return 'metadata';
     }
 
@@ -100,7 +100,7 @@ export class MetadataContentProvider extends BaseContentProvider {
         return false;
     }
 
-    async clearContent(): Promise<void> {
+    async clearContent(_context?: { oldSettings: NotebookNavigatorSettings; newSettings: NotebookNavigatorSettings }): Promise<void> {
         this.clearPendingHiddenStates();
         const db = getDBInstance();
         await db.batchClearAllFileContent('metadata');
@@ -125,7 +125,11 @@ export class MetadataContentProvider extends BaseContentProvider {
             return false;
         }
 
-        const shouldTrackHidden = hiddenFiles.length > 0 && file.extension === 'md';
+        if (file.extension !== 'md') {
+            return false;
+        }
+
+        const shouldTrackHidden = hiddenFiles.length > 0;
         // Lazy computation pattern - only check frontmatter when actually needed
         let hiddenStateComputed = false;
         let hiddenState = false;
@@ -144,14 +148,14 @@ export class MetadataContentProvider extends BaseContentProvider {
             }
         };
 
-        const fileModified = fileData !== null && fileData.mtime !== file.stat.mtime;
+        const needsRefresh = fileData !== null && fileData.metadataMtime !== file.stat.mtime;
         if (!fileData || fileData.metadata === null) {
             computeHiddenState();
             storeHiddenState();
             return true;
         }
 
-        if (fileModified) {
+        if (needsRefresh) {
             computeHiddenState();
             storeHiddenState();
             return true;
@@ -173,23 +177,23 @@ export class MetadataContentProvider extends BaseContentProvider {
         job: { file: TFile; path: string[] },
         fileData: FileData | null,
         settings: NotebookNavigatorSettings
-    ): Promise<{
-        path: string;
-        tags?: string[] | null;
-        preview?: string;
-        featureImage?: Blob | null;
-        featureImageKey?: string | null;
-        metadata?: FileData['metadata'];
-    } | null> {
+    ): Promise<ContentProviderProcessResult> {
+        if (job.file.extension !== 'md') {
+            return { update: null, processed: true };
+        }
+
         const hiddenFiles = getActiveHiddenFiles(settings);
         const shouldExtractMetadata = settings.useFrontmatterMetadata;
         const shouldTrackHidden = hiddenFiles.length > 0;
         if (!shouldExtractMetadata && !shouldTrackHidden) {
-            return null;
+            return { update: null, processed: true };
         }
 
         try {
             const cachedMetadata = this.app.metadataCache.getFileCache(job.file);
+            if (!cachedMetadata && (shouldExtractMetadata || (shouldTrackHidden && job.file.extension === 'md'))) {
+                return { update: null, processed: false };
+            }
             const processedMetadata = shouldExtractMetadata ? extractMetadataFromCache(cachedMetadata, settings) : {};
 
             const fileMetadata: FileData['metadata'] = {};
@@ -216,23 +220,13 @@ export class MetadataContentProvider extends BaseContentProvider {
 
             // Only return update if metadata changed
             if (fileData && this.metadataEqual(fileData.metadata, newMetadata)) {
-                return null;
+                return { update: null, processed: true };
             }
 
-            return {
-                path: job.file.path,
-                metadata: newMetadata
-            };
+            return { update: { path: job.file.path, metadata: newMetadata }, processed: true };
         } catch (error) {
             console.error(`Error extracting metadata for ${job.file.path}:`, error);
-            // Error policy:
-            // - If metadata already exists, keep it to avoid overwriting with partial/empty data.
-            // - If metadata was never extracted (`null`), store an empty object to mark the file as processed.
-            //   This avoids retry loops when metadata cache reads fail.
-            if (fileData && fileData.metadata !== null) {
-                return null;
-            }
-            return { path: job.file.path, metadata: {} };
+            return { update: null, processed: false };
         }
     }
 

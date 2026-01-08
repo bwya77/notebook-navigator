@@ -17,7 +17,7 @@
  */
 
 import { TFile } from 'obsidian';
-import { IContentProvider, ContentType } from '../../interfaces/IContentProvider';
+import { IContentProvider, type ContentProviderClearContext, type ContentProviderType } from '../../interfaces/IContentProvider';
 import { NotebookNavigatorSettings } from '../../settings';
 
 /**
@@ -25,7 +25,7 @@ import { NotebookNavigatorSettings } from '../../settings';
  * Centralizes the registration and coordination of different content generation services
  */
 export class ContentProviderRegistry {
-    private providers: Map<ContentType, IContentProvider> = new Map();
+    private providers: Map<ContentProviderType, IContentProvider> = new Map();
 
     /**
      * Registers a content provider
@@ -43,9 +43,9 @@ export class ContentProviderRegistry {
     }
 
     /**
-     * Gets a specific provider by content type
+     * Gets a specific provider by provider type
      */
-    getProvider(type: ContentType): IContentProvider | undefined {
+    getProvider(type: ContentProviderType): IContentProvider | undefined {
         return this.providers.get(type);
     }
 
@@ -69,16 +69,30 @@ export class ContentProviderRegistry {
      * @param newSettings - New settings
      * @returns Content types that were cleared and need regeneration
      */
-    async handleSettingsChange(oldSettings: NotebookNavigatorSettings, newSettings: NotebookNavigatorSettings): Promise<ContentType[]> {
-        const clearPromises: Promise<void>[] = [];
-        const affectedTypes: ContentType[] = [];
+    async handleSettingsChange(
+        oldSettings: NotebookNavigatorSettings,
+        newSettings: NotebookNavigatorSettings
+    ): Promise<ContentProviderType[]> {
+        const stopPromises: Promise<void>[] = [];
+        const providersToClear: { provider: IContentProvider; context: ContentProviderClearContext }[] = [];
+        const affectedTypes: ContentProviderType[] = [];
 
         // Check each provider to see if it's affected
         for (const provider of this.providers.values()) {
-            if (provider.shouldRegenerate(oldSettings, newSettings)) {
+            const relevantSettings = provider.getRelevantSettings();
+            const hasRelevantChanges = relevantSettings.some(settingKey => oldSettings[settingKey] !== newSettings[settingKey]);
+            const shouldClear = provider.shouldRegenerate(oldSettings, newSettings);
+            if (hasRelevantChanges || shouldClear) {
+                // Prevent providers from writing results computed with stale settings.
+                // stopProcessing() cannot cancel in-flight IndexedDB writes, so we wait for providers to become idle.
                 provider.stopProcessing();
-                // Clear content for this provider
-                clearPromises.push(provider.clearContent());
+                stopPromises.push(provider.waitForIdle());
+            }
+
+            if (shouldClear) {
+                // Clear content for this provider after all providers have stopped.
+                const context: ContentProviderClearContext = { oldSettings, newSettings };
+                providersToClear.push({ provider, context });
                 affectedTypes.push(provider.getContentType());
             }
 
@@ -86,9 +100,12 @@ export class ContentProviderRegistry {
             provider.onSettingsChanged(newSettings);
         }
 
-        // Wait for all clear operations to complete
-        if (clearPromises.length > 0) {
-            await Promise.all(clearPromises);
+        if (stopPromises.length > 0) {
+            await Promise.all(stopPromises);
+        }
+
+        if (providersToClear.length > 0) {
+            await Promise.all(providersToClear.map(({ provider, context }) => provider.clearContent(context)));
         }
 
         return affectedTypes;
@@ -103,7 +120,7 @@ export class ContentProviderRegistry {
     queueFilesForAllProviders(
         files: TFile[],
         settings: NotebookNavigatorSettings,
-        options?: { include?: ContentType[]; exclude?: ContentType[] }
+        options?: { include?: ContentProviderType[]; exclude?: ContentProviderType[] }
     ): void {
         const include = options?.include;
         const exclude = options?.exclude;

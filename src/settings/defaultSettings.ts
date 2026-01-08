@@ -183,6 +183,9 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
     prioritizeColoredFileTags: true,
     showFileTagAncestors: false,
     showFileTagsInCompactMode: false,
+    customPropertyType: 'none',
+    customPropertyFrontmatterFields: '',
+    showCustomPropertyInCompactMode: false,
     showFileDate: true,
     // Default to showing modified date when sorting alphabetically
     alphabeticalDateMode: 'modified',

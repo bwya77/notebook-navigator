@@ -17,8 +17,7 @@
  */
 
 import { TFile } from 'obsidian';
-import { IndexedDBStorage, FileData } from './IndexedDBStorage';
-import { isPdfFile } from '../utils/fileTypeUtils';
+import { createDefaultFileData, IndexedDBStorage, FileData } from './IndexedDBStorage';
 
 /**
  * FileOperations - IndexedDB storage access layer and cache management
@@ -166,12 +165,11 @@ export function shutdownDatabase(): void {
  *
  * Behavior:
  * - New files: Initialize with null content fields for content generation
- * - Modified files: Skip update entirely, letting content providers detect mtime mismatch
+ * - Modified files: Update the stored mtime, leaving provider processed mtimes unchanged
  * - Unchanged files: Update the record (useful for sync scenarios)
  *
- * When files are modified, the database mtime is intentionally not updated.
- * This creates an mtime mismatch that content providers use to trigger regeneration.
- * Existing content remains visible until regeneration completes, avoiding UI flicker.
+ * Content providers track their own processed mtimes (e.g. `markdownPipelineMtime`, `tagsMtime`) to detect staleness.
+ * On file modification, we keep existing content visible until regeneration completes, avoiding UI flicker.
  *
  * @param files - Array of Obsidian files to record
  * @param existingData - Pre-fetched map of existing file data
@@ -179,11 +177,13 @@ export function shutdownDatabase(): void {
 export async function recordFileChanges(
     files: TFile[],
     existingData: Map<string, FileData>,
-    renamedData?: Map<string, FileData>
+    renamedData?: Map<string, FileData>,
+    dbOverride?: Pick<IndexedDBStorage, 'upsertFilesWithPatch'>
 ): Promise<void> {
     if (isShuttingDown) return;
-    const db = getDBInstance();
-    const updates: { path: string; data: FileData }[] = [];
+    const db = dbOverride ?? getDBInstance();
+    // Use patch-only upserts for existing records so provider-owned fields cannot be overwritten by stale snapshots.
+    const updates: { path: string; create: FileData; patch?: Partial<FileData> }[] = [];
 
     for (const file of files) {
         const existing = existingData.get(file.path);
@@ -195,64 +195,48 @@ export async function recordFileChanges(
                     ...renamed,
                     mtime: file.stat.mtime
                 };
-                updates.push({ path: file.path, data: clonedData });
+                updates.push({ path: file.path, create: clonedData });
                 renamedData?.delete(file.path);
                 continue;
             }
-            // New file - initialize with null content
-            const isMarkdown = file.extension === 'md';
-            const fileData: FileData = {
-                mtime: file.stat.mtime,
-                tags: isMarkdown ? null : [], // TagContentProvider extracts markdown tags
-                previewStatus: isMarkdown ? 'unprocessed' : 'none', // PreviewContentProvider generates markdown previews
-                featureImage: null, // FeatureImageContentProvider will generate these
-                featureImageStatus: 'unprocessed',
-                featureImageKey: null, // FeatureImageContentProvider will generate these
-                metadata: isMarkdown ? null : {} // MetadataContentProvider extracts markdown frontmatter
-            };
-            updates.push({ path: file.path, data: fileData });
+            // New file - initialize with default content and provider bookkeeping fields.
+            updates.push({ path: file.path, create: createDefaultFileData({ mtime: file.stat.mtime, path: file.path }) });
         } else if (renamed) {
             // File exists in DB and has pending rename data - merge them
             // This happens when a file is renamed then modified before the rename is fully processed
-            const mergedData: FileData = {
-                ...existing,
-                ...renamed,
-                mtime: file.stat.mtime
+            const patch: Partial<FileData> = {
+                mtime: file.stat.mtime,
+                markdownPipelineMtime: renamed.markdownPipelineMtime,
+                tagsMtime: renamed.tagsMtime,
+                metadataMtime: renamed.metadataMtime,
+                fileThumbnailsMtime: renamed.fileThumbnailsMtime,
+                tags: renamed.tags,
+                customProperty: renamed.customProperty,
+                previewStatus: renamed.previewStatus,
+                featureImageStatus: renamed.featureImageStatus,
+                featureImageKey: renamed.featureImageKey,
+                metadata: renamed.metadata
             };
-            updates.push({ path: file.path, data: mergedData });
+            const createdData: FileData = { ...renamed, mtime: file.stat.mtime };
+            updates.push({ path: file.path, create: createdData, patch });
             renamedData?.delete(file.path);
-        } else if (isPdfFile(file) && existing.mtime !== file.stat.mtime) {
-            // PDFs do not have markdown previews/tags/frontmatter, so keep the record mtime in sync.
-            // Feature image regeneration is driven by the featureImageKey mismatch.
-            updates.push({
-                path: file.path,
-                data: {
-                    ...existing,
-                    mtime: file.stat.mtime
-                }
-            });
+        } else if (existing.mtime !== file.stat.mtime) {
+            // Keep the record mtime in sync with the vault.
+            // Regeneration is driven by provider-specific processed mtimes and content status fields.
+            const createdData: FileData = { ...existing, mtime: file.stat.mtime };
+            // Patch only the stat-derived fields; all other fields come from the stored record.
+            updates.push({ path: file.path, create: createdData, patch: { mtime: file.stat.mtime } });
         }
-        // If file was actually modified (existing.mtime !== file.stat.mtime),
-        // we intentionally skip the update. Content providers will detect
-        // the mtime mismatch and regenerate content as needed.
     }
 
-    await db.setFiles(updates);
+    await db.upsertFilesWithPatch(updates);
 }
 
 /**
- * Mark files for content regeneration without updating mtime.
- * This preserves existing file data but clears content fields.
- * Used when settings change and content needs to be regenerated.
+ * Mark files for content regeneration without clearing existing content fields.
  *
- * Why we preserve mtime:
- * - The file hasn't actually changed, only our settings have
- * - Updating mtime would make content providers think the file was modified
- * - We want to regenerate content with new settings, not because file changed
- *
- * When we DO update mtime:
- * - recordFileChanges(): When files are actually modified/added/renamed
- * - Content providers update mtime after generation to prevent re-processing
+ * This resets provider processed mtimes so providers re-run even when the file mtime has not changed
+ * (for example when Obsidian refreshes metadata after a frontmatter edit that preserves timestamps).
  *
  * @param files - Array of Obsidian files to mark for regeneration
  */
@@ -261,37 +245,29 @@ export async function markFilesForRegeneration(files: TFile[]): Promise<void> {
     const db = getDBInstance();
     const paths = files.map(f => f.path);
     const existingData = db.getFiles(paths);
-    const updates: { path: string; data: FileData }[] = [];
-    const mtimeOnlyUpdates: { path: string; mtime: number }[] = [];
+    // Reset provider processed mtimes without clearing provider output fields.
+    const updates: { path: string; create: FileData; patch?: Partial<FileData> }[] = [];
 
     for (const file of files) {
         const existing = existingData.get(file.path);
         if (!existing) {
             // File not in database yet, record it
-            updates.push({
-                path: file.path,
-                data: {
-                    mtime: file.stat.mtime,
-                    tags: null,
-                    previewStatus: file.extension === 'md' ? 'unprocessed' : 'none',
-                    featureImage: null,
-                    featureImageStatus: 'unprocessed',
-                    featureImageKey: null,
-                    metadata: null
-                }
-            });
+            updates.push({ path: file.path, create: createDefaultFileData({ mtime: file.stat.mtime, path: file.path }) });
         } else {
-            // Force regeneration by setting mtime to 0, without overwriting other fields
-            mtimeOnlyUpdates.push({ path: file.path, mtime: 0 });
+            // Force regeneration by resetting provider processed mtimes without clearing existing content fields.
+            const patch: Partial<FileData> = {
+                mtime: file.stat.mtime,
+                markdownPipelineMtime: 0,
+                tagsMtime: 0,
+                metadataMtime: 0,
+                fileThumbnailsMtime: 0
+            };
+            const createdData: FileData = { ...existing, ...patch };
+            updates.push({ path: file.path, create: createdData, patch });
         }
     }
 
-    if (updates.length > 0) {
-        await db.setFiles(updates);
-    }
-    if (mtimeOnlyUpdates.length > 0) {
-        await db.updateMtimes(mtimeOnlyUpdates);
-    }
+    await db.upsertFilesWithPatch(updates);
 }
 
 /**

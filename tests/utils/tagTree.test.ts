@@ -50,7 +50,12 @@ function createMockDb(files: MockFile[]): IndexedDBStorage {
 function createFileData(tags: string[] | null): FileData {
     return {
         mtime: 0,
+        markdownPipelineMtime: 0,
+        tagsMtime: 0,
+        metadataMtime: 0,
+        fileThumbnailsMtime: 0,
         tags,
+        customProperty: null,
         previewStatus: 'unprocessed',
         featureImage: null,
         featureImageStatus: 'unprocessed',

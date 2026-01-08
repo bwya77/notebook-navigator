@@ -589,6 +589,24 @@ settings:
         default-dark: '#'
     -
     -
+        id: nn-theme-file-custom-property-color
+        title: Custom property text color
+        description: Text color for custom property pill.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+    -
+        id: nn-theme-file-custom-property-bg
+        title: Custom property background
+        description: Background color for custom property pill.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+    -
         id: nn-theme-file-tag-border-radius
         title: Tag pill border radius
         description: Corner radius for tag pills.

@@ -67,6 +67,14 @@ export type ListNoteGroupingOption = 'none' | 'date' | 'folder';
 /** Date source to display when alphabetical sorting is active */
 export type AlphabeticalDateMode = 'created' | 'modified';
 
+/** Available custom property types displayed in file items */
+export type CustomPropertyType = 'none' | 'frontmatter' | 'wordCount';
+
+/** Type guard for validating custom property type values */
+export function isCustomPropertyType(value: string): value is CustomPropertyType {
+    return value === 'none' || value === 'frontmatter' || value === 'wordCount';
+}
+
 /** Buttons available in the navigation toolbar */
 export type NavigationToolbarButtonId = 'expandCollapse' | 'hiddenItems' | 'rootReorder' | 'newFolder';
 
@@ -222,6 +230,9 @@ export interface NotebookNavigatorSettings {
     prioritizeColoredFileTags: boolean;
     showFileTagAncestors: boolean;
     showFileTagsInCompactMode: boolean;
+    customPropertyType: CustomPropertyType;
+    customPropertyFrontmatterFields: string;
+    showCustomPropertyInCompactMode: boolean;
     showFileDate: boolean;
     alphabeticalDateMode: AlphabeticalDateMode;
     showParentFolder: boolean;

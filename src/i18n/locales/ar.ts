@@ -642,6 +642,7 @@ export const STRINGS_AR = {
                 previewText: 'نص المعاينة',
                 featureImage: 'الصورة المميزة',
                 tags: 'الوسوم',
+                customProperty: 'Custom property',
                 date: 'التاريخ',
                 parentFolder: 'المجلد الأصلي'
             }
@@ -1020,6 +1021,24 @@ export const STRINGS_AR = {
             showFileTagsInCompactMode: {
                 name: 'إظهار وسوم الملفات في الوضع المضغوط',
                 desc: 'عرض الوسوم عند إخفاء التاريخ والمعاينة والصورة.'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: 'تنسيق التاريخ',

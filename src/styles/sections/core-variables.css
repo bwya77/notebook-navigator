@@ -220,6 +220,8 @@ body {
     --nn-theme-file-tag-color: var(--text-muted);
     --nn-theme-file-tag-custom-color-text-color: var(--nn-theme-navitem-name-color);
     --nn-theme-file-tag-bg: var(--background-modifier-border);
+    --nn-theme-file-custom-property-color: var(--nn-theme-file-tag-color);
+    --nn-theme-file-custom-property-bg: var(--nn-theme-file-tag-bg);
     --nn-theme-file-tag-border-radius: 10px;
     --nn-theme-file-border-radius: 8px;
     --nn-theme-file-selected-bg: var(--text-selection);

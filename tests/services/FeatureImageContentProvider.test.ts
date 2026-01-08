@@ -16,29 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 import { describe, expect, it, vi } from 'vitest';
-import { App, TFile } from 'obsidian';
-import type { CachedMetadata } from 'obsidian';
-import { FeatureImageContentProvider } from '../../src/services/content/FeatureImageContentProvider';
+import { App, TFile, parseYaml, type CachedMetadata, type FrontMatterCache } from 'obsidian';
+import { MarkdownPipelineContentProvider } from '../../src/services/content/MarkdownPipelineContentProvider';
+import { findFeatureImageReference, type FeatureImageReference } from '../../src/services/content/featureImageReferenceResolver';
 import { DEFAULT_SETTINGS } from '../../src/settings/defaultSettings';
 import type { NotebookNavigatorSettings } from '../../src/settings/types';
 import type { FileData } from '../../src/storage/IndexedDBStorage';
 import { deriveFileMetadata } from '../utils/pathMetadata';
 
-class TestFeatureImageContentProvider extends FeatureImageContentProvider {
-    getFrontmatterReference(file: TFile, metadata: CachedMetadata | null, settings: NotebookNavigatorSettings) {
-        return this.getFrontmatterImageReference(file, metadata, settings);
-    }
-
-    getDocumentReference(content: string, file: TFile, settings: NotebookNavigatorSettings) {
-        return this.getDocumentImageReference(content, file, settings);
-    }
-
+class TestFeatureImageContentProvider extends MarkdownPipelineContentProvider {
     async runProcessFile(file: TFile, settings: NotebookNavigatorSettings) {
-        return this.processFile({ file, path: file.path.split('/') }, null, settings);
+        const result = await this.processFile({ file, path: file.path.split('/') }, null, settings);
+        return result.update;
     }
 
     async runProcessFileWithData(file: TFile, fileData: FileData | null, settings: NotebookNavigatorSettings) {
-        return this.processFile({ file, path: file.path.split('/') }, fileData, settings);
+        const result = await this.processFile({ file, path: file.path.split('/') }, fileData, settings);
+        return result.update;
     }
 
     buildKey(reference: FeatureImageReference): string {
@@ -46,11 +40,11 @@ class TestFeatureImageContentProvider extends FeatureImageContentProvider {
     }
 }
 
-type FeatureImageReference = { kind: 'local'; file: TFile } | { kind: 'external'; url: string } | { kind: 'youtube'; videoId: string };
-
 function createSettings(overrides?: Partial<NotebookNavigatorSettings>): NotebookNavigatorSettings {
     return {
         ...DEFAULT_SETTINGS,
+        showFilePreview: false,
+        customPropertyType: 'none',
         featureImageProperties: ['thumbnail'],
         downloadExternalFeatureImages: true,
         ...overrides
@@ -60,18 +54,19 @@ function createSettings(overrides?: Partial<NotebookNavigatorSettings>): Noteboo
 function createApp() {
     const app = new App();
     const resolvedFiles = new Map<string, TFile>();
+    const cachedMetadataByPath = new Map<string, CachedMetadata>();
 
-    app.metadataCache.getFileCache = () => null;
+    app.metadataCache.getFileCache = (file: TFile) => cachedMetadataByPath.get(file.path) ?? null;
     const getFirstLinkpathDest = vi.fn<(path: string, sourcePath: string) => TFile | null>(
         (path: string) => resolvedFiles.get(path) ?? null
     );
     app.metadataCache.getFirstLinkpathDest = getFirstLinkpathDest;
     app.vault.getFolderByPath = () => null;
     app.vault.getAbstractFileByPath = (path: string) => resolvedFiles.get(path) ?? null;
-    app.vault.cachedRead = async () => '';
+    app.vault.cachedRead = async (_file: TFile) => '';
     app.vault.adapter.readBinary = async () => new ArrayBuffer(0);
 
-    return { app, resolvedFiles, getFirstLinkpathDest };
+    return { app, cachedMetadataByPath, resolvedFiles, getFirstLinkpathDest };
 }
 
 function createFile(path: string): TFile {
@@ -84,10 +79,97 @@ function createFile(path: string): TFile {
     return file;
 }
 
+type FrontmatterBlock = {
+    yamlText: string;
+    bodyStartIndex: number;
+};
+
+function extractFrontmatterBlock(content: string): FrontmatterBlock | null {
+    const firstLineEnd = content.indexOf('\n');
+    const firstLine = firstLineEnd === -1 ? content : content.slice(0, firstLineEnd);
+    const normalizedFirstLine = firstLine.charCodeAt(0) === 0xfeff ? firstLine.slice(1) : firstLine;
+
+    if (normalizedFirstLine.trim() !== '---' || firstLineEnd === -1) {
+        return null;
+    }
+
+    const yamlStart = firstLineEnd + 1;
+    let lineStart = yamlStart;
+    while (lineStart <= content.length) {
+        const nextLineEnd = content.indexOf('\n', lineStart);
+        const lineEnd = nextLineEnd === -1 ? content.length : nextLineEnd;
+        const line = content.slice(lineStart, lineEnd);
+        const trimmed = line.trim();
+
+        if (trimmed === '---' || trimmed === '...') {
+            const yamlText = content.slice(yamlStart, lineStart);
+            const bodyStartIndex = nextLineEnd === -1 ? content.length : lineEnd + 1;
+            return { yamlText, bodyStartIndex };
+        }
+
+        if (nextLineEnd === -1) {
+            break;
+        }
+
+        lineStart = lineEnd + 1;
+    }
+
+    return null;
+}
+
+function createFrontmatterPosition(bodyStartIndex: number): CachedMetadata['frontmatterPosition'] {
+    return {
+        start: { line: 0, col: 0, offset: 0 },
+        end: { line: 0, col: 0, offset: bodyStartIndex }
+    };
+}
+
+function deriveFrontmatterAndBodyStartIndex(content: string): { frontmatter: FrontMatterCache | null; bodyStartIndex: number } {
+    const block = extractFrontmatterBlock(content);
+    if (!block) {
+        return { frontmatter: null, bodyStartIndex: 0 };
+    }
+
+    const yamlText = block.yamlText.trim();
+    const parsed: Record<string, unknown> = yamlText.length > 0 ? parseYaml(yamlText) : {};
+    const frontmatter = Object.keys(parsed).length > 0 ? parsed : null;
+    return { frontmatter, bodyStartIndex: block.bodyStartIndex };
+}
+
+function resolveReference(app: App, file: TFile, content: string, settings: NotebookNavigatorSettings) {
+    const { frontmatter, bodyStartIndex } = deriveFrontmatterAndBodyStartIndex(content);
+    return findFeatureImageReference({ app, file, content, settings, frontmatter, bodyStartIndex });
+}
+
+function setMarkdownContent(
+    context: ReturnType<typeof createApp>,
+    file: TFile,
+    content: string,
+    options?: { overrideRead?: boolean }
+): void {
+    if (options?.overrideRead !== false) {
+        context.app.vault.cachedRead = async (target: TFile) => {
+            return target.path === file.path ? content : '';
+        };
+    }
+
+    const { frontmatter, bodyStartIndex } = deriveFrontmatterAndBodyStartIndex(content);
+    const metadata: CachedMetadata = {};
+
+    if (frontmatter) {
+        metadata.frontmatter = frontmatter;
+    }
+
+    if (bodyStartIndex > 0) {
+        metadata.frontmatterPosition = createFrontmatterPosition(bodyStartIndex);
+    }
+
+    context.cachedMetadataByPath.set(file.path, metadata);
+}
+
 describe('FeatureImageContentProvider scanning', () => {
     it('uses the first embedded YouTube link in the document', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings({ downloadExternalFeatureImages: true });
         const noteFile = createFile('notes/note.md');
 
@@ -96,7 +178,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set(imageFile.path, imageFile);
 
         const content = `![](https://youtu.be/abc123)\n![[image]]`;
-        const result = provider.getDocumentReference(content, noteFile, settings);
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('youtube');
         if (result?.kind === 'youtube') {
@@ -106,7 +188,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('resolves extensionless wiki embeds to local images', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -114,7 +195,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set('hero', imageFile);
         resolvedFiles.set(imageFile.path, imageFile);
 
-        const result = provider.getDocumentReference('![[hero]]', noteFile, settings);
+        const result = resolveReference(app, noteFile, '![[hero]]', settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -124,7 +205,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('resolves extensionless markdown embeds to local images', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -132,7 +212,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set('hero', imageFile);
         resolvedFiles.set(imageFile.path, imageFile);
 
-        const result = provider.getDocumentReference('![](hero)', noteFile, settings);
+        const result = resolveReference(app, noteFile, '![](hero)', settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -142,7 +222,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('skips external images when downloads are disabled and continues scanning', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings({ downloadExternalFeatureImages: false });
         const noteFile = createFile('notes/note.md');
 
@@ -151,7 +230,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set(imageFile.path, imageFile);
 
         const content = `![](https://example.com/cover.jpg)\n![[hero]]`;
-        const result = provider.getDocumentReference(content, noteFile, settings);
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -161,7 +240,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('ignores frontmatter content when scanning the document body', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -170,7 +248,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set(imageFile.path, imageFile);
 
         const content = `---\ncover: ![](https://youtu.be/frontmatter)\n---\n![[hero]]`;
-        const result = provider.getDocumentReference(content, noteFile, settings);
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -180,7 +258,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('ignores CRLF frontmatter content when scanning the document body', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -189,7 +266,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set(imageFile.path, imageFile);
 
         const content = `---\r\ncover: ![](https://youtu.be/frontmatter)\r\n---\r\n![[hero]]`;
-        const result = provider.getDocumentReference(content, noteFile, settings);
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -199,7 +276,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('skips non-image wiki embeds with extensions before resolving and continues scanning', () => {
         const { app, resolvedFiles, getFirstLinkpathDest } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -208,7 +284,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set(imageFile.path, imageFile);
 
         const content = `![[note.md]]\n![[hero]]`;
-        const result = provider.getDocumentReference(content, noteFile, settings);
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('local');
         expect(getFirstLinkpathDest.mock.calls.some(call => call[0] === 'note.md')).toBe(false);
@@ -216,7 +292,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('skips non-image markdown embeds with extensions before resolving and continues scanning', () => {
         const { app, resolvedFiles, getFirstLinkpathDest } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -225,7 +300,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set(imageFile.path, imageFile);
 
         const content = `![](doc.docx)\n![[hero]]`;
-        const result = provider.getDocumentReference(content, noteFile, settings);
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('local');
         expect(getFirstLinkpathDest.mock.calls.some(call => call[0] === 'doc.docx')).toBe(false);
@@ -233,7 +308,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('resolves PDF markdown embeds to local files', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -241,7 +315,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set('doc.pdf', pdfFile);
         resolvedFiles.set(pdfFile.path, pdfFile);
 
-        const result = provider.getDocumentReference('![](doc.pdf)', noteFile, settings);
+        const result = resolveReference(app, noteFile, '![](doc.pdf)', settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -251,7 +325,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('resolves PDF markdown embeds with fragments to local files', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -259,7 +332,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set('doc.pdf', pdfFile);
         resolvedFiles.set(pdfFile.path, pdfFile);
 
-        const result = provider.getDocumentReference('![](doc.pdf#page=2)', noteFile, settings);
+        const result = resolveReference(app, noteFile, '![](doc.pdf#page=2)', settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -269,7 +342,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('resolves PDF markdown embeds with query strings to local files', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -277,7 +349,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set('doc.pdf', pdfFile);
         resolvedFiles.set(pdfFile.path, pdfFile);
 
-        const result = provider.getDocumentReference('![](doc.pdf?page=2)', noteFile, settings);
+        const result = resolveReference(app, noteFile, '![](doc.pdf?page=2)', settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -287,7 +359,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('resolves PDF wiki embeds to local files', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -295,7 +366,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set('hero.pdf', pdfFile);
         resolvedFiles.set(pdfFile.path, pdfFile);
 
-        const result = provider.getDocumentReference('![[hero.pdf]]', noteFile, settings);
+        const result = resolveReference(app, noteFile, '![[hero.pdf]]', settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -305,7 +376,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('resolves PDF wiki embeds with fragments to local files', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -313,7 +383,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set('hero.pdf', pdfFile);
         resolvedFiles.set(pdfFile.path, pdfFile);
 
-        const result = provider.getDocumentReference('![[hero.pdf#page=2]]', noteFile, settings);
+        const result = resolveReference(app, noteFile, '![[hero.pdf#page=2]]', settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -323,7 +393,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('resolves PDF wiki embeds with query strings to local files', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -331,7 +400,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set('hero.pdf', pdfFile);
         resolvedFiles.set(pdfFile.path, pdfFile);
 
-        const result = provider.getDocumentReference('![[hero.pdf?page=2]]', noteFile, settings);
+        const result = resolveReference(app, noteFile, '![[hero.pdf?page=2]]', settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -341,7 +410,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('continues scanning when PDF embed cannot be resolved', () => {
         const { app, resolvedFiles, getFirstLinkpathDest } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -350,7 +418,7 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set(imageFile.path, imageFile);
 
         const content = `![](doc.pdf)\n![[hero]]`;
-        const result = provider.getDocumentReference(content, noteFile, settings);
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -361,7 +429,6 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('resolves frontmatter properties to local images', () => {
         const { app, resolvedFiles } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
 
@@ -369,13 +436,8 @@ describe('FeatureImageContentProvider scanning', () => {
         resolvedFiles.set('hero', imageFile);
         resolvedFiles.set(imageFile.path, imageFile);
 
-        const metadata: CachedMetadata = {
-            frontmatter: {
-                thumbnail: '![[hero]]'
-            }
-        };
-
-        const result = provider.getFrontmatterReference(noteFile, metadata, settings);
+        const content = `---\nthumbnail: ![[hero]]\n---`;
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('local');
         if (result?.kind === 'local') {
@@ -385,17 +447,11 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('preserves query params in frontmatter external URLs while stripping the hash', () => {
         const { app } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings({ downloadExternalFeatureImages: true });
         const noteFile = createFile('notes/note.md');
 
-        const metadata: CachedMetadata = {
-            frontmatter: {
-                thumbnail: 'https://example.com/cover.jpg?width=800&sig=%2Babc#frag'
-            }
-        };
-
-        const result = provider.getFrontmatterReference(noteFile, metadata, settings);
+        const content = `---\nthumbnail: https://example.com/cover.jpg?width=800&sig=%2Babc#frag\n---`;
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('external');
         if (result?.kind === 'external') {
@@ -405,12 +461,11 @@ describe('FeatureImageContentProvider scanning', () => {
 
     it('preserves encoded query params in markdown external URLs while stripping the hash', () => {
         const { app } = createApp();
-        const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings({ downloadExternalFeatureImages: true });
         const noteFile = createFile('notes/note.md');
 
         const content = '![](https://example.com/cover.jpg?width=800&sig=%2Babc#frag)';
-        const result = provider.getDocumentReference(content, noteFile, settings);
+        const result = resolveReference(app, noteFile, content, settings);
 
         expect(result?.kind).toBe('external');
         if (result?.kind === 'external') {
@@ -430,22 +485,22 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('skips regeneration when featureImageKey matches even without a blob', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
-
-        const metadata: CachedMetadata = {
-            frontmatter: {
-                thumbnail: 'https://example.com/cover.jpg'
-            }
-        };
-        app.metadataCache.getFileCache = () => metadata;
+        setMarkdownContent(context, noteFile, '');
 
         // Existing data already recorded the same feature image key.
         const fileData: FileData = {
             mtime: noteFile.stat.mtime,
+            markdownPipelineMtime: noteFile.stat.mtime,
+            tagsMtime: noteFile.stat.mtime,
+            metadataMtime: noteFile.stat.mtime,
+            fileThumbnailsMtime: noteFile.stat.mtime,
             tags: null,
+            customProperty: null,
             previewStatus: 'unprocessed',
             featureImage: null,
             featureImageStatus: 'none',
@@ -459,22 +514,24 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('acknowledges mtime mismatch when featureImageKey matches and a thumbnail exists', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const noteFile = createFile('notes/note.md');
         noteFile.stat.mtime = 200;
 
-        const metadata: CachedMetadata = {
-            frontmatter: {
-                thumbnail: 'https://example.com/cover.jpg'
-            }
-        };
-        app.metadataCache.getFileCache = () => metadata;
+        const content = `---\nthumbnail: https://example.com/cover.jpg\n---\n`;
+        setMarkdownContent(context, noteFile, content);
 
         const fileData: FileData = {
-            mtime: 100,
+            mtime: noteFile.stat.mtime,
+            markdownPipelineMtime: 100,
+            tagsMtime: 100,
+            metadataMtime: 100,
+            fileThumbnailsMtime: 100,
             tags: null,
+            customProperty: null,
             previewStatus: 'unprocessed',
             featureImage: null,
             featureImageStatus: 'has',
@@ -484,27 +541,28 @@ describe('FeatureImageContentProvider scanning', () => {
 
         const result = await provider.runProcessFileWithData(noteFile, fileData, settings);
 
-        expect(result).toEqual({ path: noteFile.path, featureImageKey: 'e:https://example.com/cover.jpg' });
-        expect(result?.featureImage).toBeUndefined();
+        expect(result).toBeNull();
     });
 
     it('retries external downloads when the file changed but the featureImageKey did not', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings({ downloadExternalFeatureImages: true });
         const noteFile = createFile('notes/note.md');
         noteFile.stat.mtime = 200;
 
-        const metadata: CachedMetadata = {
-            frontmatter: {
-                thumbnail: 'https://example.com/cover.jpg'
-            }
-        };
-        app.metadataCache.getFileCache = () => metadata;
+        const content = `---\nthumbnail: https://example.com/cover.jpg\n---\n`;
+        setMarkdownContent(context, noteFile, content);
 
         const fileData: FileData = {
-            mtime: 100,
+            mtime: noteFile.stat.mtime,
+            markdownPipelineMtime: 100,
+            tagsMtime: 100,
+            metadataMtime: 100,
+            fileThumbnailsMtime: 100,
             tags: null,
+            customProperty: null,
             previewStatus: 'unprocessed',
             featureImage: null,
             featureImageStatus: 'none',
@@ -521,22 +579,24 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('retries YouTube thumbnails when the file changed but the featureImageKey did not', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings({ downloadExternalFeatureImages: true });
         const noteFile = createFile('notes/note.md');
         noteFile.stat.mtime = 200;
 
-        const metadata: CachedMetadata = {
-            frontmatter: {
-                thumbnail: 'https://youtu.be/abc123'
-            }
-        };
-        app.metadataCache.getFileCache = () => metadata;
+        const content = `---\nthumbnail: https://youtu.be/abc123\n---\n`;
+        setMarkdownContent(context, noteFile, content);
 
         const fileData: FileData = {
-            mtime: 100,
+            mtime: noteFile.stat.mtime,
+            markdownPipelineMtime: 100,
+            tagsMtime: 100,
+            metadataMtime: 100,
+            fileThumbnailsMtime: 100,
             tags: null,
+            customProperty: null,
             previewStatus: 'unprocessed',
             featureImage: null,
             featureImageStatus: 'none',
@@ -553,13 +613,15 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('stores empty blob when external download fails', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings({ downloadExternalFeatureImages: true });
         const noteFile = createFile('notes/note.md');
 
         // Provide a document with an external image reference.
-        app.vault.cachedRead = async () => '![](https://example.com/cover.jpg)';
+        const content = '![](https://example.com/cover.jpg)';
+        setMarkdownContent(context, noteFile, content);
 
         const result = await provider.runProcessFile(noteFile, settings);
 
@@ -571,11 +633,13 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('generates Excalidraw feature images via ExcalidrawAutomate', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const excalidrawFile = createFile('drawings/sketch.excalidraw.md');
         excalidrawFile.stat.mtime = 123;
+        setMarkdownContent(context, excalidrawFile, '');
 
         const destroy = vi.fn<() => void>();
         const createPng = vi.fn<
@@ -617,18 +681,15 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('generates Excalidraw feature images when excalidraw-plugin frontmatter is set', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const excalidrawFile = createFile('drawings/sketch.md');
         excalidrawFile.stat.mtime = 321;
 
-        const metadata: CachedMetadata = {
-            frontmatter: {
-                'excalidraw-plugin': 'parsed'
-            }
-        };
-        app.metadataCache.getFileCache = () => metadata;
+        const content = `---\nexcalidraw-plugin: parsed\n---\n`;
+        setMarkdownContent(context, excalidrawFile, content);
 
         const destroy = vi.fn<() => void>();
         const createPng = vi.fn<
@@ -670,11 +731,13 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('skips Excalidraw regeneration when featureImageKey matches', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const excalidrawFile = createFile('drawings/sketch.excalidraw.md');
         excalidrawFile.stat.mtime = 456;
+        setMarkdownContent(context, excalidrawFile, '');
 
         const createPng = vi.fn(async () => new Blob([new Uint8Array([1])], { type: 'image/png' }));
 
@@ -692,7 +755,12 @@ describe('FeatureImageContentProvider scanning', () => {
         try {
             const fileData: FileData = {
                 mtime: excalidrawFile.stat.mtime,
+                markdownPipelineMtime: excalidrawFile.stat.mtime,
+                tagsMtime: excalidrawFile.stat.mtime,
+                metadataMtime: excalidrawFile.stat.mtime,
+                fileThumbnailsMtime: excalidrawFile.stat.mtime,
                 tags: null,
+                customProperty: null,
                 previewStatus: 'unprocessed',
                 featureImage: null,
                 featureImageStatus: 'has',
@@ -709,11 +777,13 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('destroys ExcalidrawAutomate API when getSceneFromFile throws', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const excalidrawFile = createFile('drawings/broken.excalidraw.md');
         excalidrawFile.stat.mtime = 777;
+        setMarkdownContent(context, excalidrawFile, '');
 
         const destroy = vi.fn<() => void>();
 
@@ -743,9 +813,11 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('falls back to copyViewElementsToEAforEditing without embedded files', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const excalidrawFile = createFile('drawings/embedded.excalidraw.md');
         excalidrawFile.stat.mtime = 888;
+        setMarkdownContent(context, excalidrawFile, '');
 
         Reflect.set(app as object, 'workspace', {
             iterateAllLeaves: (cb: (leaf: object) => void) => {
@@ -794,11 +866,13 @@ describe('FeatureImageContentProvider scanning', () => {
     });
 
     it('destroys ExcalidrawAutomate API when createPNG throws', async () => {
-        const { app } = createApp();
+        const context = createApp();
+        const { app } = context;
         const provider = new TestFeatureImageContentProvider(app);
         const settings = createSettings();
         const excalidrawFile = createFile('drawings/throw.excalidraw.md');
         excalidrawFile.stat.mtime = 999;
+        setMarkdownContent(context, excalidrawFile, '');
 
         const destroy = vi.fn<() => void>();
 

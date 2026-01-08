@@ -722,6 +722,7 @@ export type {
     ItemScope,
     MultiSelectModifier,
     ListPaneTitleOption,
-    AlphabeticalDateMode
+    AlphabeticalDateMode,
+    CustomPropertyType
 } from './settings/types';
 export { DEFAULT_SETTINGS } from './settings/defaultSettings';

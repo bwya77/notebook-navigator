@@ -643,6 +643,7 @@ export const STRINGS_ES = {
                 previewText: 'Texto de vista previa',
                 featureImage: 'Imagen destacada',
                 tags: 'Etiquetas',
+                customProperty: 'Custom property',
                 date: 'Fecha',
                 parentFolder: 'Carpeta superior'
             }
@@ -1022,6 +1023,24 @@ export const STRINGS_ES = {
             showFileTagsInCompactMode: {
                 name: 'Mostrar etiquetas de archivo en modo compacto',
                 desc: 'Mostrar etiquetas cuando la fecha, vista previa e imagen están ocultas.'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: 'Formato de fecha',

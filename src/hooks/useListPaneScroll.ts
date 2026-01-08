@@ -55,7 +55,7 @@ import type { ListPaneItem } from '../types/virtualization';
 import type { NotebookNavigatorSettings } from '../settings';
 import type { SelectionState } from '../context/SelectionContext';
 import { calculateCompactListMetrics } from '../utils/listPaneMetrics';
-import { getListPaneMeasurements, shouldShowFeatureImageArea } from '../utils/listPaneMeasurements';
+import { getListPaneMeasurements, shouldShowCustomPropertyRow, shouldShowFeatureImageArea } from '../utils/listPaneMeasurements';
 
 /**
  * Parameters for the useListPaneScroll hook
@@ -251,7 +251,8 @@ export function useListPaneScroll({
 
             // Keep height estimation aligned with FileItem feature image rendering.
             // getFile reads from the in-memory cache; no IndexedDB reads occur during sizing.
-            const featureImageStatus = file ? db.getFile(file.path)?.featureImageStatus : null;
+            const fileRecord = file ? db.getFile(file.path) : null;
+            const featureImageStatus = fileRecord?.featureImageStatus ?? null;
             const showFeatureImageArea = shouldShowFeatureImageArea({
                 showImage: folderSettings.showImage,
                 file,
@@ -345,6 +346,18 @@ export function useListPaneScroll({
             const shouldShowFileTags = settings.showTags && settings.showFileTags && (!isCompactMode || settings.showFileTagsInCompactMode);
 
             if (shouldShowFileTags && item.type === ListPaneItemType.FILE && item.hasTags) {
+                textContentHeight += heights.tagRowHeight;
+            }
+
+            const shouldShowCustomProperty = shouldShowCustomPropertyRow({
+                customPropertyType: settings.customPropertyType,
+                showCustomPropertyInCompactMode: settings.showCustomPropertyInCompactMode,
+                isCompactMode,
+                file,
+                customProperty: fileRecord?.customProperty
+            });
+
+            if (shouldShowCustomProperty) {
                 textContentHeight += heights.tagRowHeight;
             }
 
@@ -635,7 +648,8 @@ export function useListPaneScroll({
                     change.changes.preview !== undefined ||
                     change.changes.featureImageKey !== undefined ||
                     change.changes.featureImageStatus !== undefined ||
-                    change.changes.metadata !== undefined
+                    change.changes.metadata !== undefined ||
+                    change.changes.customProperty !== undefined
                 ) {
                     return true;
                 }
@@ -698,6 +712,8 @@ export function useListPaneScroll({
         settings.showFeatureImage,
         settings.fileNameRows,
         settings.previewRows,
+        settings.customPropertyType,
+        settings.showCustomPropertyInCompactMode,
         settings.showParentFolder,
         settings.showTags,
         settings.showFileTags,

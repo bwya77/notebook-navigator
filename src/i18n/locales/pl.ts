@@ -644,6 +644,7 @@ export const STRINGS_PL = {
                 previewText: 'Tekst podglądu',
                 featureImage: 'Obraz wyróżniający',
                 tags: 'Tagi',
+                customProperty: 'Custom property',
                 date: 'Data',
                 parentFolder: 'Folder nadrzędny'
             }
@@ -1023,6 +1024,24 @@ export const STRINGS_PL = {
             showFileTagsInCompactMode: {
                 name: 'Pokaż tagi plików w trybie kompaktowym',
                 desc: 'Wyświetl tagi, gdy data, podgląd i obraz są ukryte.'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: 'Format daty',

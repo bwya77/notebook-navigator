@@ -645,6 +645,7 @@ export const STRINGS_DE = {
                 previewText: 'Vorschautext',
                 featureImage: 'Hauptbild',
                 tags: 'Tags',
+                customProperty: 'Custom property',
                 date: 'Datum',
                 parentFolder: 'Übergeordneter Ordner'
             }
@@ -1024,6 +1025,24 @@ export const STRINGS_DE = {
             showFileTagsInCompactMode: {
                 name: 'Datei-Tags im schlanken Modus anzeigen',
                 desc: 'Tags anzeigen, wenn Datum, Vorschau und Bild ausgeblendet sind.'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: 'Datumsformat',

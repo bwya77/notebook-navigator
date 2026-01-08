@@ -16,18 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TFile, getAllTags, CachedMetadata } from 'obsidian';
-import { ContentType } from '../../interfaces/IContentProvider';
+import { TFile, getAllTags } from 'obsidian';
+import { type ContentProviderType } from '../../interfaces/IContentProvider';
 import { NotebookNavigatorSettings } from '../../settings';
 import { FileData } from '../../storage/IndexedDBStorage';
 import { getDBInstance } from '../../storage/fileOperations';
-import { BaseContentProvider } from './BaseContentProvider';
+import { BaseContentProvider, type ContentProviderProcessResult } from './BaseContentProvider';
 
 /**
  * Content provider for extracting tags from files
  */
 export class TagContentProvider extends BaseContentProvider {
-    getContentType(): ContentType {
+    // When tags are regenerated due to a metadata-only change, `markFilesForRegeneration()` resets `tagsMtime` to 0.
+    // If Obsidian has not populated tags in the metadata cache yet, defer clearing existing tags for a few retries.
+    private static readonly EMPTY_TAGS_RETRY_LIMIT = 2;
+
+    // Tracks consecutive empty-tag reads for files with `tagsMtime === 0` and existing non-empty tags.
+    // Returning `processed:false` triggers BaseContentProvider retry scheduling.
+    private readonly emptyTagRetryCounts = new Map<string, number>();
+
+    getContentType(): ContentProviderType {
         return 'tags';
     }
 
@@ -49,9 +57,10 @@ export class TagContentProvider extends BaseContentProvider {
         return false;
     }
 
-    async clearContent(): Promise<void> {
+    async clearContent(_context?: { oldSettings: NotebookNavigatorSettings; newSettings: NotebookNavigatorSettings }): Promise<void> {
         const db = getDBInstance();
         await db.batchClearAllFileContent('tags');
+        this.emptyTagRetryCounts.clear();
     }
 
     protected needsProcessing(fileData: FileData | null, file: TFile, settings: NotebookNavigatorSettings): boolean {
@@ -59,60 +68,63 @@ export class TagContentProvider extends BaseContentProvider {
             return false;
         }
 
-        const fileModified = fileData !== null && fileData.mtime !== file.stat.mtime;
-        return !fileData || fileData.tags === null || fileModified;
+        if (file.extension !== 'md') {
+            return false;
+        }
+
+        const needsRefresh = fileData !== null && fileData.tagsMtime !== file.stat.mtime;
+        return !fileData || fileData.tags === null || needsRefresh;
     }
 
     protected async processFile(
         job: { file: TFile; path: string[] },
         fileData: FileData | null,
         settings: NotebookNavigatorSettings
-    ): Promise<{
-        path: string;
-        tags?: string[] | null;
-        preview?: string;
-        featureImage?: Blob | null;
-        featureImageKey?: string | null;
-        metadata?: FileData['metadata'];
-    } | null> {
+    ): Promise<ContentProviderProcessResult> {
         if (!settings.showTags) {
-            return null;
+            return { update: null, processed: true };
+        }
+
+        if (job.file.extension !== 'md') {
+            return { update: null, processed: true };
         }
 
         try {
             const metadata = this.app.metadataCache.getFileCache(job.file);
-            const tags = this.extractTagsFromMetadata(metadata);
+            if (!metadata) {
+                this.emptyTagRetryCounts.delete(job.file.path);
+                return { update: null, processed: false };
+            }
 
-            if (
-                fileData &&
-                Array.isArray(fileData.tags) &&
-                fileData.tags.length > 0 &&
-                tags.length === 0 &&
-                fileData.mtime === job.file.stat.mtime
-            ) {
-                // Metadata has not been refreshed after a rename; keep existing tags until Obsidian re-parses the file
-                return null;
+            const rawTags = getAllTags(metadata);
+            const tags = this.extractTagsFromMetadata(rawTags);
+
+            const shouldDeferClearing =
+                fileData !== null && fileData.tagsMtime === 0 && fileData.tags !== null && fileData.tags.length > 0 && tags.length === 0;
+
+            if (!shouldDeferClearing) {
+                this.emptyTagRetryCounts.delete(job.file.path);
+            }
+
+            if (shouldDeferClearing) {
+                const attempts = this.emptyTagRetryCounts.get(job.file.path) ?? 0;
+                if (attempts < TagContentProvider.EMPTY_TAGS_RETRY_LIMIT) {
+                    this.emptyTagRetryCounts.set(job.file.path, attempts + 1);
+                    return { update: null, processed: false };
+                }
+
+                this.emptyTagRetryCounts.delete(job.file.path);
             }
 
             // Only return update if tags changed
             if (fileData && this.tagsEqual(fileData.tags, tags)) {
-                return null;
+                return { update: null, processed: true };
             }
 
-            return {
-                path: job.file.path,
-                tags
-            };
+            return { update: { path: job.file.path, tags }, processed: true };
         } catch (error) {
             console.error(`Error extracting tags for ${job.file.path}:`, error);
-            // Error policy:
-            // - If tags already exist, keep them to avoid overwriting with partial/empty data.
-            // - If tags were never extracted (`null`), store an empty list to mark the file as processed.
-            //   This avoids retry loops when metadata cache reads fail.
-            if (fileData && fileData.tags !== null) {
-                return null;
-            }
-            return { path: job.file.path, tags: [] };
+            return { update: null, processed: false };
         }
     }
 
@@ -129,11 +141,10 @@ export class TagContentProvider extends BaseContentProvider {
      * The tag tree building process will later normalize these to lowercase
      * for the `path` property while preserving the original casing in `displayPath`.
      *
-     * @param metadata - Cached metadata from Obsidian's metadata cache
+     * @param rawTags - Raw tag strings returned by Obsidian (with # prefix)
      * @returns Array of unique tag strings without # prefix, in original casing
      */
-    private extractTagsFromMetadata(metadata: CachedMetadata | null): string[] {
-        const rawTags = metadata ? getAllTags(metadata) : [];
+    private extractTagsFromMetadata(rawTags: string[] | null): string[] {
         if (!rawTags || rawTags.length === 0) return [];
 
         // Deduplicate tags while preserving the first occurrence's casing

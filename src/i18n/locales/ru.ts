@@ -642,6 +642,7 @@ export const STRINGS_RU = {
                 previewText: 'Текст превью',
                 featureImage: 'Изображение записи',
                 tags: 'Теги',
+                customProperty: 'Custom property',
                 date: 'Дата',
                 parentFolder: 'Родительская папка'
             }
@@ -1022,6 +1023,24 @@ export const STRINGS_RU = {
             showFileTagsInCompactMode: {
                 name: 'Показывать теги файлов в компактном режиме',
                 desc: 'Отображать теги, когда дата, превью и изображение скрыты.'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: 'Формат даты',

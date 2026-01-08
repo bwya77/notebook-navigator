@@ -99,10 +99,186 @@ export const requestUrl = async (): Promise<RequestUrlResponse> => ({
     headers: {}
 });
 
+function stripSurroundingQuotes(value: string): string {
+    const trimmed = value.trim();
+    if (trimmed.length < 2) {
+        return trimmed;
+    }
+
+    const first = trimmed[0];
+    const last = trimmed[trimmed.length - 1];
+    if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
+        return trimmed.slice(1, -1);
+    }
+
+    return trimmed;
+}
+
+function parseInlineArray(value: string): string[] | null {
+    const trimmed = value.trim();
+    if (!trimmed.startsWith('[') || !trimmed.endsWith(']')) {
+        return null;
+    }
+
+    const inner = trimmed.slice(1, -1).trim();
+    if (!inner) {
+        return [];
+    }
+
+    return inner
+        .split(',')
+        .map(entry => stripSurroundingQuotes(entry))
+        .map(entry => entry.trim())
+        .filter(Boolean);
+}
+
+/**
+ * Minimal YAML parser for Vitest stubs.
+ * Supports frontmatter patterns used by the plugin:
+ * - `key: value`
+ * - `key: [a, b]`
+ * - `key:` followed by `- item` list entries
+ */
+export function parseYaml(yaml: string): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+    let currentListKey: string | null = null;
+
+    const lines = yaml.split(/\r?\n/u);
+    for (const rawLine of lines) {
+        const trimmedLine = rawLine.trim();
+        if (!trimmedLine || trimmedLine.startsWith('#')) {
+            continue;
+        }
+
+        const listMatch = /^\s*-\s*(.*)$/u.exec(rawLine);
+        if (listMatch && currentListKey) {
+            const item = stripSurroundingQuotes(listMatch[1] ?? '').trim();
+            if (!item) {
+                continue;
+            }
+            const existing = result[currentListKey];
+            if (Array.isArray(existing)) {
+                existing.push(item);
+            } else {
+                result[currentListKey] = [item];
+            }
+            continue;
+        }
+
+        currentListKey = null;
+
+        const separatorIndex = rawLine.indexOf(':');
+        if (separatorIndex <= 0) {
+            continue;
+        }
+
+        const key = rawLine.slice(0, separatorIndex).trim();
+        if (!key) {
+            continue;
+        }
+
+        let rawValue = rawLine.slice(separatorIndex + 1).trim();
+        if (!rawValue) {
+            currentListKey = key;
+            continue;
+        }
+
+        // Remove inline comments (`value # comment`) but keep fragments in URLs (`...#frag`).
+        rawValue = rawValue.replace(/\s+#.*$/u, '').trimEnd();
+
+        const inlineArray = parseInlineArray(rawValue);
+        if (inlineArray) {
+            result[key] = inlineArray;
+            continue;
+        }
+
+        result[key] = stripSurroundingQuotes(rawValue);
+    }
+
+    return result;
+}
+
 export type CachedMetadata = {
     frontmatter?: Record<string, unknown>;
+    frontmatterPosition?: Pos;
+    tags?: TagCache[];
 };
 
 export type FrontMatterCache = Record<string, unknown>;
 export type Hotkey = { modifiers: string[]; key: string };
 export type Modifier = string;
+
+export type TagCache = { tag: string };
+
+/**
+ * Minimal `getAllTags` implementation for Vitest.
+ * Returns tags with `#` prefix, or `null` when no tags are present.
+ */
+export function getAllTags(cache: CachedMetadata): string[] | null {
+    const tags: string[] = [];
+    const seen = new Set<string>();
+
+    if (cache.tags) {
+        for (const entry of cache.tags) {
+            const raw = typeof entry.tag === 'string' ? entry.tag.trim() : '';
+            if (!raw) {
+                continue;
+            }
+            const normalized = raw.startsWith('#') ? raw : `#${raw}`;
+            const key = normalized.toLowerCase();
+            if (seen.has(key)) {
+                continue;
+            }
+            seen.add(key);
+            tags.push(normalized);
+        }
+    }
+
+    const frontmatter = cache.frontmatter;
+    const fmTags = frontmatter ? frontmatter['tags'] : undefined;
+    if (typeof fmTags === 'string') {
+        for (const token of fmTags.split(/[,\s]+/u)) {
+            const trimmed = token.trim();
+            if (!trimmed) {
+                continue;
+            }
+            const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+            const key = normalized.toLowerCase();
+            if (seen.has(key)) {
+                continue;
+            }
+            seen.add(key);
+            tags.push(normalized);
+        }
+    } else if (Array.isArray(fmTags)) {
+        for (const item of fmTags) {
+            if (typeof item !== 'string') {
+                continue;
+            }
+            const trimmed = item.trim();
+            if (!trimmed) {
+                continue;
+            }
+            const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+            const key = normalized.toLowerCase();
+            if (seen.has(key)) {
+                continue;
+            }
+            seen.add(key);
+            tags.push(normalized);
+        }
+    }
+
+    return tags.length > 0 ? tags : null;
+}
+
+export type Loc = {
+    line: number;
+    col: number;
+    offset: number;
+};
+
+export type Pos = {
+    start: Loc;
+    end: Loc;
+};

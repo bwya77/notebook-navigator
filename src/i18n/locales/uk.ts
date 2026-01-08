@@ -642,6 +642,7 @@ export const STRINGS_UK = {
                 previewText: 'Текст попереднього перегляду',
                 featureImage: 'Зображення запису',
                 tags: 'Теги',
+                customProperty: 'Custom property',
                 date: 'Дата',
                 parentFolder: 'Батьківська папка'
             }
@@ -1021,6 +1022,24 @@ export const STRINGS_UK = {
             showFileTagsInCompactMode: {
                 name: 'Показувати теги файлів у компактному режимі',
                 desc: 'Відображати теги, коли дата, попередній перегляд та зображення приховані.'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: 'Формат дати',

@@ -83,7 +83,7 @@ const RELEASE_NOTES: ReleaseNote[] = [
         ],
         improved: [
             'Internal: Improved cache rebuild performance by slowing down tag tree updates during the process.',
-            'Internal: Major rewrite of the metadata processing chain. It is now a single sequential pipeline per file instead of multiple parallel provider. It reads markdown content at most once per file per run and writes one merged database update per run. This should make the system handle vaults of virtually any size without performance degradation.'
+            'Internal: Major rewrite of the metadata processing chain. It is now a single sequential pipeline per file instead of multiple parallel providers. It reads markdown content at most once per file per run and writes just one merged database update per file. This should make the cache system handle vaults of virtually any size without memory spikes.'
         ],
         changed: [],
         fixed: []

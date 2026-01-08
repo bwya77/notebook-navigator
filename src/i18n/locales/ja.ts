@@ -643,6 +643,7 @@ export const STRINGS_JA = {
                 previewText: 'プレビューテキスト',
                 featureImage: 'アイキャッチ画像',
                 tags: 'タグ',
+                customProperty: 'Custom property',
                 date: '日付',
                 parentFolder: '親フォルダ'
             }
@@ -1023,6 +1024,24 @@ export const STRINGS_JA = {
             showFileTagsInCompactMode: {
                 name: 'スリムモードでファイルタグを表示',
                 desc: '日付、プレビュー、画像が非表示のときにタグを表示します。'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: '日付形式',

@@ -27,6 +27,8 @@ import {
 import { MemoryFileCache } from './MemoryFileCache';
 import { isPlainObjectRecordValue } from '../utils/recordUtils';
 import { isMarkdownPath } from '../utils/fileTypeUtils';
+import type { ContentProviderType } from '../interfaces/IContentProvider';
+import { getProviderProcessedMtimeField } from './providerMtime';
 
 const STORE_NAME = 'keyvaluepairs';
 const PREVIEW_STORE_NAME = 'filePreviews';
@@ -40,6 +42,24 @@ function getDefaultPreviewStatusForPath(path: string): PreviewStatus {
     return isMarkdownPath(path) ? 'unprocessed' : 'none';
 }
 
+export function createDefaultFileData(params: { mtime: number; path: string }): FileData {
+    const isMarkdown = isMarkdownPath(params.path);
+    return {
+        mtime: params.mtime,
+        markdownPipelineMtime: 0,
+        tagsMtime: 0,
+        metadataMtime: 0,
+        fileThumbnailsMtime: 0,
+        tags: isMarkdown ? null : [],
+        customProperty: null,
+        previewStatus: getDefaultPreviewStatusForPath(params.path),
+        featureImage: null,
+        featureImageStatus: 'unprocessed',
+        featureImageKey: null,
+        metadata: isMarkdown ? null : {}
+    };
+}
+
 /**
  * Sentinel values for metadata date fields
  */
@@ -51,8 +71,34 @@ export const METADATA_SENTINEL = {
 } as const;
 
 export interface FileData {
+    /**
+     * Last observed vault mtime for the file path.
+     *
+     * Content providers use provider-specific processed mtimes (e.g. `markdownPipelineMtime`)
+     * to determine whether their cached output is stale for the current file version.
+     */
     mtime: number;
+    /**
+     * Last file mtime processed by the markdown pipeline provider.
+     *
+     * Used to detect markdown changes even when existing preview/feature image/custom property values remain visible
+     * until regeneration completes.
+     */
+    markdownPipelineMtime: number;
+    /**
+     * Last file mtime processed by the tags provider.
+     */
+    tagsMtime: number;
+    /**
+     * Last file mtime processed by the metadata provider.
+     */
+    metadataMtime: number;
+    /**
+     * Last file mtime processed by the file thumbnails provider (non-markdown thumbnails like PDF covers).
+     */
+    fileThumbnailsMtime: number;
     tags: string[] | null; // null = not extracted yet (e.g. when tags disabled)
+    customProperty: string | null; // null = not generated yet
     /**
      * Preview text processing state.
      *
@@ -108,6 +154,7 @@ export interface FileContentChange {
         featureImageStatus?: FeatureImageStatus;
         metadata?: FileData['metadata'] | null;
         tags?: string[] | null;
+        customProperty?: string | null;
     };
     changeType?: 'metadata' | 'content' | 'both';
 }
@@ -209,7 +256,14 @@ export class IndexedDBStorage {
                     : 'unprocessed';
 
         data.mtime = typeof data.mtime === 'number' ? data.mtime : 0;
+        // Default provider processed mtimes to the stored mtime for existing databases.
+        // New files explicitly initialize these to 0 so providers run at least once.
+        data.markdownPipelineMtime = typeof data.markdownPipelineMtime === 'number' ? data.markdownPipelineMtime : data.mtime;
+        data.tagsMtime = typeof data.tagsMtime === 'number' ? data.tagsMtime : data.mtime;
+        data.metadataMtime = typeof data.metadataMtime === 'number' ? data.metadataMtime : data.mtime;
+        data.fileThumbnailsMtime = typeof data.fileThumbnailsMtime === 'number' ? data.fileThumbnailsMtime : data.mtime;
         data.tags = Array.isArray(data.tags) ? data.tags : null;
+        data.customProperty = typeof data.customProperty === 'string' ? data.customProperty : null;
         data.previewStatus = previewStatus;
         // Feature image blobs are stored separately from the main record.
         // The MemoryFileCache is used for synchronous rendering and should not hold blob payloads.
@@ -1021,6 +1075,106 @@ export class IndexedDBStorage {
     }
 
     /**
+     * Upsert file records by applying a patch to existing records and inserting defaults for missing ones.
+     *
+     * This avoids clobbering provider-owned fields when callers only need to update stat-derived fields
+     * such as `mtime` or forced-regeneration processed mtimes.
+     */
+    async upsertFilesWithPatch(updates: { path: string; create: FileData; patch?: Partial<FileData> }[]): Promise<void> {
+        await this.init();
+        if (!this.db) throw new Error('Database not initialized');
+
+        const updatesByPath = new Map<string, (typeof updates)[number]>();
+        for (const update of updates) {
+            const existing = updatesByPath.get(update.path);
+            if (!existing) {
+                updatesByPath.set(update.path, update);
+                continue;
+            }
+
+            const mergedPatch = existing.patch ? { ...existing.patch, ...update.patch } : update.patch;
+            updatesByPath.set(update.path, { ...update, patch: mergedPatch });
+        }
+
+        const uniqueUpdates = Array.from(updatesByPath.values());
+        if (uniqueUpdates.length === 0) {
+            return;
+        }
+
+        const transaction = this.db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+
+        await new Promise<void>((resolve, reject) => {
+            const op = 'upsertFilesWithPatch';
+            let lastRequestError: DOMException | Error | null = null;
+            const cacheUpdates: { path: string; data: FileData }[] = [];
+
+            uniqueUpdates.forEach(update => {
+                const getReq = store.get(update.path);
+                getReq.onsuccess = () => {
+                    const existingRaw = (getReq.result as Partial<FileData> | undefined) || null;
+                    // Use the stored record as the merge base so stat-only callers cannot overwrite provider-owned fields.
+                    const base = existingRaw ? this.normalizeFileData(existingRaw) : this.normalizeFileData(update.create);
+                    // Apply the patch on top of the base record (typically mtime + provider processed-mtime resets).
+                    const nextData: FileData = update.patch ? { ...base, ...update.patch } : base;
+
+                    // Main store never persists feature image blobs; keep it null.
+                    nextData.featureImage = null;
+                    const sanitized = this.normalizeFileData(nextData);
+                    cacheUpdates.push({ path: update.path, data: sanitized });
+
+                    const putReq = store.put(sanitized, update.path);
+                    putReq.onerror = () => {
+                        lastRequestError = putReq.error || null;
+                        console.error('[IndexedDB] put failed', {
+                            store: STORE_NAME,
+                            op,
+                            path: update.path,
+                            name: putReq.error?.name,
+                            message: putReq.error?.message
+                        });
+                    };
+                };
+                getReq.onerror = () => {
+                    lastRequestError = getReq.error || null;
+                    console.error('[IndexedDB] get failed', {
+                        store: STORE_NAME,
+                        op,
+                        path: update.path,
+                        name: getReq.error?.name,
+                        message: getReq.error?.message
+                    });
+                };
+            });
+
+            transaction.oncomplete = () => {
+                if (cacheUpdates.length > 0) {
+                    this.cache.batchUpdate(cacheUpdates);
+                }
+                resolve();
+            };
+            transaction.onabort = () => {
+                console.error('[IndexedDB] transaction aborted', {
+                    store: STORE_NAME,
+                    op,
+                    txError: transaction.error?.message,
+                    reqError: lastRequestError?.message
+                });
+                this.rejectWithTransactionError(reject, transaction, lastRequestError, 'Transaction aborted');
+            };
+            transaction.onerror = () => {
+                console.error('[IndexedDB] transaction error', {
+                    store: STORE_NAME,
+                    op,
+                    txError: transaction.error?.message,
+                    reqError: lastRequestError?.message
+                });
+                this.rejectWithTransactionError(reject, transaction, lastRequestError, 'Transaction error');
+            };
+        });
+    }
+
+    /**
      * Delete multiple files from the database by paths.
      * More efficient than multiple deleteFile calls.
      *
@@ -1168,18 +1322,46 @@ export class IndexedDBStorage {
      * @param type - Type of content to check for
      * @returns Set of file paths needing content
      */
-    getFilesNeedingContent(type: 'tags' | 'preview' | 'featureImage' | 'metadata'): Set<string> {
+    getFilesNeedingContent(type: 'tags' | 'preview' | 'featureImage' | 'metadata' | 'customProperty'): Set<string> {
         if (!this.cache.isReady()) {
             return new Set();
         }
         const result = new Set<string>();
         this.cache.forEachFile((path, data) => {
             if (
-                (type === 'tags' && data.tags === null) ||
+                (type === 'tags' && isMarkdownPath(path) && data.tags === null) ||
                 (type === 'preview' && isMarkdownPath(path) && data.previewStatus === 'unprocessed') ||
-                // Feature images need processing when they are unprocessed.
-                (type === 'featureImage' && data.featureImageStatus === 'unprocessed') ||
-                (type === 'metadata' && data.metadata === null)
+                // Feature images need processing when they are unprocessed or missing a key marker.
+                (type === 'featureImage' && (data.featureImageKey === null || data.featureImageStatus === 'unprocessed')) ||
+                (type === 'metadata' && isMarkdownPath(path) && data.metadata === null) ||
+                (type === 'customProperty' && isMarkdownPath(path) && data.customProperty === null)
+            ) {
+                result.add(path);
+            }
+        });
+        return result;
+    }
+
+    getFilesNeedingAnyContent(types: ('tags' | 'preview' | 'featureImage' | 'metadata' | 'customProperty')[]): Set<string> {
+        if (!this.cache.isReady() || types.length === 0) {
+            return new Set();
+        }
+
+        const needsTags = types.includes('tags');
+        const needsPreview = types.includes('preview');
+        const needsFeatureImage = types.includes('featureImage');
+        const needsMetadata = types.includes('metadata');
+        const needsCustomProperty = types.includes('customProperty');
+
+        const result = new Set<string>();
+        this.cache.forEachFile((path, data) => {
+            const isMarkdown = isMarkdownPath(path);
+            if (
+                (needsTags && isMarkdown && data.tags === null) ||
+                (needsPreview && isMarkdown && data.previewStatus === 'unprocessed') ||
+                (needsFeatureImage && (data.featureImageKey === null || data.featureImageStatus === 'unprocessed')) ||
+                (needsMetadata && isMarkdown && data.metadata === null) ||
+                (needsCustomProperty && isMarkdown && data.customProperty === null)
             ) {
                 result.add(path);
             }
@@ -1504,84 +1686,22 @@ export class IndexedDBStorage {
     }
 
     /**
-     * Update modification times for multiple files in batch.
-     * Used by content providers after successfully generating content.
-     * Does NOT emit change notifications as this is an internal update.
+     * Update processed mtimes for a specific content provider.
      *
-     * @param updates - Array of path and mtime pairs to update
+     * Providers track their own processed mtimes so that:
+     * - file modifications do not depend on a shared `mtime` flag across providers, and
+     * - providers can record "processed" even when no content fields changed.
+     *
+     * Does NOT emit change notifications as this is internal bookkeeping.
      */
-    async updateMtimes(updates: { path: string; mtime: number }[]): Promise<void> {
-        await this.init();
-        if (!this.db) throw new Error('Database not initialized');
-
-        if (updates.length === 0) return;
-
-        const transaction = this.db.transaction([STORE_NAME], 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
-        const cacheUpdates: { path: string; data: FileData }[] = [];
-
-        await new Promise<void>((resolve, reject) => {
-            const op = 'updateMtimes';
-            let lastRequestError: DOMException | Error | null = null;
-            updates.forEach(({ path, mtime }) => {
-                const getReq = store.get(path);
-                getReq.onsuccess = () => {
-                    const existingRaw = (getReq.result as Partial<FileData> | undefined) || null;
-                    if (!existingRaw) return;
-                    const updated: FileData = { ...this.normalizeFileData(existingRaw), mtime };
-                    cacheUpdates.push({ path, data: updated });
-                    const putReq = store.put(updated, path);
-                    putReq.onerror = () => {
-                        lastRequestError = putReq.error || null;
-                        console.error('[IndexedDB] put failed', {
-                            store: STORE_NAME,
-                            op,
-                            path,
-                            name: putReq.error?.name,
-                            message: putReq.error?.message
-                        });
-                    };
-                };
-                getReq.onerror = () => {
-                    lastRequestError = getReq.error || null;
-                    console.error('[IndexedDB] get failed', {
-                        store: STORE_NAME,
-                        op,
-                        path,
-                        name: getReq.error?.name,
-                        message: getReq.error?.message
-                    });
-                    try {
-                        transaction.abort();
-                    } catch (e) {
-                        void e;
-                    }
-                };
-            });
-            transaction.oncomplete = () => {
-                if (cacheUpdates.length > 0) {
-                    this.cache.batchUpdate(cacheUpdates);
-                }
-                resolve();
-            };
-            transaction.onabort = () => {
-                console.error('[IndexedDB] transaction aborted', {
-                    store: STORE_NAME,
-                    op,
-                    txError: transaction.error?.message,
-                    reqError: lastRequestError?.message
-                });
-                this.rejectWithTransactionError(reject, transaction, lastRequestError, 'Transaction aborted');
-            };
-            transaction.onerror = () => {
-                console.error('[IndexedDB] transaction error', {
-                    store: STORE_NAME,
-                    op,
-                    txError: transaction.error?.message,
-                    reqError: lastRequestError?.message
-                });
-                this.rejectWithTransactionError(reject, transaction, lastRequestError, 'Transaction error');
-            };
+    async updateProviderProcessedMtimes(
+        provider: ContentProviderType,
+        updates: { path: string; mtime: number; expectedPreviousMtime: number }[]
+    ): Promise<void> {
+        await this.batchUpdateFileContentAndProviderProcessedMtimes({
+            provider,
+            contentUpdates: [],
+            processedMtimeUpdates: updates
         });
     }
 
@@ -1738,7 +1858,7 @@ export class IndexedDBStorage {
      *
      * @param type - Type of content to clear or 'all'
      */
-    async batchClearAllFileContent(type: 'preview' | 'featureImage' | 'metadata' | 'tags' | 'all'): Promise<void> {
+    async batchClearAllFileContent(type: 'preview' | 'featureImage' | 'metadata' | 'tags' | 'customProperty' | 'all'): Promise<void> {
         await this.init();
         if (!this.db) throw new Error('Database not initialized');
 
@@ -1792,9 +1912,10 @@ export class IndexedDBStorage {
                         cursor.continue();
                         return;
                     }
+                    const isMarkdown = isMarkdownPath(path);
 
                     if (type === 'preview' || type === 'all') {
-                        const nextPreviewStatus = getDefaultPreviewStatusForPath(path);
+                        const nextPreviewStatus = isMarkdown ? 'unprocessed' : 'none';
                         if (updated.previewStatus !== nextPreviewStatus) {
                             updated.previewStatus = nextPreviewStatus;
                             changes.preview = null;
@@ -1814,14 +1935,35 @@ export class IndexedDBStorage {
                             hasChanges = true;
                         }
                     }
-                    if ((type === 'metadata' || type === 'all') && updated.metadata !== null) {
-                        updated.metadata = null;
-                        changes.metadata = null;
-                        hasChanges = true;
+                    if (type === 'metadata' || type === 'all') {
+                        if (isMarkdown) {
+                            if (updated.metadata !== null) {
+                                updated.metadata = null;
+                                changes.metadata = null;
+                                hasChanges = true;
+                            }
+                        } else if (updated.metadata === null) {
+                            updated.metadata = {};
+                            changes.metadata = {};
+                            hasChanges = true;
+                        }
                     }
-                    if ((type === 'tags' || type === 'all') && updated.tags !== null) {
-                        updated.tags = null;
-                        changes.tags = null;
+                    if (type === 'tags' || type === 'all') {
+                        if (isMarkdown) {
+                            if (updated.tags !== null) {
+                                updated.tags = null;
+                                changes.tags = null;
+                                hasChanges = true;
+                            }
+                        } else if (updated.tags === null) {
+                            updated.tags = [];
+                            changes.tags = [];
+                            hasChanges = true;
+                        }
+                    }
+                    if ((type === 'customProperty' || type === 'all') && updated.customProperty !== null) {
+                        updated.customProperty = null;
+                        changes.customProperty = null;
                         hasChanges = true;
                     }
 
@@ -1844,7 +1986,10 @@ export class IndexedDBStorage {
                         };
                         cacheUpdates.push({ path, data: updated });
                         const hasContentCleared =
-                            changes.preview === null || changes.featureImageKey === null || changes.featureImageStatus !== undefined;
+                            changes.preview === null ||
+                            changes.featureImageKey === null ||
+                            changes.featureImageStatus !== undefined ||
+                            changes.customProperty === null;
                         const hasMetadataCleared = changes.metadata === null || changes.tags !== undefined;
                         const clearType = hasContentCleared && hasMetadataCleared ? 'both' : hasContentCleared ? 'content' : 'metadata';
                         changeNotifications.push({ path, changes, changeType: clearType });
@@ -1899,6 +2044,152 @@ export class IndexedDBStorage {
     }
 
     /**
+     * Clear feature image content for either markdown or non-markdown files.
+     *
+     * Used when providers split feature image generation by domain:
+     * - markdownPipeline clears markdown feature images
+     * - fileThumbnails clears non-markdown feature images (PDF covers, etc)
+     *
+     * Emits change notifications for affected files.
+     */
+    async batchClearFeatureImageContent(scope: 'markdown' | 'nonMarkdown'): Promise<void> {
+        await this.init();
+        if (!this.db) throw new Error('Database not initialized');
+
+        const transaction = this.db.transaction([STORE_NAME, FEATURE_IMAGE_STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const blobStore = transaction.objectStore(FEATURE_IMAGE_STORE_NAME);
+        const changeNotifications: FileContentChange[] = [];
+        const cacheUpdates: { path: string; data: FileData }[] = [];
+        const blobCacheUpdates: string[] = [];
+        const op = 'batchClearFeatureImageContent';
+        let lastRequestError: DOMException | Error | null = null;
+
+        await new Promise<void>((resolve, reject) => {
+            const request = store.openCursor();
+
+            request.onsuccess = () => {
+                const cursor = request.result;
+                if (!cursor) {
+                    return;
+                }
+
+                const path = cursor.key;
+                if (typeof path !== 'string') {
+                    cursor.continue();
+                    return;
+                }
+
+                const isMarkdown = isMarkdownPath(path);
+                const shouldClear = scope === 'markdown' ? isMarkdown : !isMarkdown;
+                if (!shouldClear) {
+                    cursor.continue();
+                    return;
+                }
+
+                const current = this.normalizeFileData(cursor.value as Partial<FileData>);
+                const updated: FileData = { ...current };
+                const changes: FileContentChange['changes'] = {};
+                let hasChanges = false;
+
+                if (updated.featureImageKey !== null) {
+                    updated.featureImageKey = null;
+                    changes.featureImageKey = null;
+                    hasChanges = true;
+                }
+
+                updated.featureImage = null;
+                if (updated.featureImageStatus !== 'unprocessed') {
+                    updated.featureImageStatus = 'unprocessed';
+                    changes.featureImageStatus = 'unprocessed';
+                    hasChanges = true;
+                }
+
+                if (hasChanges) {
+                    const updateReq = cursor.update(updated);
+                    updateReq.onerror = () => {
+                        lastRequestError = updateReq.error || null;
+                        console.error('[IndexedDB] cursor.update failed', {
+                            store: STORE_NAME,
+                            op,
+                            path,
+                            name: updateReq.error?.name,
+                            message: updateReq.error?.message
+                        });
+                        try {
+                            transaction.abort();
+                        } catch (e) {
+                            void e;
+                        }
+                    };
+                    cacheUpdates.push({ path, data: updated });
+                    changeNotifications.push({ path, changes, changeType: 'content' });
+                }
+
+                const shouldDeleteBlob = current.featureImageKey !== null || current.featureImageStatus === 'has';
+                if (shouldDeleteBlob) {
+                    const deleteReq = blobStore.delete(path);
+                    deleteReq.onerror = () => {
+                        lastRequestError = deleteReq.error || null;
+                        console.error('[IndexedDB] delete failed', {
+                            store: FEATURE_IMAGE_STORE_NAME,
+                            op,
+                            path,
+                            name: deleteReq.error?.name,
+                            message: deleteReq.error?.message
+                        });
+                    };
+                    blobCacheUpdates.push(path);
+                }
+
+                cursor.continue();
+            };
+
+            request.onerror = () => {
+                const requestError = request.error;
+                lastRequestError = requestError || null;
+                console.error('[IndexedDB] openCursor failed', {
+                    store: STORE_NAME,
+                    op,
+                    name: requestError?.name,
+                    message: requestError?.message
+                });
+                reject(this.normalizeIdbError(requestError, 'Cursor request failed'));
+            };
+
+            transaction.oncomplete = () => resolve();
+            transaction.onabort = () => {
+                console.error('[IndexedDB] transaction aborted', {
+                    store: STORE_NAME,
+                    op,
+                    txError: transaction.error?.message,
+                    reqError: lastRequestError?.message
+                });
+                this.rejectWithTransactionError(reject, transaction, lastRequestError, 'Transaction aborted');
+            };
+            transaction.onerror = () => {
+                console.error('[IndexedDB] transaction error', {
+                    store: STORE_NAME,
+                    op,
+                    txError: transaction.error?.message,
+                    reqError: lastRequestError?.message
+                });
+                this.rejectWithTransactionError(reject, transaction, lastRequestError, 'Transaction error');
+            };
+        });
+
+        if (cacheUpdates.length > 0) {
+            this.cache.batchUpdate(cacheUpdates);
+            this.emitChanges(changeNotifications);
+        }
+        if (blobCacheUpdates.length > 0) {
+            for (const path of blobCacheUpdates) {
+                this.featureImageBlobs.deleteFromCache(path);
+            }
+        }
+    }
+
+    /**
      * Clear content for specific files in batch.
      * More efficient than multiple clearFileContent calls.
      * Only clears content that is not already null.
@@ -1907,7 +2198,10 @@ export class IndexedDBStorage {
      * @param paths - Array of file paths to clear content for
      * @param type - Type of content to clear or 'all'
      */
-    async batchClearFileContent(paths: string[], type: 'preview' | 'featureImage' | 'metadata' | 'tags' | 'all'): Promise<void> {
+    async batchClearFileContent(
+        paths: string[],
+        type: 'preview' | 'featureImage' | 'metadata' | 'tags' | 'customProperty' | 'all'
+    ): Promise<void> {
         await this.init();
         if (!this.db) throw new Error('Database not initialized');
 
@@ -1978,6 +2272,11 @@ export class IndexedDBStorage {
                         changes.tags = null;
                         hasChanges = true;
                     }
+                    if ((type === 'customProperty' || type === 'all') && file.customProperty !== null) {
+                        file.customProperty = null;
+                        changes.customProperty = null;
+                        hasChanges = true;
+                    }
                     if (hasChanges) {
                         const putReq = store.put(file, path);
                         putReq.onerror = () => {
@@ -2006,7 +2305,10 @@ export class IndexedDBStorage {
                         }
                         updates.push({ path, data: file });
                         const hasContentCleared =
-                            changes.preview === null || changes.featureImageKey === null || changes.featureImageStatus !== undefined;
+                            changes.preview === null ||
+                            changes.featureImageKey === null ||
+                            changes.featureImageStatus !== undefined ||
+                            changes.customProperty === null;
                         const hasMetadataCleared = changes.metadata === null || changes.tags !== undefined;
                         const clearType = hasContentCleared && hasMetadataCleared ? 'both' : hasContentCleared ? 'content' : 'metadata';
                         changeNotifications.push({ path, changes, changeType: clearType });
@@ -2079,15 +2381,72 @@ export class IndexedDBStorage {
             featureImage?: Blob | null;
             featureImageKey?: string | null;
             metadata?: FileData['metadata'];
+            customProperty?: string | null;
         }[]
     ): Promise<void> {
+        await this.batchUpdateFileContentAndProviderProcessedMtimes({ contentUpdates: updates });
+    }
+
+    /**
+     * Update file content fields and provider processed mtimes in a single transaction.
+     *
+     * This is used by content providers so that:
+     * - content updates are applied atomically alongside their processed mtime bookkeeping, and
+     * - providers can still record "processed" even when no content fields changed.
+     *
+     * Provider processed mtimes are updated with a CAS guard (`expectedPreviousMtime`) to avoid
+     * overwriting forced regeneration resets that occurred mid-flight.
+     */
+    async batchUpdateFileContentAndProviderProcessedMtimes(params: {
+        contentUpdates: {
+            path: string;
+            tags?: string[] | null;
+            preview?: string;
+            featureImage?: Blob | null;
+            featureImageKey?: string | null;
+            metadata?: FileData['metadata'];
+            customProperty?: string | null;
+        }[];
+        provider?: ContentProviderType;
+        processedMtimeUpdates?: { path: string; mtime: number; expectedPreviousMtime: number }[];
+    }): Promise<void> {
         await this.init();
         if (!this.db) throw new Error('Database not initialized');
 
-        if (updates.length === 0) return;
+        const contentUpdates = params.contentUpdates;
+        const processedMtimeUpdates = params.processedMtimeUpdates ?? [];
+        const provider = params.provider;
 
-        const needsPreviewStore = updates.some(update => update.preview !== undefined);
-        const needsFeatureImageStore = updates.some(update => update.featureImageKey !== undefined || update.featureImage !== undefined);
+        if (processedMtimeUpdates.length > 0 && !provider) {
+            throw new Error('Provider type required when updating processed mtimes');
+        }
+
+        if (contentUpdates.length === 0 && processedMtimeUpdates.length === 0) {
+            return;
+        }
+
+        const contentUpdatesByPath = new Map<string, (typeof contentUpdates)[number]>();
+        for (const update of contentUpdates) {
+            contentUpdatesByPath.set(update.path, update);
+        }
+
+        const processedMtimeUpdatesByPath = new Map<string, (typeof processedMtimeUpdates)[number]>();
+        for (const update of processedMtimeUpdates) {
+            processedMtimeUpdatesByPath.set(update.path, update);
+        }
+
+        const pathsToUpdate = new Set<string>();
+        contentUpdatesByPath.forEach((_value, path) => pathsToUpdate.add(path));
+        processedMtimeUpdatesByPath.forEach((_value, path) => pathsToUpdate.add(path));
+
+        if (pathsToUpdate.size === 0) {
+            return;
+        }
+
+        const needsPreviewStore = contentUpdates.some(update => update.preview !== undefined);
+        const needsFeatureImageStore = contentUpdates.some(
+            update => update.featureImageKey !== undefined || update.featureImage !== undefined
+        );
         const storeNames: string[] = [STORE_NAME];
         if (needsFeatureImageStore) {
             storeNames.push(FEATURE_IMAGE_STORE_NAME);
@@ -2104,133 +2463,200 @@ export class IndexedDBStorage {
         const changeNotifications: FileContentChange[] = [];
         const featureImageCacheUpdates = new Set<string>();
         const previewTextUpdates: { path: string; previewText: string; previewStatus: PreviewStatus }[] = [];
+        let createdRecordWithoutKnownMtime = 0;
+        const createdRecordWithoutKnownMtimeExamples: string[] = [];
+        let skippedProviderContentUpdates = 0;
+        const skippedProviderContentUpdateExamples: { path: string; expectedPreviousMtime: number; actualPreviousMtime: number }[] = [];
 
         await new Promise<void>((resolve, reject) => {
-            const op = 'batchUpdateFileContent';
+            const op = 'batchUpdateFileContentAndProviderProcessedMtimes';
             let lastRequestError: DOMException | Error | null = null;
-            updates.forEach(update => {
-                const getReq = store.get(update.path);
+            pathsToUpdate.forEach(path => {
+                const update = contentUpdatesByPath.get(path);
+                const processedMtimeUpdate = processedMtimeUpdatesByPath.get(path);
+
+                const getReq = store.get(path);
                 getReq.onsuccess = () => {
                     const existingRaw = (getReq.result as Partial<FileData> | undefined) || null;
-                    if (!existingRaw) {
-                        return;
-                    }
-                    const existing = this.normalizeFileData(existingRaw);
-                    const newData: FileData = { ...existing };
-                    const changes: FileContentChange['changes'] = {};
-                    let hasChanges = false;
-                    if (update.tags !== undefined) {
-                        newData.tags = update.tags;
-                        changes.tags = update.tags;
-                        hasChanges = true;
-                    }
-                    if (update.preview !== undefined) {
-                        const previewStatus: PreviewStatus = update.preview.length > 0 ? 'has' : 'none';
-                        newData.previewStatus = previewStatus;
-                        changes.preview = update.preview;
-                        hasChanges = true;
-                        if (previewStore && previewStatus === 'has') {
-                            const previewReq = previewStore.put(update.preview, update.path);
-                            previewReq.onerror = () => {
-                                lastRequestError = previewReq.error || null;
-                                console.error('[IndexedDB] put failed', {
-                                    store: PREVIEW_STORE_NAME,
-                                    op,
-                                    path: update.path,
-                                    name: previewReq.error?.name,
-                                    message: previewReq.error?.message
-                                });
-                            };
-                            previewTextUpdates.push({ path: update.path, previewText: update.preview, previewStatus });
-                        } else if (previewStore) {
-                            const deleteReq = previewStore.delete(update.path);
-                            deleteReq.onerror = () => {
-                                lastRequestError = deleteReq.error || null;
-                                console.error('[IndexedDB] delete failed', {
-                                    store: PREVIEW_STORE_NAME,
-                                    op,
-                                    path: update.path,
-                                    name: deleteReq.error?.name,
-                                    message: deleteReq.error?.message
-                                });
-                            };
+                    const fallbackMtime = processedMtimeUpdate?.mtime ?? 0;
+                    const existing = existingRaw
+                        ? this.normalizeFileData(existingRaw)
+                        : this.normalizeFileData(createDefaultFileData({ mtime: fallbackMtime, path }));
+                    if (!existingRaw && fallbackMtime === 0 && update) {
+                        createdRecordWithoutKnownMtime += 1;
+                        if (createdRecordWithoutKnownMtimeExamples.length < 5) {
+                            createdRecordWithoutKnownMtimeExamples.push(path);
                         }
                     }
-                    const featureImageMutation = computeFeatureImageMutation({
-                        existingKey: existing.featureImageKey,
-                        existingStatus: existing.featureImageStatus,
-                        featureImageKey: update.featureImageKey,
-                        featureImage: update.featureImage
-                    });
-                    if (featureImageMutation.changes.featureImageKey !== undefined) {
-                        changes.featureImageKey = featureImageMutation.changes.featureImageKey;
-                        hasChanges = true;
+                    const newData: FileData = { ...existing };
+                    const changes: FileContentChange['changes'] = {};
+                    let hasContentChanges = false;
+                    const providerField = provider ? getProviderProcessedMtimeField(provider) : null;
+                    const expectedPreviousMtime = processedMtimeUpdate?.expectedPreviousMtime ?? null;
+                    const shouldApplyProviderContent =
+                        !provider ||
+                        !processedMtimeUpdate ||
+                        !providerField ||
+                        newData[providerField] === processedMtimeUpdate.expectedPreviousMtime;
+                    const guardedUpdate = shouldApplyProviderContent ? update : null;
+                    if (provider && providerField && update && expectedPreviousMtime !== null && !shouldApplyProviderContent) {
+                        skippedProviderContentUpdates += 1;
+                        if (skippedProviderContentUpdateExamples.length < 5) {
+                            skippedProviderContentUpdateExamples.push({
+                                path,
+                                expectedPreviousMtime,
+                                actualPreviousMtime: newData[providerField]
+                            });
+                        }
                     }
-                    if (featureImageMutation.changes.featureImageStatus !== undefined) {
-                        changes.featureImageStatus = featureImageMutation.changes.featureImageStatus;
-                        hasChanges = true;
+                    const hasFeatureImageUpdate = guardedUpdate?.featureImageKey !== undefined || guardedUpdate?.featureImage !== undefined;
+                    const featureImageMutation =
+                        guardedUpdate && hasFeatureImageUpdate
+                            ? computeFeatureImageMutation({
+                                  existingKey: existing.featureImageKey,
+                                  existingStatus: existing.featureImageStatus,
+                                  featureImageKey: guardedUpdate.featureImageKey,
+                                  featureImage: guardedUpdate.featureImage
+                              })
+                            : null;
+
+                    if (guardedUpdate) {
+                        if (guardedUpdate.tags !== undefined) {
+                            newData.tags = guardedUpdate.tags;
+                            changes.tags = guardedUpdate.tags;
+                            hasContentChanges = true;
+                        }
+                        if (guardedUpdate.customProperty !== undefined) {
+                            newData.customProperty = guardedUpdate.customProperty;
+                            changes.customProperty = guardedUpdate.customProperty;
+                            hasContentChanges = true;
+                        }
+                        if (guardedUpdate.preview !== undefined) {
+                            const previewStatus: PreviewStatus = guardedUpdate.preview.length > 0 ? 'has' : 'none';
+                            newData.previewStatus = previewStatus;
+                            changes.preview = guardedUpdate.preview;
+                            hasContentChanges = true;
+                            if (previewStore && previewStatus === 'has') {
+                                const previewReq = previewStore.put(guardedUpdate.preview, path);
+                                previewReq.onerror = () => {
+                                    lastRequestError = previewReq.error || null;
+                                    console.error('[IndexedDB] put failed', {
+                                        store: PREVIEW_STORE_NAME,
+                                        op,
+                                        path,
+                                        name: previewReq.error?.name,
+                                        message: previewReq.error?.message
+                                    });
+                                };
+                                previewTextUpdates.push({ path, previewText: guardedUpdate.preview, previewStatus });
+                            } else if (previewStore) {
+                                const deleteReq = previewStore.delete(path);
+                                deleteReq.onerror = () => {
+                                    lastRequestError = deleteReq.error || null;
+                                    console.error('[IndexedDB] delete failed', {
+                                        store: PREVIEW_STORE_NAME,
+                                        op,
+                                        path,
+                                        name: deleteReq.error?.name,
+                                        message: deleteReq.error?.message
+                                    });
+                                };
+                            }
+                        }
+
+                        if (featureImageMutation) {
+                            if (featureImageMutation.changes.featureImageKey !== undefined) {
+                                changes.featureImageKey = featureImageMutation.changes.featureImageKey;
+                                hasContentChanges = true;
+                            }
+                            if (featureImageMutation.changes.featureImageStatus !== undefined) {
+                                changes.featureImageStatus = featureImageMutation.changes.featureImageStatus;
+                                hasContentChanges = true;
+                            }
+                            // Main store records never hold blob data.
+                            newData.featureImageKey = featureImageMutation.nextKey;
+                            newData.featureImage = null;
+                            newData.featureImageStatus = featureImageMutation.nextStatus;
+
+                            if (featureImageMutation.shouldClearCache) {
+                                featureImageCacheUpdates.add(path);
+                            }
+                        }
+
+                        if (guardedUpdate.metadata !== undefined) {
+                            newData.metadata = guardedUpdate.metadata;
+                            changes.metadata = guardedUpdate.metadata;
+                            hasContentChanges = true;
+                        }
                     }
-                    if (update.featureImageKey !== undefined || update.featureImage !== undefined) {
-                        // Main store records never hold blob data.
-                        newData.featureImageKey = featureImageMutation.nextKey;
-                        newData.featureImage = null;
-                        newData.featureImageStatus = featureImageMutation.nextStatus;
+
+                    let hasProviderMtimeChanges = false;
+                    if (processedMtimeUpdate && provider) {
+                        const { mtime, expectedPreviousMtime } = processedMtimeUpdate;
+                        const field = getProviderProcessedMtimeField(provider);
+                        if (newData[field] === expectedPreviousMtime && newData[field] !== mtime) {
+                            newData[field] = mtime;
+                            hasProviderMtimeChanges = true;
+                        }
                     }
-                    if (featureImageMutation.shouldClearCache) {
-                        featureImageCacheUpdates.add(update.path);
-                    }
-                    if (update.metadata !== undefined) {
-                        newData.metadata = update.metadata;
-                        changes.metadata = update.metadata;
-                        hasChanges = true;
-                    }
-                    if (hasChanges) {
-                        const putReq = store.put(newData, update.path);
+
+                    const hasAnyChanges = hasContentChanges || hasProviderMtimeChanges;
+                    if (hasAnyChanges) {
+                        const putReq = store.put(newData, path);
                         putReq.onerror = () => {
                             lastRequestError = putReq.error || null;
                             console.error('[IndexedDB] put failed', {
                                 store: STORE_NAME,
                                 op,
-                                path: update.path,
+                                path,
                                 name: putReq.error?.name,
                                 message: putReq.error?.message
                             });
                         };
-                        if (blobStore && featureImageMutation.blobUpdate) {
-                            // Write the blob record with the current key.
-                            const imageReq = blobStore.put(featureImageMutation.blobUpdate, update.path);
-                            imageReq.onerror = () => {
-                                lastRequestError = imageReq.error || null;
-                                console.error('[IndexedDB] put failed', {
-                                    store: FEATURE_IMAGE_STORE_NAME,
-                                    op,
-                                    path: update.path,
-                                    name: imageReq.error?.name,
-                                    message: imageReq.error?.message
-                                });
-                            };
-                        } else if (blobStore && featureImageMutation.shouldDeleteBlob) {
-                            // Remove any stored blob when the key changes or blob is empty.
-                            const deleteReq = blobStore.delete(update.path);
-                            deleteReq.onerror = () => {
-                                lastRequestError = deleteReq.error || null;
-                                console.error('[IndexedDB] delete failed', {
-                                    store: FEATURE_IMAGE_STORE_NAME,
-                                    op,
-                                    path: update.path,
-                                    name: deleteReq.error?.name,
-                                    message: deleteReq.error?.message
-                                });
-                            };
+
+                        if (blobStore && featureImageMutation) {
+                            if (featureImageMutation.blobUpdate) {
+                                // Write the blob record with the current key.
+                                const imageReq = blobStore.put(featureImageMutation.blobUpdate, path);
+                                imageReq.onerror = () => {
+                                    lastRequestError = imageReq.error || null;
+                                    console.error('[IndexedDB] put failed', {
+                                        store: FEATURE_IMAGE_STORE_NAME,
+                                        op,
+                                        path,
+                                        name: imageReq.error?.name,
+                                        message: imageReq.error?.message
+                                    });
+                                };
+                            } else if (featureImageMutation.shouldDeleteBlob) {
+                                // Remove any stored blob when the key changes or blob is empty.
+                                const deleteReq = blobStore.delete(path);
+                                deleteReq.onerror = () => {
+                                    lastRequestError = deleteReq.error || null;
+                                    console.error('[IndexedDB] delete failed', {
+                                        store: FEATURE_IMAGE_STORE_NAME,
+                                        op,
+                                        path,
+                                        name: deleteReq.error?.name,
+                                        message: deleteReq.error?.message
+                                    });
+                                };
+                            }
                         }
-                        filesToUpdate.push({ path: update.path, data: newData });
-                        const hasContentUpdates =
-                            changes.preview !== undefined ||
-                            changes.featureImageKey !== undefined ||
-                            changes.featureImageStatus !== undefined;
-                        const hasMetadataUpdates = changes.metadata !== undefined || changes.tags !== undefined;
-                        const updateType = hasContentUpdates && hasMetadataUpdates ? 'both' : hasContentUpdates ? 'content' : 'metadata';
-                        changeNotifications.push({ path: update.path, changes, changeType: updateType });
+
+                        filesToUpdate.push({ path, data: newData });
+
+                        if (hasContentChanges) {
+                            const hasContentUpdates =
+                                changes.preview !== undefined ||
+                                changes.featureImageKey !== undefined ||
+                                changes.featureImageStatus !== undefined ||
+                                changes.customProperty !== undefined;
+                            const hasMetadataUpdates = changes.metadata !== undefined || changes.tags !== undefined;
+                            const updateType =
+                                hasContentUpdates && hasMetadataUpdates ? 'both' : hasContentUpdates ? 'content' : 'metadata';
+                            changeNotifications.push({ path, changes, changeType: updateType });
+                        }
                     }
                     // noop
                 };
@@ -2239,7 +2665,7 @@ export class IndexedDBStorage {
                     console.error('[IndexedDB] get failed', {
                         store: STORE_NAME,
                         op,
-                        path: update.path,
+                        path,
                         name: getReq.error?.name,
                         message: getReq.error?.message
                     });
@@ -2278,11 +2704,26 @@ export class IndexedDBStorage {
                     this.cache.updateFileContent(update.path, { previewText: update.previewText, previewStatus: update.previewStatus });
                 });
             }
-            this.emitChanges(changeNotifications);
+            if (changeNotifications.length > 0) {
+                this.emitChanges(changeNotifications);
+            }
         }
         if (featureImageCacheUpdates.size > 0) {
             // Drop any cached blobs for updated paths.
             featureImageCacheUpdates.forEach(path => this.featureImageBlobs.deleteFromCache(path));
+        }
+        if (createdRecordWithoutKnownMtime > 0) {
+            console.error('[IndexedDB] Created file record without known mtime during content update', {
+                count: createdRecordWithoutKnownMtime,
+                examples: createdRecordWithoutKnownMtimeExamples
+            });
+        }
+        if (provider && skippedProviderContentUpdates > 0) {
+            console.log('[IndexedDB] Skipped stale provider content updates', {
+                provider,
+                count: skippedProviderContentUpdates,
+                examples: skippedProviderContentUpdateExamples
+            });
         }
     }
 

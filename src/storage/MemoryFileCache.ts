@@ -23,7 +23,12 @@ import { PreviewTextCache } from './PreviewTextCache';
 function cloneFileData(data: FileData): FileData {
     return {
         mtime: data.mtime,
+        markdownPipelineMtime: data.markdownPipelineMtime,
+        tagsMtime: data.tagsMtime,
+        metadataMtime: data.metadataMtime,
+        fileThumbnailsMtime: data.fileThumbnailsMtime,
         tags: data.tags ? [...data.tags] : null,
+        customProperty: data.customProperty,
         previewStatus: data.previewStatus,
         // Feature image blobs are stored in IndexedDB, not in the memory cache.
         featureImage: null,
@@ -196,6 +201,7 @@ export class MemoryFileCache {
             featureImageKey?: string | null;
             featureImageStatus?: FileData['featureImageStatus'];
             metadata?: FileData['metadata'];
+            customProperty?: string | null;
         }
     ): void {
         const existing = this.fileDataByPath.get(path);
@@ -219,6 +225,7 @@ export class MemoryFileCache {
             if (updates.featureImageKey !== undefined) existing.featureImageKey = updates.featureImageKey;
             if (updates.featureImageStatus !== undefined) existing.featureImageStatus = updates.featureImageStatus;
             if (updates.metadata !== undefined) existing.metadata = updates.metadata;
+            if (updates.customProperty !== undefined) existing.customProperty = updates.customProperty;
         }
     }
 

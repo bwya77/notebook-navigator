@@ -18,6 +18,7 @@
 
 import type { TFile } from 'obsidian';
 import type { FeatureImageStatus } from '../storage/IndexedDBStorage';
+import type { CustomPropertyType } from '../settings/types';
 import { isImageFile } from './fileTypeUtils';
 
 /**
@@ -104,4 +105,32 @@ export function shouldShowFeatureImageArea({
     }
 
     return featureImageStatus === 'has';
+}
+
+export function shouldShowCustomPropertyRow({
+    customPropertyType,
+    showCustomPropertyInCompactMode,
+    isCompactMode,
+    file,
+    customProperty
+}: {
+    customPropertyType: CustomPropertyType;
+    showCustomPropertyInCompactMode: boolean;
+    isCompactMode: boolean;
+    file: TFile | null;
+    customProperty: string | null | undefined;
+}): boolean {
+    if (customPropertyType === 'none') {
+        return false;
+    }
+
+    if (!file || file.extension !== 'md') {
+        return false;
+    }
+
+    if (isCompactMode && !showCustomPropertyInCompactMode) {
+        return false;
+    }
+
+    return Boolean(customProperty);
 }

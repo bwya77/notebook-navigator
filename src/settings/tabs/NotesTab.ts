@@ -298,6 +298,7 @@ export function renderNotesTab(context: SettingsTabContext): void {
     const previewTextGroup = createGroup(strings.settings.groups.notes.previewText);
     const featureImageGroup = createGroup(strings.settings.groups.notes.featureImage);
     const tagsGroup = createGroup(strings.settings.groups.notes.tags);
+    const customPropertyGroup = createGroup(strings.settings.groups.notes.customProperty);
     const dateGroup = createGroup(strings.settings.groups.notes.date);
     const parentFolderGroup = createGroup(strings.settings.groups.notes.parentFolder);
 
@@ -656,6 +657,55 @@ export function renderNotesTab(context: SettingsTabContext): void {
                 await plugin.saveSettingsAndUpdate();
             })
         );
+
+    let updateCustomPropertyFieldsVisibility: (() => void) | null = null;
+
+    customPropertyGroup.addSetting(setting => {
+        setting.setName(strings.settings.items.customPropertyType.name).setDesc(strings.settings.items.customPropertyType.desc);
+        setting.addDropdown(dropdown =>
+            dropdown
+                .addOption('none', strings.settings.items.customPropertyType.options.none)
+                .addOption('frontmatter', strings.settings.items.customPropertyType.options.frontmatter)
+                .addOption('wordCount', strings.settings.items.customPropertyType.options.wordCount)
+                .setValue(plugin.settings.customPropertyType)
+                .onChange(async value => {
+                    plugin.settings.customPropertyType = value === 'frontmatter' || value === 'wordCount' ? value : 'none';
+                    await plugin.saveSettingsAndUpdate();
+                    updateCustomPropertyFieldsVisibility?.();
+                })
+        );
+    });
+
+    const customPropertyFrontmatterFieldsSetting = customPropertyGroup.addSetting(setting => {
+        context.configureDebouncedTextSetting(
+            setting,
+            strings.settings.items.customPropertyFrontmatterFields.name,
+            strings.settings.items.customPropertyFrontmatterFields.desc,
+            strings.settings.items.customPropertyFrontmatterFields.placeholder,
+            () => normalizeCommaSeparatedList(plugin.settings.customPropertyFrontmatterFields),
+            value => {
+                plugin.settings.customPropertyFrontmatterFields = normalizeCommaSeparatedList(value);
+            }
+        );
+    });
+    customPropertyFrontmatterFieldsSetting.controlEl.addClass('nn-setting-wide-input');
+
+    updateCustomPropertyFieldsVisibility = () => {
+        setElementVisible(customPropertyFrontmatterFieldsSetting.settingEl, plugin.settings.customPropertyType === 'frontmatter');
+    };
+    updateCustomPropertyFieldsVisibility();
+
+    customPropertyGroup.addSetting(setting => {
+        setting
+            .setName(strings.settings.items.showCustomPropertyInCompactMode.name)
+            .setDesc(strings.settings.items.showCustomPropertyInCompactMode.desc)
+            .addToggle(toggle =>
+                toggle.setValue(plugin.settings.showCustomPropertyInCompactMode).onChange(async value => {
+                    plugin.settings.showCustomPropertyInCompactMode = value;
+                    await plugin.saveSettingsAndUpdate();
+                })
+            );
+    });
 
     const showFileDateSetting = dateGroup.addSetting(setting => {
         setting.setName(strings.settings.items.showFileDate.name).setDesc(strings.settings.items.showFileDate.desc);

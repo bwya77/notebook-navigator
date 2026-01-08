@@ -70,7 +70,14 @@ import registerWorkspaceEvents from './services/workspace/registerWorkspaceEvent
 import type { RevealFileOptions } from './hooks/useNavigatorReveal';
 import { ShortcutType, type ShortcutEntry } from './types/shortcuts';
 import type { FolderAppearance } from './hooks/useListPaneAppearance';
-import { isSortOption, isTagSortOrder, type SortOption, type TagSortOrder, type VaultProfile } from './settings/types';
+import {
+    isCustomPropertyType,
+    isSortOption,
+    isTagSortOrder,
+    type SortOption,
+    type TagSortOrder,
+    type VaultProfile
+} from './settings/types';
 import { clearHiddenTagPatternCache } from './utils/tagPrefixMatcher';
 import { getPathPatternCacheKey } from './utils/pathPatternMatcher';
 import { DEFAULT_UI_SCALE, sanitizeUIScale } from './utils/uiScale';
@@ -270,6 +277,18 @@ export default class NotebookNavigatorPlugin extends Plugin implements ISettings
             this.settings.shortcutBadgeDisplay !== 'none'
         ) {
             this.settings.shortcutBadgeDisplay = DEFAULT_SETTINGS.shortcutBadgeDisplay;
+        }
+
+        if (!isCustomPropertyType(this.settings.customPropertyType)) {
+            this.settings.customPropertyType = DEFAULT_SETTINGS.customPropertyType;
+        }
+
+        if (typeof this.settings.customPropertyFrontmatterFields !== 'string') {
+            this.settings.customPropertyFrontmatterFields = DEFAULT_SETTINGS.customPropertyFrontmatterFields;
+        }
+
+        if (typeof this.settings.showCustomPropertyInCompactMode !== 'boolean') {
+            this.settings.showCustomPropertyInCompactMode = DEFAULT_SETTINGS.showCustomPropertyInCompactMode;
         }
 
         type LegacyAppearance = FolderAppearance & {

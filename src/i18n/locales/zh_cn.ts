@@ -641,6 +641,7 @@ export const STRINGS_ZH_CN = {
                 previewText: '预览文本',
                 featureImage: '特色图片',
                 tags: '标签',
+                customProperty: 'Custom property',
                 date: '日期',
                 parentFolder: '父文件夹'
             }
@@ -1019,6 +1020,24 @@ export const STRINGS_ZH_CN = {
             showFileTagsInCompactMode: {
                 name: '在精简模式中显示文件标签',
                 desc: '当日期、预览和图像被隐藏时显示标签。'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: '日期格式',

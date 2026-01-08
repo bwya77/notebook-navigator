@@ -247,6 +247,8 @@ body {
     --nn-theme-file-tag-color: var(--text-muted);
     --nn-theme-file-tag-custom-color-text-color: var(--nn-theme-navitem-name-color);
     --nn-theme-file-tag-bg: var(--background-modifier-border);
+    --nn-theme-file-custom-property-color: var(--nn-theme-file-tag-color);
+    --nn-theme-file-custom-property-bg: var(--nn-theme-file-tag-bg);
     --nn-theme-file-tag-border-radius: 10px;
     --nn-theme-file-border-radius: 8px;
     --nn-theme-file-selected-bg: var(--text-selection);
@@ -2555,11 +2557,12 @@ body {
 /* Source: src/styles/sections/list-tags.css */
 
 /* ========================================================================
-   Tag Display Styles
+   Tag & Custom Property Display Styles
    ======================================================================== */
 
 /* Tag container */
-.nn-file-tags {
+.nn-file-tags,
+.nn-file-custom-property-row {
     display: flex;
     flex-wrap: nowrap;
     gap: var(--nn-file-tag-row-gap);
@@ -2572,7 +2575,8 @@ body {
     -ms-overflow-style: none;
 }
 
-.nn-file-tags::-webkit-scrollbar {
+.nn-file-tags::-webkit-scrollbar,
+.nn-file-custom-property-row::-webkit-scrollbar {
     display: none;
 }
 
@@ -2592,6 +2596,11 @@ body {
     font-weight: var(--nn-theme-file-tag-font-weight);
     white-space: nowrap;
     flex-shrink: 0;
+}
+
+.nn-file-custom-property {
+    background-color: var(--nn-theme-file-custom-property-bg);
+    color: var(--nn-theme-file-custom-property-color);
 }
 
 .nn-file-tag[data-has-background='true'] {
@@ -6704,6 +6713,24 @@ settings:
         id: nn-theme-file-tag-bg
         title: File tag background
         description: Background color for tag pills.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+    -
+        id: nn-theme-file-custom-property-color
+        title: Custom property text color
+        description: Text color for custom property pill.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+    -
+        id: nn-theme-file-custom-property-bg
+        title: Custom property background
+        description: Background color for custom property pill.
         type: variable-themed-color
         format: hex
         default-light: '#'

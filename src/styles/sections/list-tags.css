@@ -1,11 +1,12 @@
 /* Source: src/styles/sections/list-tags.css */
 
 /* ========================================================================
-   Tag Display Styles
+   Tag & Custom Property Display Styles
    ======================================================================== */
 
 /* Tag container */
-.nn-file-tags {
+.nn-file-tags,
+.nn-file-custom-property-row {
     display: flex;
     flex-wrap: nowrap;
     gap: var(--nn-file-tag-row-gap);
@@ -18,7 +19,8 @@
     -ms-overflow-style: none;
 }
 
-.nn-file-tags::-webkit-scrollbar {
+.nn-file-tags::-webkit-scrollbar,
+.nn-file-custom-property-row::-webkit-scrollbar {
     display: none;
 }
 
@@ -38,6 +40,11 @@
     font-weight: var(--nn-theme-file-tag-font-weight);
     white-space: nowrap;
     flex-shrink: 0;
+}
+
+.nn-file-custom-property {
+    background-color: var(--nn-theme-file-custom-property-bg);
+    color: var(--nn-theme-file-custom-property-color);
 }
 
 .nn-file-tag[data-has-background='true'] {

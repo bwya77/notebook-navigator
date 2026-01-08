@@ -642,6 +642,7 @@ export const STRINGS_KO = {
                 previewText: '미리보기 텍스트',
                 featureImage: '대표 이미지',
                 tags: '태그',
+                customProperty: 'Custom property',
                 date: '날짜',
                 parentFolder: '상위 폴더'
             }
@@ -1020,6 +1021,24 @@ export const STRINGS_KO = {
             showFileTagsInCompactMode: {
                 name: '슬림 모드에서 파일 태그 표시',
                 desc: '날짜, 미리보기, 이미지가 숨겨져 있을 때 태그를 표시합니다.'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: '날짜 형식',

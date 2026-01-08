@@ -642,6 +642,7 @@ export const STRINGS_VI = {
                 previewText: 'Văn bản xem trước',
                 featureImage: 'Hình ảnh nổi bật',
                 tags: 'Thẻ',
+                customProperty: 'Custom property',
                 date: 'Ngày',
                 parentFolder: 'Thư mục cha'
             }
@@ -1020,6 +1021,24 @@ export const STRINGS_VI = {
             showFileTagsInCompactMode: {
                 name: 'Hiện thẻ tệp ở chế độ gọn',
                 desc: 'Hiển thị thẻ khi ngày, xem trước và ảnh bị ẩn.'
+            },
+            customPropertyType: {
+                name: 'Type',
+                desc: 'Select the custom property to display in file items.',
+                options: {
+                    frontmatter: 'Frontmatter property',
+                    wordCount: 'Word count',
+                    none: 'None'
+                }
+            },
+            customPropertyFrontmatterFields: {
+                name: 'Frontmatter properties',
+                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+                placeholder: 'status, type, category'
+            },
+            showCustomPropertyInCompactMode: {
+                name: 'Show custom property in compact mode',
+                desc: 'Display the custom property when date, preview, and image are hidden.'
             },
             dateFormat: {
                 name: 'Định dạng ngày',
