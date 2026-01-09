@@ -75,7 +75,7 @@ describe('recordFileChanges rename merge', () => {
             tagsMtime: 150,
             metadataMtime: 150,
             tags: ['destination'],
-            customProperty: 'destination',
+            customProperty: [{ value: 'destination' }],
             previewStatus: 'none',
             featureImageStatus: 'none',
             featureImageKey: '',
@@ -88,7 +88,7 @@ describe('recordFileChanges rename merge', () => {
             tagsMtime: 0,
             metadataMtime: 0,
             tags: ['source'],
-            customProperty: 'source',
+            customProperty: [{ value: 'source' }],
             previewStatus: 'has',
             featureImageStatus: 'has',
             featureImageKey: 'f:images/cover.png@123',
@@ -110,7 +110,7 @@ describe('recordFileChanges rename merge', () => {
 
         expect(updated.mtime).toBe(200);
         expect(updated.tags).toEqual(['source']);
-        expect(updated.customProperty).toBe('source');
+        expect(updated.customProperty).toEqual([{ value: 'source' }]);
         expect(updated.previewStatus).toBe('has');
         expect(updated.featureImageStatus).toBe('has');
         expect(updated.featureImageKey).toBe('f:images/cover.png@123');

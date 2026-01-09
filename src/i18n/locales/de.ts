@@ -988,10 +988,15 @@ export const STRINGS_DE = {
                     none: 'Keine'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Frontmatter-Eigenschaften',
-                desc: 'Kommagetrennte Liste der anzuzeigenden Frontmatter-Eigenschaften. Die erste Eigenschaft mit einem Wert wird verwendet.',
+            customPropertyFields: {
+                name: 'Anzuzeigende Eigenschaft',
+                desc: 'Kommagetrennte Liste von Frontmatter-Eigenschaften zur Anzeige als Badges. Listen-Eigenschaften zeigen ein Badge pro Wert. [[Wikilink]]-Werte werden als anklickbare Links angezeigt.',
                 placeholder: 'status, typ, kategorie'
+            },
+            customPropertyColorFields: {
+                name: 'Eigenschaft für Farbe',
+                desc: 'Kommagetrennte Liste von Frontmatter-Eigenschaften für Badge-Farben. Farb-Eigenschaften werden nach Position mit Anzeige-Eigenschaften gepaart. Listen-Eigenschaften paaren Farben nach Index. Werte können Tag-Namen oder CSS-Farben sein.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Benutzerdefinierte Eigenschaft im Kompaktmodus anzeigen',

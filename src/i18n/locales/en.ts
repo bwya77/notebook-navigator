@@ -985,10 +985,15 @@ export const STRINGS_EN = {
                     none: 'None'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Frontmatter properties',
-                desc: 'Comma-separated list of frontmatter properties to display. The first property with a value is used.',
+            customPropertyFields: {
+                name: 'Property to display',
+                desc: 'Comma-separated list of frontmatter properties to display as badges. List-valued properties render one badge per value. [[wikilink]] values displayed as clickable links.',
                 placeholder: 'status, type, category'
+            },
+            customPropertyColorFields: {
+                name: 'Property for color',
+                desc: 'Comma-separated list of frontmatter properties for badge colors. Color properties pair with display properties by position. List-valued properties pair colors by index. Values can be tag names or CSS colors.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Show custom property in compact mode',

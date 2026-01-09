@@ -988,10 +988,15 @@ export const STRINGS_ES = {
                     none: 'Ninguno'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Propiedades del frontmatter',
-                desc: 'Lista de propiedades del frontmatter separadas por comas a mostrar. Se usa la primera propiedad con valor.',
+            customPropertyFields: {
+                name: 'Propiedad a mostrar',
+                desc: 'Lista separada por comas de propiedades del frontmatter para mostrar como insignias. Las propiedades con valores de lista muestran una insignia por valor. Los valores [[wikilink]] se muestran como enlaces clicables.',
                 placeholder: 'estado, tipo, categoría'
+            },
+            customPropertyColorFields: {
+                name: 'Propiedad para color',
+                desc: 'Lista separada por comas de propiedades del frontmatter para colores de insignias. Las propiedades de color se emparejan con las de visualización por posición. Las propiedades con valores de lista emparejan colores por índice. Los valores pueden ser nombres de etiquetas o colores CSS.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Mostrar propiedad personalizada en modo compacto',

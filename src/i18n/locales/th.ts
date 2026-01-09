@@ -986,10 +986,15 @@ export const STRINGS_TH = {
                     none: 'ไม่มี'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'คุณสมบัติ Frontmatter',
-                desc: 'รายการคุณสมบัติ Frontmatter ที่คั่นด้วยเครื่องหมายจุลภาค คุณสมบัติแรกที่มีค่าจะถูกใช้',
+            customPropertyFields: {
+                name: 'คุณสมบัติที่จะแสดง',
+                desc: 'รายการคุณสมบัติ frontmatter คั่นด้วยเครื่องหมายจุลภาคเพื่อแสดงเป็นป้าย คุณสมบัติที่มีค่าเป็นรายการจะแสดงหนึ่งป้ายต่อค่า ค่าในรูปแบบ [[wikilink]] จะแสดงเป็นลิงก์ที่คลิกได้',
                 placeholder: 'สถานะ, ประเภท, หมวดหมู่'
+            },
+            customPropertyColorFields: {
+                name: 'คุณสมบัติสำหรับสี',
+                desc: 'รายการคุณสมบัติ frontmatter คั่นด้วยเครื่องหมายจุลภาคสำหรับสีของป้าย คุณสมบัติสีจะจับคู่กับคุณสมบัติแสดงผลตามตำแหน่ง คุณสมบัติที่มีค่าเป็นรายการจะจับคู่สีตามดัชนี ค่าสามารถเป็นชื่อแท็กหรือสี CSS',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'แสดงคุณสมบัติกำหนดเองในโหมดกะทัดรัด',

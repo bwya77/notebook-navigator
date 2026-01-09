@@ -990,10 +990,15 @@ export const STRINGS_FR = {
                     none: 'Aucun'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Propriétés frontmatter',
-                desc: 'Liste de propriétés frontmatter séparées par des virgules à afficher. La première propriété avec une valeur est utilisée.',
+            customPropertyFields: {
+                name: 'Propriété à afficher',
+                desc: 'Liste de propriétés frontmatter séparées par des virgules à afficher sous forme de badges. Les propriétés à valeurs multiples affichent un badge par valeur. Les valeurs [[wikilink]] sont affichées comme liens cliquables.',
                 placeholder: 'statut, type, catégorie'
+            },
+            customPropertyColorFields: {
+                name: 'Propriété pour la couleur',
+                desc: "Liste de propriétés frontmatter séparées par des virgules pour les couleurs des badges. Les propriétés de couleur sont associées aux propriétés d'affichage par position. Les propriétés à valeurs multiples associent les couleurs par index. Les valeurs peuvent être des noms de tags ou des couleurs CSS.",
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Afficher la propriété personnalisée en mode compact',

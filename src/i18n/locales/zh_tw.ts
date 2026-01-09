@@ -984,10 +984,15 @@ export const STRINGS_ZH_TW = {
                     none: '無'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: '前置中繼資料屬性',
-                desc: '逗號分隔的前置中繼資料屬性列表。使用第一個有值的屬性。',
+            customPropertyFields: {
+                name: '要顯示的屬性',
+                desc: '以逗號分隔的前置中繼資料屬性清單，用於顯示為標籤。清單值屬性每個值顯示一個標籤。[[wikilink]] 格式的值會顯示為可點擊連結。',
                 placeholder: 'status, type, category'
+            },
+            customPropertyColorFields: {
+                name: '顏色屬性',
+                desc: '以逗號分隔的前置中繼資料屬性清單，用於標籤顏色。顏色屬性按位置與顯示屬性配對。清單值屬性按索引配對顏色。值可以是標籤名稱或 CSS 顏色。',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: '在精簡模式中顯示自訂屬性',

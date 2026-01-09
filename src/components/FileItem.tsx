@@ -49,7 +49,7 @@
 import React, { useRef, useMemo, useEffect, useState, useCallback, useId } from 'react';
 import { TFile, TFolder, setTooltip, setIcon } from 'obsidian';
 import { useServices } from '../context/ServicesContext';
-import type { FeatureImageStatus, FileContentChange } from '../storage/IndexedDBStorage';
+import type { CustomPropertyItem, FeatureImageStatus, FileContentChange } from '../storage/IndexedDBStorage';
 import { useMetadataService } from '../context/ServicesContext';
 import { useActiveProfile, useSettingsDerived, useSettingsState } from '../context/SettingsContext';
 import { useUXPreferences } from '../context/UXPreferencesContext';
@@ -68,6 +68,13 @@ import { openFileInContext } from '../utils/openFileInContext';
 import { FILE_VISIBILITY, getExtensionSuffix, isImageFile, shouldDisplayFile } from '../utils/fileTypeUtils';
 import { resolveFileDragIconId, resolveFileIconId } from '../utils/fileIconUtils';
 import { getDateField, naturalCompare } from '../utils/sortUtils';
+import {
+    areCustomPropertyItemsEqual,
+    cloneCustomPropertyItems,
+    isSupportedCssColor,
+    parseStrictWikiLink,
+    type WikiLinkTarget
+} from '../utils/customPropertyUtils';
 import { shouldShowCustomPropertyRow, shouldShowFeatureImageArea } from '../utils/listPaneMeasurements';
 import { getIconService, useIconServiceVersion } from '../services/icons';
 import type { SearchResultMeta } from '../types/search';
@@ -83,6 +90,13 @@ const FEATURE_IMAGE_MAX_ASPECT_RATIO = 16 / 9;
 const FEATURE_IMAGE_REGEN_THROTTLE_MS = 10000;
 const sortTagsAlphabetically = (tags: string[]): void => {
     tags.sort((firstTag, secondTag) => naturalCompare(firstTag, secondTag));
+};
+
+type CustomPropertyPill = {
+    value: string;
+    label: string;
+    wikiLink: WikiLinkTarget | null;
+    color?: string;
 };
 
 interface FileItemProps {
@@ -314,7 +328,7 @@ export const FileItem = React.memo(function FileItem({
         const record = db.getFile(file.path);
         const featureImageKey = record?.featureImageKey ?? null;
         const featureImageStatus: FeatureImageStatus = record?.featureImageStatus ?? 'unprocessed';
-        const customProperty = record?.customProperty ?? null;
+        const customProperty = cloneCustomPropertyItems(record?.customProperty ?? null);
 
         let imageUrl: string | null = null;
         if (appearanceSettings.showImage && isImageFile(file)) {
@@ -341,7 +355,7 @@ export const FileItem = React.memo(function FileItem({
     const [featureImageKey, setFeatureImageKey] = useState<string | null>(initialData.featureImageKey);
     const [featureImageStatus, setFeatureImageStatus] = useState<FeatureImageStatus>(initialData.featureImageStatus);
     const [featureImageUrl, setFeatureImageUrl] = useState<string | null>(initialData.imageUrl);
-    const [customProperty, setCustomProperty] = useState<string | null>(initialData.customProperty);
+    const [customProperty, setCustomProperty] = useState<CustomPropertyItem[] | null>(initialData.customProperty);
     const [featureImageAspectRatio, setFeatureImageAspectRatio] = useState<number | null>(null);
     const [isFeatureImageHidden, setIsFeatureImageHidden] = useState(false);
     const [metadataVersion, setMetadataVersion] = useState(0);
@@ -497,18 +511,18 @@ export const FileItem = React.memo(function FileItem({
         [navigateToTag, onModifySearchWithTag, settings.multiSelectModifier, isMobile]
     );
 
-    // Get tag color
-    const getTagColor = useCallback(
-        (tag: string): string | undefined => {
-            return metadataService.getTagColor(tag);
+    const handleCustomPropertyWikilinkClick = useCallback(
+        (event: React.MouseEvent, wikiLink: WikiLinkTarget) => {
+            event.stopPropagation();
+            event.preventDefault();
+            void app.workspace.openLinkText(wikiLink.target, file.path, false);
         },
-        [metadataService]
+        [app.workspace, file.path]
     );
 
-    // Get tag background color
-    const getTagBackgroundColor = useCallback(
-        (tag: string): string | undefined => {
-            return metadataService.getTagBackgroundColor(tag);
+    const getTagColorData = useCallback(
+        (tag: string): { color?: string; background?: string } => {
+            return metadataService.getTagColorData(tag);
         },
         [metadataService]
     );
@@ -529,23 +543,25 @@ export const FileItem = React.memo(function FileItem({
 
     // Build color and background map for visible tags
     const tagColorData = useMemo(() => {
+        void settings.tagColors;
+        void settings.tagBackgroundColors;
+        void settings.inheritTagColors;
+
         if (!colorFileTags || visibleTags.length === 0) {
             return new Map<string, { color?: string; background?: string }>();
         }
 
+        // Cache resolved tag color/background for visible tags to avoid repeated ancestor checks.
         const entries = new Map<string, { color?: string; background?: string }>();
-        const tagColorOverrides = settings.tagColors;
-        const tagBackgroundOverrides = settings.tagBackgroundColors;
-
         visibleTags.forEach(tag => {
-            entries.set(tag, {
-                color: tagColorOverrides?.[tag] ?? getTagColor(tag),
-                background: tagBackgroundOverrides?.[tag] ?? getTagBackgroundColor(tag)
-            });
+            const data = getTagColorData(tag);
+            if (data.color || data.background) {
+                entries.set(tag, data);
+            }
         });
 
         return entries;
-    }, [colorFileTags, getTagBackgroundColor, getTagColor, settings.tagBackgroundColors, settings.tagColors, visibleTags]);
+    }, [colorFileTags, getTagColorData, settings.inheritTagColors, settings.tagBackgroundColors, settings.tagColors, visibleTags]);
 
     // Sort tags alphabetically and optionally prioritize colored tags
     const categorizedTags = useMemo(() => {
@@ -594,17 +610,90 @@ export const FileItem = React.memo(function FileItem({
         return true;
     }, [categorizedTags, isCompactMode, settings.showFileTags, settings.showFileTagsInCompactMode, settings.showTags]);
 
-    const customPropertyLabel = useMemo(() => {
-        const value = customProperty ?? '';
-        if (value === '' || settings.customPropertyType !== 'wordCount') {
-            return value;
+    const customPropertyPills = useMemo<CustomPropertyPill[]>(() => {
+        if (!customProperty || customProperty.length === 0) {
+            return [];
         }
-        const num = parseInt(value, 10);
-        if (Number.isNaN(num)) {
-            return value;
+
+        // Convert cached custom property data to renderable pill models.
+        const pills: CustomPropertyPill[] = [];
+        for (const entry of customProperty) {
+            const rawValue = entry.value;
+            if (rawValue.trim().length === 0) {
+                continue;
+            }
+
+            if (settings.customPropertyType === 'wordCount') {
+                const num = parseInt(rawValue, 10);
+                const label = Number.isNaN(num) ? rawValue : num.toLocaleString();
+                pills.push({ value: rawValue, label, wikiLink: null });
+                continue;
+            }
+
+            const wikiLink = parseStrictWikiLink(rawValue);
+            const label = wikiLink ? wikiLink.displayText : rawValue;
+            pills.push({ value: rawValue, label, wikiLink, color: entry.color });
         }
-        return num.toLocaleString();
+
+        return pills;
     }, [customProperty, settings.customPropertyType]);
+
+    const customPropertyColorData = useMemo(() => {
+        void settings.tagColors;
+        void settings.tagBackgroundColors;
+        void settings.inheritTagColors;
+
+        // Precompute per-token styles (tag colors/backgrounds, or CSS color fallback) so each pill render is O(1).
+        const entries = new Map<
+            string,
+            {
+                style?: (React.CSSProperties & { '--nn-file-tag-custom-bg'?: string }) | undefined;
+                hasColor: boolean;
+                hasBackground: boolean;
+            }
+        >();
+
+        if (customPropertyPills.length === 0) {
+            return entries;
+        }
+
+        for (const pill of customPropertyPills) {
+            const colorToken = pill.color?.trim();
+            if (!colorToken || colorToken.length === 0) {
+                continue;
+            }
+            if (entries.has(colorToken)) {
+                continue;
+            }
+
+            const resolved = getTagColorData(colorToken);
+            const pillStyle: React.CSSProperties & { '--nn-file-tag-custom-bg'?: string } = {};
+
+            let hasColor = false;
+            let hasBackground = false;
+            if (resolved.background) {
+                pillStyle['--nn-file-tag-custom-bg'] = resolved.background;
+                hasBackground = true;
+            }
+            if (resolved.color) {
+                pillStyle.color = resolved.color;
+                hasColor = true;
+            }
+
+            if (!hasColor && !hasBackground && isSupportedCssColor(colorToken)) {
+                pillStyle.color = colorToken;
+                hasColor = true;
+            }
+
+            entries.set(colorToken, {
+                style: hasColor || hasBackground ? pillStyle : undefined,
+                hasColor,
+                hasBackground
+            });
+        }
+
+        return entries;
+    }, [customPropertyPills, getTagColorData, settings.inheritTagColors, settings.tagBackgroundColors, settings.tagColors]);
 
     const shouldShowCustomProperty = useMemo(() => {
         return shouldShowCustomPropertyRow({
@@ -612,9 +701,9 @@ export const FileItem = React.memo(function FileItem({
             showCustomPropertyInCompactMode: settings.showCustomPropertyInCompactMode,
             isCompactMode,
             file,
-            customProperty: customPropertyLabel
+            customProperty
         });
-    }, [customPropertyLabel, file, isCompactMode, settings.customPropertyType, settings.showCustomPropertyInCompactMode]);
+    }, [customProperty, file, isCompactMode, settings.customPropertyType, settings.showCustomPropertyInCompactMode]);
 
     const shouldShowPillRowIcons = useMemo(() => {
         const tagPillsEnabled = settings.showTags && settings.showFileTags && (!isCompactMode || settings.showFileTagsInCompactMode);
@@ -688,7 +777,7 @@ export const FileItem = React.memo(function FileItem({
                             onClick={e => handleTagClick(e, tag)}
                             role="button"
                             tabIndex={0}
-                            style={Object.keys(tagStyle).length > 0 ? tagStyle : undefined}
+                            style={tagColor || tagBackground ? tagStyle : undefined}
                         >
                             {displayTag}
                         </span>
@@ -716,7 +805,32 @@ export const FileItem = React.memo(function FileItem({
 
         const customPropertyContent = (
             <div className="nn-file-custom-property-row">
-                <span className="nn-file-tag nn-file-custom-property">{customPropertyLabel}</span>
+                {customPropertyPills.map((pill, index) => {
+                    const wikiLink = pill.wikiLink;
+                    const isLinked = Boolean(wikiLink);
+                    const className = isLinked
+                        ? 'nn-file-tag nn-file-custom-property nn-clickable-tag'
+                        : 'nn-file-tag nn-file-custom-property';
+                    const colorToken = pill.color?.trim();
+                    const resolvedColorData = colorToken && colorToken.length > 0 ? customPropertyColorData.get(colorToken) : undefined;
+                    const hasColor = Boolean(resolvedColorData?.hasColor);
+                    const hasBackground = Boolean(resolvedColorData?.hasBackground);
+
+                    return (
+                        <span
+                            key={index}
+                            className={className}
+                            data-has-color={hasColor ? 'true' : undefined}
+                            data-has-background={hasBackground ? 'true' : undefined}
+                            onClick={wikiLink ? event => handleCustomPropertyWikilinkClick(event, wikiLink) : undefined}
+                            role={isLinked ? 'button' : undefined}
+                            tabIndex={isLinked ? 0 : undefined}
+                            style={resolvedColorData?.style}
+                        >
+                            {pill.label}
+                        </span>
+                    );
+                })}
             </div>
         );
 
@@ -734,7 +848,14 @@ export const FileItem = React.memo(function FileItem({
                 {customPropertyContent}
             </div>
         );
-    }, [customPropertyLabel, customPropertyPillIconId, shouldShowCustomProperty, shouldShowPillRowIcons]);
+    }, [
+        customPropertyPillIconId,
+        customPropertyColorData,
+        customPropertyPills,
+        handleCustomPropertyWikilinkClick,
+        shouldShowCustomProperty,
+        shouldShowPillRowIcons
+    ]);
 
     // Format display date based on current sort
     const displayDate = useMemo(() => {
@@ -946,7 +1067,7 @@ export const FileItem = React.memo(function FileItem({
         setTags(prev => (areStringArraysEqual(prev, initialTags) ? prev : initialTags));
         setFeatureImageKey(prev => (prev === initialFeatureImageKey ? prev : initialFeatureImageKey));
         setFeatureImageStatus(prev => (prev === initialFeatureImageStatus ? prev : initialFeatureImageStatus));
-        setCustomProperty(prev => (prev === initialCustomProperty ? prev : initialCustomProperty));
+        setCustomProperty(prev => (areCustomPropertyItemsEqual(prev, initialCustomProperty) ? prev : initialCustomProperty));
 
         const db = getDB();
         const unsubscribe = db.onFileContentChange(file.path, (changes: FileContentChange['changes']) => {
@@ -970,8 +1091,8 @@ export const FileItem = React.memo(function FileItem({
             }
             // Update custom property when it changes
             if (changes.customProperty !== undefined) {
-                const nextCustomProperty = changes.customProperty ?? null;
-                setCustomProperty(prev => (prev === nextCustomProperty ? prev : nextCustomProperty));
+                const nextCustomProperty = cloneCustomPropertyItems(changes.customProperty ?? null);
+                setCustomProperty(prev => (areCustomPropertyItemsEqual(prev, nextCustomProperty) ? prev : nextCustomProperty));
             }
             // Trigger metadata refresh when frontmatter changes
             if (changes.metadata !== undefined) {

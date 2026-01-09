@@ -986,10 +986,15 @@ export const STRINGS_AR = {
                     none: 'لا شيء'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'خصائص الواجهة الأمامية',
-                desc: 'قائمة خصائص الواجهة الأمامية مفصولة بفواصل. يتم استخدام أول خاصية لها قيمة.',
+            customPropertyFields: {
+                name: 'الخاصية للعرض',
+                desc: 'قائمة خصائص frontmatter مفصولة بفواصل لعرضها كشارات. الخصائص ذات القيم المتعددة تعرض شارة واحدة لكل قيمة. قيم [[wikilink]] تُعرض كروابط قابلة للنقر.',
                 placeholder: 'الحالة، النوع، الفئة'
+            },
+            customPropertyColorFields: {
+                name: 'الخاصية للون',
+                desc: 'قائمة خصائص frontmatter مفصولة بفواصل لألوان الشارات. تقترن خصائص الألوان بخصائص العرض حسب الموضع. الخصائص ذات القيم المتعددة تقرن الألوان حسب الفهرس. يمكن أن تكون القيم أسماء وسوم أو ألوان CSS.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'إظهار الخاصية المخصصة في الوضع المضغوط',

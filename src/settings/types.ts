@@ -231,7 +231,8 @@ export interface NotebookNavigatorSettings {
     showFileTagAncestors: boolean;
     showFileTagsInCompactMode: boolean;
     customPropertyType: CustomPropertyType;
-    customPropertyFrontmatterFields: string;
+    customPropertyFields: string;
+    customPropertyColorFields: string;
     showCustomPropertyInCompactMode: boolean;
     showFileDate: boolean;
     alphabeticalDateMode: AlphabeticalDateMode;

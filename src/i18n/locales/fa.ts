@@ -986,10 +986,15 @@ export const STRINGS_FA = {
                     none: 'هیچ‌کدام'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'ویژگی‌های Frontmatter',
-                desc: 'لیست ویژگی‌های Frontmatter جدا شده با کاما. اولین ویژگی دارای مقدار استفاده می‌شود.',
+            customPropertyFields: {
+                name: 'ویژگی برای نمایش',
+                desc: 'لیست ویژگی‌های frontmatter جدا شده با کاما برای نمایش به صورت نشان. ویژگی‌های با مقادیر لیستی یک نشان برای هر مقدار نمایش می‌دهند. مقادیر [[wikilink]] به صورت لینک‌های قابل کلیک نمایش داده می‌شوند.',
                 placeholder: 'وضعیت، نوع، دسته‌بندی'
+            },
+            customPropertyColorFields: {
+                name: 'ویژگی برای رنگ',
+                desc: 'لیست ویژگی‌های frontmatter جدا شده با کاما برای رنگ نشان‌ها. ویژگی‌های رنگ با ویژگی‌های نمایش بر اساس موقعیت جفت می‌شوند. ویژگی‌های با مقادیر لیستی رنگ‌ها را بر اساس شاخص جفت می‌کنند. مقادیر می‌توانند نام برچسب یا رنگ‌های CSS باشند.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'نمایش ویژگی سفارشی در حالت فشرده',

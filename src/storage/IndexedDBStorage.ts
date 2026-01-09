@@ -33,10 +33,43 @@ import { getProviderProcessedMtimeField } from './providerMtime';
 const STORE_NAME = 'keyvaluepairs';
 const PREVIEW_STORE_NAME = 'filePreviews';
 const DB_SCHEMA_VERSION = 3; // IndexedDB structure version
-const DB_CONTENT_VERSION = 2; // Data format version
+const DB_CONTENT_VERSION = 3; // Data format version
 
 export type FeatureImageStatus = 'unprocessed' | 'none' | 'has';
 export type PreviewStatus = 'unprocessed' | 'none' | 'has';
+
+export interface CustomPropertyItem {
+    // Rendered pill text (raw frontmatter value or computed value such as word count).
+    value: string;
+    // Optional color token (tag name or CSS color string).
+    color?: string;
+}
+
+function isCustomPropertyItem(value: unknown): value is CustomPropertyItem {
+    if (!isPlainObjectRecordValue(value)) {
+        return false;
+    }
+
+    // Persisted data must remain JSON-compatible.
+    const rawValue = value['value'];
+    if (typeof rawValue !== 'string') {
+        return false;
+    }
+
+    const rawColor = value['color'];
+    if (typeof rawColor !== 'undefined' && typeof rawColor !== 'string') {
+        return false;
+    }
+
+    return true;
+}
+
+function isCustomPropertyData(value: unknown): value is CustomPropertyItem[] {
+    if (!Array.isArray(value)) {
+        return false;
+    }
+    return value.every(entry => isCustomPropertyItem(entry));
+}
 
 function getDefaultPreviewStatusForPath(path: string): PreviewStatus {
     return isMarkdownPath(path) ? 'unprocessed' : 'none';
@@ -98,7 +131,7 @@ export interface FileData {
      */
     fileThumbnailsMtime: number;
     tags: string[] | null; // null = not extracted yet (e.g. when tags disabled)
-    customProperty: string | null; // null = not generated yet
+    customProperty: CustomPropertyItem[] | null; // null = not generated yet
     /**
      * Preview text processing state.
      *
@@ -154,7 +187,7 @@ export interface FileContentChange {
         featureImageStatus?: FeatureImageStatus;
         metadata?: FileData['metadata'] | null;
         tags?: string[] | null;
-        customProperty?: string | null;
+        customProperty?: FileData['customProperty'];
     };
     changeType?: 'metadata' | 'content' | 'both';
 }
@@ -263,7 +296,7 @@ export class IndexedDBStorage {
         data.metadataMtime = typeof data.metadataMtime === 'number' ? data.metadataMtime : data.mtime;
         data.fileThumbnailsMtime = typeof data.fileThumbnailsMtime === 'number' ? data.fileThumbnailsMtime : data.mtime;
         data.tags = Array.isArray(data.tags) ? data.tags : null;
-        data.customProperty = typeof data.customProperty === 'string' ? data.customProperty : null;
+        data.customProperty = isCustomPropertyData(data.customProperty) ? data.customProperty : null;
         data.previewStatus = previewStatus;
         // Feature image blobs are stored separately from the main record.
         // The MemoryFileCache is used for synchronous rendering and should not hold blob payloads.
@@ -2381,7 +2414,7 @@ export class IndexedDBStorage {
             featureImage?: Blob | null;
             featureImageKey?: string | null;
             metadata?: FileData['metadata'];
-            customProperty?: string | null;
+            customProperty?: FileData['customProperty'];
         }[]
     ): Promise<void> {
         await this.batchUpdateFileContentAndProviderProcessedMtimes({ contentUpdates: updates });
@@ -2405,7 +2438,7 @@ export class IndexedDBStorage {
             featureImage?: Blob | null;
             featureImageKey?: string | null;
             metadata?: FileData['metadata'];
-            customProperty?: string | null;
+            customProperty?: FileData['customProperty'];
         }[];
         provider?: ContentProviderType;
         processedMtimeUpdates?: { path: string; mtime: number; expectedPreviousMtime: number }[];

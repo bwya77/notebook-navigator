@@ -18,6 +18,7 @@
 
 import { FileData } from './IndexedDBStorage';
 import { PreviewTextCache } from './PreviewTextCache';
+import { cloneCustomPropertyItems } from '../utils/customPropertyUtils';
 
 // Creates a deep clone of FileData to prevent mutations from affecting the original
 function cloneFileData(data: FileData): FileData {
@@ -28,7 +29,8 @@ function cloneFileData(data: FileData): FileData {
         metadataMtime: data.metadataMtime,
         fileThumbnailsMtime: data.fileThumbnailsMtime,
         tags: data.tags ? [...data.tags] : null,
-        customProperty: data.customProperty,
+        // Clone custom property items to prevent consumers from mutating cached records.
+        customProperty: cloneCustomPropertyItems(data.customProperty),
         previewStatus: data.previewStatus,
         // Feature image blobs are stored in IndexedDB, not in the memory cache.
         featureImage: null,
@@ -201,7 +203,7 @@ export class MemoryFileCache {
             featureImageKey?: string | null;
             featureImageStatus?: FileData['featureImageStatus'];
             metadata?: FileData['metadata'];
-            customProperty?: string | null;
+            customProperty?: FileData['customProperty'];
         }
     ): void {
         const existing = this.fileDataByPath.get(path);

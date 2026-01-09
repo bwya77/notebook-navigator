@@ -38,7 +38,7 @@ export type ContentProviderUpdate = {
     featureImage?: Blob | null;
     featureImageKey?: string | null;
     metadata?: FileData['metadata'];
-    customProperty?: string | null;
+    customProperty?: FileData['customProperty'];
 };
 
 export type ContentProviderProcessResult = {
@@ -359,7 +359,7 @@ export abstract class BaseContentProvider implements IContentProvider {
                 featureImage?: Blob | null;
                 featureImageKey?: string | null;
                 metadata?: FileData['metadata'];
-                customProperty?: string | null;
+                customProperty?: FileData['customProperty'];
             }[] = [];
             const processedMtimeUpdates: { path: string; mtime: number; expectedPreviousMtime: number }[] = [];
 

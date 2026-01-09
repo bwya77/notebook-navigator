@@ -283,8 +283,12 @@ export default class NotebookNavigatorPlugin extends Plugin implements ISettings
             this.settings.customPropertyType = DEFAULT_SETTINGS.customPropertyType;
         }
 
-        if (typeof this.settings.customPropertyFrontmatterFields !== 'string') {
-            this.settings.customPropertyFrontmatterFields = DEFAULT_SETTINGS.customPropertyFrontmatterFields;
+        if (typeof this.settings.customPropertyFields !== 'string') {
+            this.settings.customPropertyFields = DEFAULT_SETTINGS.customPropertyFields;
+        }
+
+        if (typeof this.settings.customPropertyColorFields !== 'string') {
+            this.settings.customPropertyColorFields = DEFAULT_SETTINGS.customPropertyColorFields;
         }
 
         if (typeof this.settings.showCustomPropertyInCompactMode !== 'boolean') {

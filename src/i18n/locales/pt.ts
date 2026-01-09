@@ -987,10 +987,15 @@ export const STRINGS_PT = {
                     none: 'Nenhum'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Propriedades frontmatter',
-                desc: 'Lista de propriedades frontmatter separadas por vírgulas. É usada a primeira propriedade com valor.',
+            customPropertyFields: {
+                name: 'Propriedade a mostrar',
+                desc: 'Lista de propriedades frontmatter separadas por vírgulas para mostrar como emblemas. Propriedades com valores de lista mostram um emblema por valor. Valores em formato [[wikilink]] são exibidos como links clicáveis.',
                 placeholder: 'estado, tipo, categoria'
+            },
+            customPropertyColorFields: {
+                name: 'Propriedade para cor',
+                desc: 'Lista de propriedades frontmatter separadas por vírgulas para cores dos emblemas. As propriedades de cor são emparelhadas com as propriedades de exibição por posição. Propriedades com valores de lista emparelham cores por índice. Os valores podem ser nomes de etiquetas ou cores CSS.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Mostrar propriedade personalizada no modo compacto',

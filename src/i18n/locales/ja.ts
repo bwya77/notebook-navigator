@@ -989,10 +989,15 @@ export const STRINGS_JA = {
                     none: 'なし'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'フロントマタープロパティ',
-                desc: 'カンマ区切りのフロントマタープロパティのリスト。値を持つ最初のプロパティが使用されます。',
+            customPropertyFields: {
+                name: '表示するプロパティ',
+                desc: 'バッジとして表示するフロントマタープロパティのカンマ区切りリスト。リスト値のプロパティは値ごとに1つのバッジを表示します。[[wikilink]]値はクリック可能なリンクとして表示されます。',
                 placeholder: 'ステータス, タイプ, カテゴリ'
+            },
+            customPropertyColorFields: {
+                name: '色のプロパティ',
+                desc: 'バッジの色を指定するフロントマタープロパティのカンマ区切りリスト。色プロパティは位置によって表示プロパティとペアになります。リスト値のプロパティはインデックスで色をペアにします。値はタグ名またはCSSカラーが使用できます。',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'スリムモードでカスタムプロパティを表示',

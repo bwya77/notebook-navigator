@@ -112,7 +112,7 @@
 }
 
 /* Tag pill hover effect - darken/lighten all tags on hover */
-.nn-file-tag:hover {
+.nn-file-tag.nn-clickable-tag:hover {
     filter: brightness(0.9);
 }
 
@@ -121,8 +121,14 @@
     cursor: pointer;
 }
 
+/* Custom property wiki links show underline */
+.nn-file-tag.nn-file-custom-property.nn-clickable-tag {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 /* Dark mode tag hover - lighten instead of darken */
-.theme-dark .nn-file-tag:hover {
+.theme-dark .nn-file-tag.nn-clickable-tag:hover {
     filter: brightness(1.05);
 }
 
@@ -132,7 +138,7 @@
     color: var(--nn-selected-file-tag-color);
 }
 
-.nn-file.nn-selected .nn-file-tag.nn-file-custom-property {
+.nn-file.nn-selected .nn-file-tag.nn-file-custom-property:not([data-has-color='true']):not([data-has-background='true']) {
     background-color: var(--nn-selected-file-custom-property-bg);
     color: var(--nn-selected-file-custom-property-color);
 }

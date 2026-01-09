@@ -17,7 +17,7 @@
  */
 
 import type { TFile } from 'obsidian';
-import type { FeatureImageStatus } from '../storage/IndexedDBStorage';
+import type { FeatureImageStatus, FileData } from '../storage/IndexedDBStorage';
 import type { CustomPropertyType } from '../settings/types';
 import { isImageFile } from './fileTypeUtils';
 
@@ -118,7 +118,7 @@ export function shouldShowCustomPropertyRow({
     showCustomPropertyInCompactMode: boolean;
     isCompactMode: boolean;
     file: TFile | null;
-    customProperty: string | null | undefined;
+    customProperty: FileData['customProperty'] | undefined;
 }): boolean {
     if (customPropertyType === 'none') {
         return false;
@@ -132,5 +132,6 @@ export function shouldShowCustomPropertyRow({
         return false;
     }
 
-    return Boolean(customProperty);
+    // Custom property values are stored as an array; an empty array means there are no pills to render.
+    return Boolean(customProperty && customProperty.length > 0);
 }

@@ -987,10 +987,15 @@ export const STRINGS_IT = {
                     none: 'Nessuno'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Proprietà frontmatter',
-                desc: 'Elenco di proprietà frontmatter separate da virgola. Viene usata la prima proprietà con un valore.',
+            customPropertyFields: {
+                name: 'Proprietà da visualizzare',
+                desc: 'Elenco di proprietà frontmatter separate da virgola da visualizzare come badge. Le proprietà con valori lista mostrano un badge per valore. I valori [[wikilink]] vengono visualizzati come link cliccabili.',
                 placeholder: 'stato, tipo, categoria'
+            },
+            customPropertyColorFields: {
+                name: 'Proprietà per il colore',
+                desc: 'Elenco di proprietà frontmatter separate da virgola per i colori dei badge. Le proprietà colore sono abbinate alle proprietà di visualizzazione per posizione. Le proprietà con valori lista abbinano i colori per indice. I valori possono essere nomi di tag o colori CSS.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Mostra proprietà personalizzata in modalità compatta',

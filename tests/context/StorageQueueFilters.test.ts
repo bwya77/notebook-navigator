@@ -109,7 +109,7 @@ describe('Storage queue filters', () => {
                 markdownPipelineMtime: 0,
                 previewStatus: 'has',
                 featureImageStatus: 'has',
-                customProperty: '1'
+                customProperty: [{ value: '1' }]
             })
         );
 
@@ -133,7 +133,7 @@ describe('Storage queue filters', () => {
                 previewStatus: 'has',
                 featureImageStatus: 'none',
                 featureImageKey: null,
-                customProperty: '1'
+                customProperty: [{ value: '1' }]
             })
         );
 

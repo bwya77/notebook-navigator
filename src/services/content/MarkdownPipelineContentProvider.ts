@@ -19,10 +19,10 @@
 import type { CachedMetadata, FrontMatterCache, TFile } from 'obsidian';
 import { type ContentProviderType } from '../../interfaces/IContentProvider';
 import { NotebookNavigatorSettings } from '../../settings';
-import { FileData } from '../../storage/IndexedDBStorage';
+import { type CustomPropertyItem, FileData } from '../../storage/IndexedDBStorage';
 import { getDBInstance } from '../../storage/fileOperations';
 import { getCachedCommaSeparatedList } from '../../utils/commaSeparatedListUtils';
-import { isCustomPropertyEnabled } from '../../utils/customPropertyUtils';
+import { areCustomPropertyItemsEqual, isCustomPropertyEnabled } from '../../utils/customPropertyUtils';
 import { PreviewTextUtils } from '../../utils/previewTextUtils';
 import { countWordsForCustomProperty } from '../../utils/wordCountUtils';
 import type { ContentProviderProcessResult } from './BaseContentProvider';
@@ -39,14 +39,15 @@ type MarkdownPipelineContext = {
     isExcalidraw: boolean;
     fileModified: boolean;
     customPropertyEnabled: boolean;
-    customPropertyFrontmatterFields: readonly string[];
+    customPropertyNameFields: readonly string[];
+    customPropertyColorFields: readonly string[];
     hasContent: boolean;
     featureImageReference: FeatureImageReference | null;
 };
 
 type MarkdownPipelineUpdate = {
     preview?: string;
-    customProperty?: string | null;
+    customProperty?: FileData['customProperty'];
     featureImageKey?: string | null;
     featureImage?: Blob | null;
 };
@@ -78,51 +79,72 @@ function resolveMarkdownBodyStartIndex(metadata: CachedMetadata, content: string
     return index;
 }
 
-function formatFrontmatterValue(value: unknown): string | null {
+// Converts frontmatter values into a list of pill strings.
+// Supports scalars and nested arrays; skips empty strings and non-finite numbers.
+function extractFrontmatterValues(value: unknown): string[] {
     if (typeof value === 'string') {
         const trimmed = value.trim();
-        return trimmed.length > 0 ? trimmed : null;
+        return trimmed.length > 0 ? [trimmed] : [];
     }
 
     if (typeof value === 'number') {
         if (!Number.isFinite(value)) {
-            return null;
+            return [];
         }
-        return value.toString();
+        return [value.toString()];
     }
 
     if (typeof value === 'boolean') {
-        return value ? 'true' : 'false';
+        return [value ? 'true' : 'false'];
     }
 
     if (Array.isArray(value)) {
         const parts: string[] = [];
         for (const entry of value) {
-            const formatted = formatFrontmatterValue(entry);
-            if (formatted) {
-                parts.push(formatted);
-            }
+            parts.push(...extractFrontmatterValues(entry));
         }
-        const joined = parts.join(', ');
-        return joined.length > 0 ? joined : null;
+        return parts;
     }
 
-    return null;
+    return [];
 }
 
-function resolveCustomPropertyFromFrontmatter(frontmatter: FrontMatterCache | null, fields: readonly string[]): string {
+// Builds the custom property pill list from frontmatter.
+// - `nameFields` produce the pill values (all matching fields are included)
+// - `colorFields` pair by field index, and list values pair by item index
+function resolveCustomPropertyItemsFromFrontmatter(
+    frontmatter: FrontMatterCache | null,
+    nameFields: readonly string[],
+    colorFields: readonly string[]
+): CustomPropertyItem[] {
     if (!frontmatter) {
-        return '';
+        return [];
     }
 
-    for (const field of fields) {
-        const formatted = formatFrontmatterValue(frontmatter[field]);
-        if (formatted) {
-            return formatted;
+    const entries: CustomPropertyItem[] = [];
+
+    for (let fieldIndex = 0; fieldIndex < nameFields.length; fieldIndex += 1) {
+        const field = nameFields[fieldIndex];
+        const values = extractFrontmatterValues(frontmatter[field]);
+        if (values.length === 0) {
+            continue;
+        }
+
+        const colorField = colorFields.length === 1 ? colorFields[0] : colorFields[fieldIndex];
+        const colors = colorField ? extractFrontmatterValues(frontmatter[colorField]) : [];
+
+        for (let valueIndex = 0; valueIndex < values.length; valueIndex += 1) {
+            const value = values[valueIndex];
+            const color = colors.length === 1 ? colors[0] : colors[valueIndex];
+            if (color) {
+                entries.push({ value, color });
+            } else {
+                entries.push({ value });
+            }
         }
     }
 
-    return '';
+    return entries;
 }
 
 export class MarkdownPipelineContentProvider extends FeatureImageContentProvider {
@@ -193,7 +215,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             'featureImageProperties',
             'downloadExternalFeatureImages',
             'customPropertyType',
-            'customPropertyFrontmatterFields'
+            'customPropertyFields',
+            'customPropertyColorFields'
         ];
     }
 
@@ -218,7 +241,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
         const shouldClearCustomProperty =
             oldSettings.customPropertyType !== newSettings.customPropertyType ||
             (newSettings.customPropertyType === 'frontmatter' &&
-                oldSettings.customPropertyFrontmatterFields !== newSettings.customPropertyFrontmatterFields);
+                (oldSettings.customPropertyFields !== newSettings.customPropertyFields ||
+                    oldSettings.customPropertyColorFields !== newSettings.customPropertyColorFields));
 
         const shouldClearFeatureImage =
             (oldSettings.showFeatureImage && !newSettings.showFeatureImage) ||
@@ -292,8 +316,10 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             return { update: null, processed: true };
         }
 
-        const customPropertyFrontmatterFields =
-            settings.customPropertyType === 'frontmatter' ? getCachedCommaSeparatedList(settings.customPropertyFrontmatterFields) : [];
+        const customPropertyNameFields =
+            settings.customPropertyType === 'frontmatter' ? getCachedCommaSeparatedList(settings.customPropertyFields) : [];
+        const customPropertyColorFields =
+            settings.customPropertyType === 'frontmatter' ? getCachedCommaSeparatedList(settings.customPropertyColorFields) : [];
         const customPropertyEnabled = isCustomPropertyEnabled(settings);
         const hasPipelineWork = settings.showFilePreview || settings.showFeatureImage || customPropertyEnabled;
         if (!hasPipelineWork) {
@@ -341,7 +367,7 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             preview?: string;
             featureImage?: Blob | null;
             featureImageKey?: string | null;
-            customProperty?: string | null;
+            customProperty?: FileData['customProperty'];
         } = { path: job.file.path };
 
         let content: string;
@@ -360,8 +386,12 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             let hasSafeUpdate = false;
 
             if (customPropertyEnabled && settings.customPropertyType === 'frontmatter') {
-                const nextValue = resolveCustomPropertyFromFrontmatter(frontmatter, customPropertyFrontmatterFields);
-                if (!fileData || fileData.customProperty !== nextValue) {
+                const nextValue = resolveCustomPropertyItemsFromFrontmatter(
+                    frontmatter,
+                    customPropertyNameFields,
+                    customPropertyColorFields
+                );
+                if (!fileData || fileData.customProperty === null || !areCustomPropertyItemsEqual(fileData.customProperty, nextValue)) {
                     update.customProperty = nextValue;
                     hasSafeUpdate = true;
                 }
@@ -403,7 +433,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             isExcalidraw,
             fileModified,
             customPropertyEnabled,
-            customPropertyFrontmatterFields,
+            customPropertyNameFields,
+            customPropertyColorFields,
             hasContent,
             featureImageReference: frontmatterFeatureImageReference
         };
@@ -476,14 +507,25 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
 
     private async processCustomProperty(context: MarkdownPipelineContext): Promise<MarkdownPipelineUpdate | null> {
         try {
-            let nextValue = '';
+            let nextValue: CustomPropertyItem[] = [];
             if (context.settings.customPropertyType === 'wordCount') {
-                nextValue = context.isExcalidraw ? '' : countWordsForCustomProperty(context.content, context.bodyStartIndex).toString();
+                if (!context.isExcalidraw) {
+                    const count = countWordsForCustomProperty(context.content, context.bodyStartIndex).toString();
+                    nextValue = [{ value: count }];
+                }
             } else if (context.settings.customPropertyType === 'frontmatter') {
-                nextValue = resolveCustomPropertyFromFrontmatter(context.frontmatter, context.customPropertyFrontmatterFields);
+                nextValue = resolveCustomPropertyItemsFromFrontmatter(
+                    context.frontmatter,
+                    context.customPropertyNameFields,
+                    context.customPropertyColorFields
+                );
             }
 
-            if (!context.fileData || context.fileData.customProperty !== nextValue) {
+            if (
+                !context.fileData ||
+                context.fileData.customProperty === null ||
+                !areCustomPropertyItemsEqual(context.fileData.customProperty, nextValue)
+            ) {
                 return { customProperty: nextValue };
             }
 
@@ -491,7 +533,7 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
         } catch (error) {
             console.error(`Error generating custom property for ${context.file.path}:`, error);
             if (!context.fileData || context.fileData.customProperty === null) {
-                return { customProperty: '' };
+                return { customProperty: [] };
             }
             return null;
         }

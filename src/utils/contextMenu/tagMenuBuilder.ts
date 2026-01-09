@@ -148,9 +148,11 @@ export function buildTagMenu(params: TagMenuBuilderParams): void {
         });
     });
 
+    // These include inherited values; direct settings entries are used to decide which "remove" actions to show.
     const tagIcon = metadataService.getTagIcon(tagPath);
-    const tagColor = metadataService.getTagColor(tagPath);
-    const tagBackgroundColor = metadataService.getTagBackgroundColor(tagPath);
+    const tagColorData = metadataService.getTagColorData(tagPath);
+    const tagColor = tagColorData.color;
+    const tagBackgroundColor = tagColorData.background;
     const normalizedTagPath = normalizeTagPath(tagPath);
     const directTagColor = normalizedTagPath ? settings.tagColors?.[normalizedTagPath] : undefined;
     const directTagBackground = normalizedTagPath ? settings.tagBackgroundColors?.[normalizedTagPath] : undefined;

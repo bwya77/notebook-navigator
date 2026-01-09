@@ -989,10 +989,15 @@ export const STRINGS_PL = {
                     none: 'Brak'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Właściwości frontmatter',
-                desc: 'Lista właściwości frontmatter oddzielonych przecinkami. Używana jest pierwsza właściwość z wartością.',
+            customPropertyFields: {
+                name: 'Właściwość do wyświetlenia',
+                desc: 'Lista właściwości frontmatter oddzielonych przecinkami do wyświetlenia jako plakietki. Właściwości z wartościami listowymi wyświetlają jedną plakietkę na wartość. Wartości w formacie [[wikilink]] są wyświetlane jako klikalne linki.',
                 placeholder: 'status, typ, kategoria'
+            },
+            customPropertyColorFields: {
+                name: 'Właściwość dla koloru',
+                desc: 'Lista właściwości frontmatter oddzielonych przecinkami dla kolorów plakietek. Właściwości kolorów są łączone z właściwościami wyświetlania według pozycji. Właściwości z wartościami listowymi łączą kolory według indeksu. Wartości mogą być nazwami tagów lub kolorami CSS.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Pokaż właściwość niestandardową w trybie kompaktowym',

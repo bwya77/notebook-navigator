@@ -985,10 +985,15 @@ export const STRINGS_ZH_CN = {
                     none: '无'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: '前置元数据属性',
-                desc: '逗号分隔的前置元数据属性列表。使用第一个有值的属性。',
+            customPropertyFields: {
+                name: '要显示的属性',
+                desc: '以逗号分隔的前置元数据属性列表，用于显示为标签。列表值属性每个值显示一个标签。[[wikilink]] 格式的值将显示为可点击链接。',
                 placeholder: '状态, 类型, 分类'
+            },
+            customPropertyColorFields: {
+                name: '颜色属性',
+                desc: '以逗号分隔的前置元数据属性列表，用于标签颜色。颜色属性按位置与显示属性配对。列表值属性按索引配对颜色。值可以是标签名称或 CSS 颜色。',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: '在精简模式中显示自定义属性',

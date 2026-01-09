@@ -676,22 +676,38 @@ export function renderNotesTab(context: SettingsTabContext): void {
         );
     });
 
-    const customPropertyFrontmatterFieldsSetting = customPropertyGroup.addSetting(setting => {
+    const customPropertyFieldsSetting = customPropertyGroup.addSetting(setting => {
         context.configureDebouncedTextSetting(
             setting,
-            strings.settings.items.customPropertyFrontmatterFields.name,
-            strings.settings.items.customPropertyFrontmatterFields.desc,
-            strings.settings.items.customPropertyFrontmatterFields.placeholder,
-            () => normalizeCommaSeparatedList(plugin.settings.customPropertyFrontmatterFields),
+            strings.settings.items.customPropertyFields.name,
+            strings.settings.items.customPropertyFields.desc,
+            strings.settings.items.customPropertyFields.placeholder,
+            () => normalizeCommaSeparatedList(plugin.settings.customPropertyFields),
             value => {
-                plugin.settings.customPropertyFrontmatterFields = normalizeCommaSeparatedList(value);
+                plugin.settings.customPropertyFields = normalizeCommaSeparatedList(value);
             }
         );
     });
-    customPropertyFrontmatterFieldsSetting.controlEl.addClass('nn-setting-wide-input');
+    customPropertyFieldsSetting.controlEl.addClass('nn-setting-wide-input');
+
+    const customPropertyColorFieldsSetting = customPropertyGroup.addSetting(setting => {
+        context.configureDebouncedTextSetting(
+            setting,
+            strings.settings.items.customPropertyColorFields.name,
+            strings.settings.items.customPropertyColorFields.desc,
+            strings.settings.items.customPropertyColorFields.placeholder,
+            () => normalizeCommaSeparatedList(plugin.settings.customPropertyColorFields),
+            value => {
+                plugin.settings.customPropertyColorFields = normalizeCommaSeparatedList(value);
+            }
+        );
+    });
+    customPropertyColorFieldsSetting.controlEl.addClass('nn-setting-wide-input');
 
     updateCustomPropertyFieldsVisibility = () => {
-        setElementVisible(customPropertyFrontmatterFieldsSetting.settingEl, plugin.settings.customPropertyType === 'frontmatter');
+        const isFrontmatter = plugin.settings.customPropertyType === 'frontmatter';
+        setElementVisible(customPropertyFieldsSetting.settingEl, isFrontmatter);
+        setElementVisible(customPropertyColorFieldsSetting.settingEl, isFrontmatter);
     };
     updateCustomPropertyFieldsVisibility();
 

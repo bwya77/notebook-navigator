@@ -25,6 +25,7 @@ import {
     TagMetadataService,
     FileMetadataService,
     NavigationSeparatorService,
+    type TagColorData,
     type FileMetadataMigrationResult
 } from './metadata';
 import { TagTreeNode } from '../types/storage';
@@ -172,6 +173,11 @@ export class MetadataService {
 
     getTagBackgroundColor(tagPath: string): string | undefined {
         return this.tagService.getTagBackgroundColor(tagPath);
+    }
+
+    getTagColorData(tagPath: string): TagColorData {
+        // Returns resolved tag color/background, including inherited values when enabled.
+        return this.tagService.getTagColorData(tagPath);
     }
 
     async setTagIcon(tagPath: string, iconId: string): Promise<void> {

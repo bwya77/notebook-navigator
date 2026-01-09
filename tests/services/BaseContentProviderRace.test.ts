@@ -35,7 +35,7 @@ class FakeDB {
             featureImage?: Blob | null;
             featureImageKey?: string | null;
             metadata?: FileData['metadata'];
-            customProperty?: string | null;
+            customProperty?: FileData['customProperty'];
         }[];
         provider?: ContentProviderType;
         processedMtimeUpdates?: { path: string; mtime: number; expectedPreviousMtime: number }[];

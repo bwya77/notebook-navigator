@@ -25,7 +25,11 @@ import { deriveFileMetadata } from '../utils/pathMetadata';
 class TestMarkdownPipelineContentProvider extends MarkdownPipelineContentProvider {
     async runWordCount(file: TFile, settings: NotebookNavigatorSettings): Promise<string | null> {
         const result = await this.processFile({ file, path: file.path.split('/') }, null, settings);
-        return result.update?.customProperty ?? null;
+        const customProperty = result.update?.customProperty ?? null;
+        if (!customProperty || customProperty.length === 0) {
+            return null;
+        }
+        return customProperty[0].value;
     }
 }
 

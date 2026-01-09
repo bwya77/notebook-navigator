@@ -987,10 +987,15 @@ export const STRINGS_ID = {
                     none: 'Tidak ada'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Properti frontmatter',
-                desc: 'Daftar properti frontmatter yang dipisahkan koma. Properti pertama yang memiliki nilai akan digunakan.',
+            customPropertyFields: {
+                name: 'Properti untuk ditampilkan',
+                desc: 'Daftar properti frontmatter yang dipisahkan koma untuk ditampilkan sebagai lencana. Properti bernilai daftar menampilkan satu lencana per nilai. Nilai [[wikilink]] ditampilkan sebagai tautan yang dapat diklik.',
                 placeholder: 'status, tipe, kategori'
+            },
+            customPropertyColorFields: {
+                name: 'Properti untuk warna',
+                desc: 'Daftar properti frontmatter yang dipisahkan koma untuk warna lencana. Properti warna dipasangkan dengan properti tampilan berdasarkan posisi. Properti bernilai daftar memasangkan warna berdasarkan indeks. Nilai dapat berupa nama tag atau warna CSS.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Tampilkan properti kustom dalam mode kompak',

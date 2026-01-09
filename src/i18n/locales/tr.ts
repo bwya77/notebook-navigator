@@ -986,10 +986,15 @@ export const STRINGS_TR = {
                     none: 'Hiçbiri'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Frontmatter özellikleri',
-                desc: 'Görüntülenecek frontmatter özelliklerinin virgülle ayrılmış listesi. Değeri olan ilk özellik kullanılır.',
+            customPropertyFields: {
+                name: 'Görüntülenecek özellik',
+                desc: 'Rozet olarak gösterilecek virgülle ayrılmış frontmatter özellikleri listesi. Liste değerli özellikler değer başına bir rozet gösterir. [[wikilink]] formatındaki değerler tıklanabilir bağlantılar olarak gösterilir.',
                 placeholder: 'durum, tür, kategori'
+            },
+            customPropertyColorFields: {
+                name: 'Renk için özellik',
+                desc: 'Rozet renkleri için virgülle ayrılmış frontmatter özellikleri listesi. Renk özellikleri görüntüleme özellikleriyle konuma göre eşleştirilir. Liste değerli özellikler renkleri dizine göre eşleştirir. Değerler etiket adları veya CSS renkleri olabilir.',
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Kompakt modda özel özelliği göster',

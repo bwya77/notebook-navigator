@@ -161,10 +161,12 @@ function decorateNavigationItems(
         }
         if (item.type === NavigationPaneItemType.TAG || item.type === NavigationPaneItemType.UNTAGGED) {
             const tagNode = item.data;
+            // Resolve both color and background in one pass (including inherited values when enabled).
+            const tagColorData = metadataService.getTagColorData(tagNode.path);
             return {
                 ...item,
-                color: metadataService.getTagColor(tagNode.path),
-                backgroundColor: metadataService.getTagBackgroundColor(tagNode.path),
+                color: tagColorData.color,
+                backgroundColor: tagColorData.background,
                 icon: metadataService.getTagIcon(tagNode.path)
             };
         }
@@ -182,13 +184,13 @@ function decorateNavigationItems(
             };
         }
         if (item.type === NavigationPaneItemType.SHORTCUT_TAG) {
-            const tagColor = metadataService.getTagColor(item.tagPath);
-            const tagBackground = metadataService.getTagBackgroundColor(item.tagPath);
+            // Resolve both color and background in one pass (including inherited values when enabled).
+            const tagColorData = metadataService.getTagColorData(item.tagPath);
             return {
                 ...item,
                 icon: metadataService.getTagIcon(item.tagPath) || 'lucide-tags',
-                color: tagColor,
-                backgroundColor: tagBackground
+                color: tagColorData.color,
+                backgroundColor: tagColorData.background
             };
         }
         if (item.type === NavigationPaneItemType.SHORTCUT_NOTE) {

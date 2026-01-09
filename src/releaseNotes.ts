@@ -79,7 +79,7 @@ const RELEASE_NOTES: ReleaseNote[] = [
         date: '2026-01-12',
         showOnUpdate: true,
         new: [
-            'New settings: ==Notes > Custom property==. Display a custom property in the list pane - either a frontmatter property or word count.',
+            'New settings: ==Notes > Custom property==. You can now show properties or word count in file list! You can show multiple properties, and you can even color each property individually using other properties!',
             'Six new style and theme settings for custom property tag pills - text, background, selected x 2, selected inactive x 2.',
             'New setting: ==Show parent folder icon==. Enable to show parent folder icons in the list pane. New default is disabled.'
         ],

@@ -989,10 +989,15 @@ export const STRINGS_NL = {
                     none: 'Geen'
                 }
             },
-            customPropertyFrontmatterFields: {
-                name: 'Frontmatter eigenschappen',
-                desc: 'Komma-gescheiden lijst van frontmatter eigenschappen om weer te geven. De eerste eigenschap met een waarde wordt gebruikt.',
+            customPropertyFields: {
+                name: 'Weer te geven eigenschap',
+                desc: "Door komma's gescheiden lijst van frontmatter-eigenschappen om als badges weer te geven. Lijstwaarde-eigenschappen tonen één badge per waarde. Waarden in [[wikilink]]-formaat worden weergegeven als aanklikbare links.",
                 placeholder: 'status, type, categorie'
+            },
+            customPropertyColorFields: {
+                name: 'Eigenschap voor kleur',
+                desc: "Door komma's gescheiden lijst van frontmatter-eigenschappen voor badge-kleuren. Kleureigenschappen worden gekoppeld aan weergave-eigenschappen op positie. Lijstwaarde-eigenschappen koppelen kleuren op index. Waarden kunnen tagnamen of CSS-kleuren zijn.",
+                placeholder: 'statusColor, typeColor, categoryColor'
             },
             showCustomPropertyInCompactMode: {
                 name: 'Toon aangepaste eigenschap in compacte modus',
