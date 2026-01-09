@@ -714,7 +714,7 @@ export const FileItem = React.memo(function FileItem({
             return customPropertyContent;
         }
 
-        const iconName = settings.customPropertyType === 'wordCount' ? 'lucide-whole-word' : 'lucide-align-left';
+        const iconName = settings.customPropertyType === 'wordCount' ? 'lucide-case-sensitive' : 'lucide-align-left';
 
         return (
             <div className="nn-file-pill-row nn-file-pill-row-custom-property">
