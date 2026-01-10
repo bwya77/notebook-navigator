@@ -19,6 +19,10 @@
     position: relative;
 }
 
+.nn-navigation-pane-content {
+    padding-bottom: calc(var(--nn-pane-bottom-toolbar-space) + var(--nn-pane-bottom-calendar-space));
+}
+
 .notebook-navigator-mobile .nn-navigation-pane-scroller {
     border-right: none;
 }

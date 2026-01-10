@@ -241,8 +241,7 @@ export const NavigationPane = React.memo(
         const uxPreferences = useUXPreferences();
         const includeDescendantNotes = uxPreferences.includeDescendantNotes;
         const showHiddenItems = uxPreferences.showHiddenItems;
-        // The calendar feature can be disabled in settings, and toggled per-device via UX preferences.
-        const showCalendar = settings.showCalendar && uxPreferences.showCalendar;
+        const showCalendar = uxPreferences.showCalendar;
         // The calendar overlay height depends on how many week rows it renders; we expose that number as a CSS var so the
         // navigation scroller can be padded and the bottom chrome can be positioned correctly (desktop + mobile/iOS).
         const [calendarWeekCount, setCalendarWeekCount] = useState<number>(() => settings.calendarWeeksToShow);
@@ -2752,82 +2751,89 @@ export const NavigationPane = React.memo(
                             </div>
                         ) : null}
                     </div>
-                    <div role={isRootReorderMode ? 'list' : 'tree'}>
-                        {isRootReorderMode ? (
-                            <NavigationRootReorderPanel
-                                sectionItems={sectionReorderItems}
-                                folderItems={folderReorderItems}
-                                tagItems={tagReorderItems}
-                                showRootFolderSection={showRootFolderSection}
-                                showRootTagSection={showRootTagSection}
-                                foldersSectionExpanded={foldersSectionExpanded}
-                                tagsSectionExpanded={tagsSectionExpanded}
-                                showRootFolderReset={settings.rootFolderOrder.length > 0}
-                                showRootTagReset={settings.rootTagOrder.length > 0}
-                                resetRootTagOrderLabel={resetRootTagOrderLabel}
-                                onResetRootFolderOrder={handleResetRootFolderOrder}
-                                onResetRootTagOrder={handleResetRootTagOrder}
-                                onReorderSections={reorderSectionOrder}
-                                onReorderFolders={reorderRootFolderOrder}
-                                onReorderTags={reorderRootTagOrder}
-                                canReorderSections={canReorderSections}
-                                canReorderFolders={canReorderRootFolders}
-                                canReorderTags={canReorderRootTags}
-                                isMobile={isMobile}
-                            />
-                        ) : (
-                            items.length > 0 && (
-                                <div
-                                    className="nn-virtual-container"
-                                    style={{
-                                        height: `${rowVirtualizer.getTotalSize()}px`
-                                    }}
-                                >
-                                    {rowVirtualizer.getVirtualItems().map(virtualItem => {
-                                        // Safe array access
-                                        const item =
-                                            virtualItem.index >= 0 && virtualItem.index < items.length ? items[virtualItem.index] : null;
-                                        if (!item) return null;
+                    <div className="nn-navigation-pane-content">
+                        <div role={isRootReorderMode ? 'list' : 'tree'}>
+                            {isRootReorderMode ? (
+                                <NavigationRootReorderPanel
+                                    sectionItems={sectionReorderItems}
+                                    folderItems={folderReorderItems}
+                                    tagItems={tagReorderItems}
+                                    showRootFolderSection={showRootFolderSection}
+                                    showRootTagSection={showRootTagSection}
+                                    foldersSectionExpanded={foldersSectionExpanded}
+                                    tagsSectionExpanded={tagsSectionExpanded}
+                                    showRootFolderReset={settings.rootFolderOrder.length > 0}
+                                    showRootTagReset={settings.rootTagOrder.length > 0}
+                                    resetRootTagOrderLabel={resetRootTagOrderLabel}
+                                    onResetRootFolderOrder={handleResetRootFolderOrder}
+                                    onResetRootTagOrder={handleResetRootTagOrder}
+                                    onReorderSections={reorderSectionOrder}
+                                    onReorderFolders={reorderRootFolderOrder}
+                                    onReorderTags={reorderRootTagOrder}
+                                    canReorderSections={canReorderSections}
+                                    canReorderFolders={canReorderRootFolders}
+                                    canReorderTags={canReorderRootTags}
+                                    isMobile={isMobile}
+                                />
+                            ) : (
+                                items.length > 0 && (
+                                    <div
+                                        className="nn-virtual-container"
+                                        style={{
+                                            height: `${rowVirtualizer.getTotalSize()}px`
+                                        }}
+                                    >
+                                        {rowVirtualizer.getVirtualItems().map(virtualItem => {
+                                            // Safe array access
+                                            const item =
+                                                virtualItem.index >= 0 && virtualItem.index < items.length
+                                                    ? items[virtualItem.index]
+                                                    : null;
+                                            if (!item) return null;
 
-                                        return (
-                                            <div
-                                                key={virtualItem.key}
-                                                data-index={virtualItem.index}
-                                                className="nn-virtual-nav-item"
-                                                style={{
-                                                    // The navigation chrome stack (header/banner/pinned) lives above the virtual list
-                                                    // inside the same scroll container. TanStack Virtual is configured with a
-                                                    // scrollMargin/scrollPaddingStart equal to the chrome height so scrollToIndex aligns
-                                                    // items below the chrome, but it also
-                                                    // means virtualItem.start includes that margin. The virtual container itself
-                                                    // is rendered below the chrome stack in normal flow, so we subtract the
-                                                    // overlay height to position items at the correct Y within the container.
-                                                    transform: `translateY(${Math.max(0, virtualItem.start - navigationOverlayHeight)}px)`
-                                                }}
-                                            >
-                                                {renderItem(item)}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )
-                        )}
+                                            return (
+                                                <div
+                                                    key={virtualItem.key}
+                                                    data-index={virtualItem.index}
+                                                    className="nn-virtual-nav-item"
+                                                    style={{
+                                                        // The navigation chrome stack (header/banner/pinned) lives above the virtual list
+                                                        // inside the same scroll container. TanStack Virtual is configured with a
+                                                        // scrollMargin/scrollPaddingStart equal to the chrome height so scrollToIndex aligns
+                                                        // items below the chrome, but it also
+                                                        // means virtualItem.start includes that margin. The virtual container itself
+                                                        // is rendered below the chrome stack in normal flow, so we subtract the
+                                                        // overlay height to position items at the correct Y within the container.
+                                                        transform: `translateY(${Math.max(0, virtualItem.start - navigationOverlayHeight)}px)`
+                                                    }}
+                                                >
+                                                    {renderItem(item)}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )
+                            )}
+                        </div>
                     </div>
+                    <div className="nn-pane-bottom-fade" aria-hidden={true} />
+                    {/* iOS - toolbar at bottom */}
+                    {isMobile && !isAndroid && (
+                        <div className="nn-pane-bottom-toolbar">
+                            <NavigationToolbar
+                                onTreeUpdateComplete={handleTreeUpdateComplete}
+                                onToggleRootFolderReorder={handleToggleRootReorder}
+                                rootReorderActive={isRootReorderMode}
+                                rootReorderDisabled={!canReorderRootItems}
+                            />
+                        </div>
+                    )}
+                    {showCalendar ? (
+                        <div className="nn-navigation-calendar-overlay">
+                            <NavigationPaneCalendar onWeekCountChange={setCalendarWeekCount} />
+                        </div>
+                    ) : null}
                 </div>
-                {/* iOS - toolbar at bottom */}
-                {isMobile && !isAndroid && (
-                    <NavigationToolbar
-                        onTreeUpdateComplete={handleTreeUpdateComplete}
-                        onToggleRootFolderReorder={handleToggleRootReorder}
-                        rootReorderActive={isRootReorderMode}
-                        rootReorderDisabled={!canReorderRootItems}
-                    />
-                )}
-                {showCalendar ? (
-                    <div className="nn-navigation-calendar-overlay">
-                        <NavigationPaneCalendar onWeekCountChange={setCalendarWeekCount} />
-                    </div>
-                ) : null}
             </div>
         );
 

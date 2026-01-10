@@ -16,6 +16,8 @@
     --nn-nav-calendar-padding: 8px;
     --nn-nav-calendar-safe-area: 0px;
     --nn-nav-calendar-height: 0px;
+    --nn-pane-bottom-toolbar-space: 0px;
+    --nn-pane-bottom-calendar-space: 0px;
 }
 
 .notebook-navigator-mobile .nn-navigation-pane {
@@ -24,36 +26,39 @@
 }
 
 .nn-navigation-pane[data-calendar='true'] {
-    position: relative;
     --nn-nav-calendar-height: calc(
         (var(--nn-nav-calendar-padding) * 2) + var(--nn-nav-calendar-safe-area) + var(--nn-nav-calendar-header-row-height) +
             var(--nn-nav-calendar-weekday-row-height) + (2 * var(--nn-nav-calendar-section-gap)) +
             (var(--nn-nav-calendar-week-count) * var(--nn-nav-calendar-week-row-height)) +
             ((var(--nn-nav-calendar-week-count) - 1) * var(--nn-nav-calendar-week-gap))
     );
+    --nn-pane-bottom-calendar-space: var(--nn-nav-calendar-height);
 }
 
-.nn-navigation-pane[data-calendar='true'] .nn-navigation-pane-scroller {
-    padding-bottom: var(--nn-nav-calendar-height);
+.nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
+    bottom: var(--nn-nav-calendar-height);
 }
 
 .nn-navigation-calendar-overlay {
-    position: absolute;
-    left: 0;
-    right: var(--nn-nav-calendar-scrollbar-gap);
+    position: sticky;
     bottom: 0;
-    z-index: 4;
-
+    z-index: 6;
     box-sizing: border-box;
     height: var(--nn-nav-calendar-height);
-    padding: var(--nn-nav-calendar-padding) var(--nn-scroller-padding)
+    padding: var(--nn-nav-calendar-padding) calc(var(--nn-scroller-padding) + var(--nn-nav-calendar-scrollbar-gap))
         calc(var(--nn-nav-calendar-padding) + var(--nn-nav-calendar-safe-area)) var(--nn-scroller-padding);
+    margin-left: calc(-1 * var(--nn-scroller-padding));
+    margin-right: calc(-1 * var(--nn-scroller-padding));
 
     background: color-mix(in srgb, var(--nn-theme-nav-bg) calc(var(--nn-theme-pane-overlay-opacity, 85) * 1%), transparent);
     -webkit-backdrop-filter: var(--nn-theme-pane-overlay-filter);
     backdrop-filter: var(--nn-theme-pane-overlay-filter);
 
     border-top: 1px solid var(--nn-theme-divider-border-color);
+}
+
+.notebook-navigator-mobile .nn-navigation-calendar-overlay {
+    border-top: none;
 }
 
 .nn-navigation-calendar {

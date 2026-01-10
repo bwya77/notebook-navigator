@@ -88,7 +88,6 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
     recentNotesCount: 5,
 
     // Navigation pane tab - Calendar
-    showCalendar: true,
     calendarLocale: 'system-default',
     calendarWeeksToShow: 5,
     calendarShowWeekNumber: false,

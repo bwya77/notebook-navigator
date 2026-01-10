@@ -152,7 +152,6 @@ export interface NotebookNavigatorSettings {
     recentNotesCount: number;
 
     // Navigation pane tab - Calendar
-    showCalendar: boolean;
     calendarLocale: string;
     calendarWeeksToShow: CalendarWeeksToShow;
     calendarShowWeekNumber: boolean;

@@ -166,20 +166,18 @@ export function renderNavigationPaneTab(context: SettingsTabContext): void {
                 })
         );
 
-    const calendarGroup = createGroup(strings.settings.items.showCalendar.name);
+    const calendarGroup = createGroup(strings.navigationCalendar.ariaLabel);
 
-    const showCalendarSetting = calendarGroup.addSetting(setting => {
-        setting.setName(strings.settings.items.showCalendar.name).setDesc(strings.settings.items.showCalendar.desc);
+    calendarGroup.addSetting(setting => {
+        setting
+            .setName(strings.settings.items.showCalendar.name)
+            .setDesc(strings.settings.items.showCalendar.desc)
+            .addToggle(toggle =>
+                toggle.setValue(plugin.getUXPreferences().showCalendar).onChange(value => {
+                    plugin.setShowCalendar(value);
+                })
+            );
     });
-
-    const calendarSubSettings = wireToggleSettingWithSubSettings(
-        showCalendarSetting,
-        () => plugin.settings.showCalendar,
-        async value => {
-            plugin.settings.showCalendar = value;
-            await plugin.saveSettingsAndUpdate();
-        }
-    );
 
     const momentApi = getMomentApi();
     // Offer moment locales as options; the selected locale is used for week rules (start-of-week + week numbering).
@@ -189,9 +187,10 @@ export function renderNavigationPaneTab(context: SettingsTabContext): void {
     const systemLocale = typeof navigator !== 'undefined' ? (navigator.language ?? '').toLowerCase() : '';
     const currentLocale = momentApi?.locale() || systemLocale;
 
-    new Setting(calendarSubSettings)
-        .setName(strings.settings.items.calendarLocale.name)
-        .setDesc(strings.settings.items.calendarLocale.desc)
+    calendarGroup
+        .addSetting(setting => {
+            setting.setName(strings.settings.items.calendarLocale.name).setDesc(strings.settings.items.calendarLocale.desc);
+        })
         .addDropdown((dropdown: DropdownComponent) => {
             dropdown.addOption(
                 CALENDAR_LOCALE_SYSTEM_DEFAULT,
@@ -207,16 +206,16 @@ export function renderNavigationPaneTab(context: SettingsTabContext): void {
             });
         });
 
-    new Setting(calendarSubSettings)
-        .setName(strings.settings.items.calendarWeeksToShow.name)
-        .setDesc(strings.settings.items.calendarWeeksToShow.desc)
+    calendarGroup
+        .addSetting(setting => {
+            setting.setName(strings.settings.items.calendarWeeksToShow.name).setDesc(strings.settings.items.calendarWeeksToShow.desc);
+        })
         .addDropdown((dropdown: DropdownComponent) => {
-            dropdown.addOption('6', strings.settings.items.calendarWeeksToShow.options.fullMonth);
-            for (let count = 5; count >= 2; count--) {
+            dropdown.addOption('1', strings.settings.items.calendarWeeksToShow.options.oneWeek);
+            for (let count = 2; count <= 5; count++) {
                 dropdown.addOption(String(count), formatCalendarWeeksOption(count));
             }
-
-            dropdown.addOption('1', strings.settings.items.calendarWeeksToShow.options.oneWeek);
+            dropdown.addOption('6', strings.settings.items.calendarWeeksToShow.options.fullMonth);
 
             dropdown.setValue(String(plugin.settings.calendarWeeksToShow)).onChange(async value => {
                 const parsed = parseCalendarWeeksToShow(value);
@@ -229,9 +228,10 @@ export function renderNavigationPaneTab(context: SettingsTabContext): void {
             });
         });
 
-    new Setting(calendarSubSettings)
-        .setName(strings.settings.items.calendarShowWeekNumber.name)
-        .setDesc(strings.settings.items.calendarShowWeekNumber.desc)
+    calendarGroup
+        .addSetting(setting => {
+            setting.setName(strings.settings.items.calendarShowWeekNumber.name).setDesc(strings.settings.items.calendarShowWeekNumber.desc);
+        })
         .addToggle(toggle =>
             toggle.setValue(plugin.settings.calendarShowWeekNumber).onChange(async value => {
                 plugin.settings.calendarShowWeekNumber = value;
@@ -239,9 +239,12 @@ export function renderNavigationPaneTab(context: SettingsTabContext): void {
             })
         );
 
-    new Setting(calendarSubSettings)
-        .setName(strings.settings.items.calendarConfirmBeforeCreate.name)
-        .setDesc(strings.settings.items.calendarConfirmBeforeCreate.desc)
+    calendarGroup
+        .addSetting(setting => {
+            setting
+                .setName(strings.settings.items.calendarConfirmBeforeCreate.name)
+                .setDesc(strings.settings.items.calendarConfirmBeforeCreate.desc);
+        })
         .addToggle(toggle =>
             toggle.setValue(plugin.settings.calendarConfirmBeforeCreate).onChange(async value => {
                 plugin.settings.calendarConfirmBeforeCreate = value;

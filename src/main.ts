@@ -89,7 +89,7 @@ const DEFAULT_UX_PREFERENCES: UXPreferences = {
     includeDescendantNotes: true,
     showHiddenItems: false,
     pinShortcuts: true,
-    // Per-device toggle for the navigation calendar overlay (does not affect the persisted feature enablement).
+    // Per-device toggle for the navigation calendar overlay.
     showCalendar: true
 };
 
@@ -1245,7 +1245,7 @@ export default class NotebookNavigatorPlugin extends Plugin implements ISettings
     }
 
     public setShowCalendar(value: boolean): void {
-        // Stored in UX preferences (localStorage) so users can quickly hide/show without changing settings.
+        // Stored in UX preferences (localStorage).
         this.updateUXPreference('showCalendar', value);
     }
 

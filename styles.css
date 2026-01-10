@@ -1548,6 +1548,10 @@ body {
     position: relative;
 }
 
+.nn-navigation-pane-content {
+    padding-bottom: calc(var(--nn-pane-bottom-toolbar-space) + var(--nn-pane-bottom-calendar-space));
+}
+
 .notebook-navigator-mobile .nn-navigation-pane-scroller {
     border-right: none;
 }
@@ -2360,6 +2364,8 @@ body {
     --nn-nav-calendar-padding: 8px;
     --nn-nav-calendar-safe-area: 0px;
     --nn-nav-calendar-height: 0px;
+    --nn-pane-bottom-toolbar-space: 0px;
+    --nn-pane-bottom-calendar-space: 0px;
 }
 
 .notebook-navigator-mobile .nn-navigation-pane {
@@ -2368,36 +2374,39 @@ body {
 }
 
 .nn-navigation-pane[data-calendar='true'] {
-    position: relative;
     --nn-nav-calendar-height: calc(
         (var(--nn-nav-calendar-padding) * 2) + var(--nn-nav-calendar-safe-area) + var(--nn-nav-calendar-header-row-height) +
             var(--nn-nav-calendar-weekday-row-height) + (2 * var(--nn-nav-calendar-section-gap)) +
             (var(--nn-nav-calendar-week-count) * var(--nn-nav-calendar-week-row-height)) +
             ((var(--nn-nav-calendar-week-count) - 1) * var(--nn-nav-calendar-week-gap))
     );
+    --nn-pane-bottom-calendar-space: var(--nn-nav-calendar-height);
 }
 
-.nn-navigation-pane[data-calendar='true'] .nn-navigation-pane-scroller {
-    padding-bottom: var(--nn-nav-calendar-height);
+.nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
+    bottom: var(--nn-nav-calendar-height);
 }
 
 .nn-navigation-calendar-overlay {
-    position: absolute;
-    left: 0;
-    right: var(--nn-nav-calendar-scrollbar-gap);
+    position: sticky;
     bottom: 0;
-    z-index: 4;
-
+    z-index: 6;
     box-sizing: border-box;
     height: var(--nn-nav-calendar-height);
-    padding: var(--nn-nav-calendar-padding) var(--nn-scroller-padding)
+    padding: var(--nn-nav-calendar-padding) calc(var(--nn-scroller-padding) + var(--nn-nav-calendar-scrollbar-gap))
         calc(var(--nn-nav-calendar-padding) + var(--nn-nav-calendar-safe-area)) var(--nn-scroller-padding);
+    margin-left: calc(-1 * var(--nn-scroller-padding));
+    margin-right: calc(-1 * var(--nn-scroller-padding));
 
     background: color-mix(in srgb, var(--nn-theme-nav-bg) calc(var(--nn-theme-pane-overlay-opacity, 85) * 1%), transparent);
     -webkit-backdrop-filter: var(--nn-theme-pane-overlay-filter);
     backdrop-filter: var(--nn-theme-pane-overlay-filter);
 
     border-top: 1px solid var(--nn-theme-divider-border-color);
+}
+
+.notebook-navigator-mobile .nn-navigation-calendar-overlay {
+    border-top: none;
 }
 
 .nn-navigation-calendar {
@@ -2610,6 +2619,10 @@ body {
    File List Styles
    ======================================================================== */
 
+.nn-list-pane {
+    --nn-pane-bottom-toolbar-space: 0px;
+}
+
 /* File list container - scrollable area for files */
 .nn-list-pane-scroller {
     flex: 1;
@@ -2617,6 +2630,10 @@ body {
     padding: 0 var(--nn-scroller-padding);
     background-color: var(--nn-theme-list-bg); /* Opaque background for GPU scroll layer optimization */
     position: relative;
+}
+
+.nn-list-pane-content {
+    padding-bottom: var(--nn-pane-bottom-toolbar-space);
 }
 
 .nn-list-title-area {
@@ -5692,6 +5709,19 @@ body.nn-resizing {
     justify-content: space-evenly;
 }
 
+.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-navigation-pane,
+.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-list-pane {
+    --nn-pane-bottom-toolbar-space: calc(49px + var(--nn-mobile-safe-area-bottom));
+}
+
+.nn-pane-bottom-toolbar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin-left: calc(-1 * var(--nn-scroller-padding));
+    margin-right: calc(-1 * var(--nn-scroller-padding));
+}
+
 .notebook-navigator-mobile .nn-mobile-toolbar-left,
 .notebook-navigator-mobile .nn-mobile-toolbar-right,
 .notebook-navigator-mobile .nn-mobile-toolbar-pill,
@@ -5797,6 +5827,20 @@ body.nn-resizing {
     --nn-mobile-safe-area-bottom: 0px;
 }
 
+.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-navigation-pane[data-calendar='true'] {
+    /* The calendar overlay accounts for the safe area; keep the bottom toolbar at the fixed 49px height above it. */
+    --nn-pane-bottom-toolbar-space: 49px;
+}
+
+.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios)
+    .nn-navigation-pane[data-calendar='true']
+    .nn-pane-bottom-toolbar
+    .nn-mobile-toolbar {
+    padding-bottom: 0;
+    height: 49px;
+    min-height: 49px;
+}
+
 /* Obsidian 1.11+ iOS: view container background */
 /* Targets Obsidian's `.view-content` wrapper to ensure the area behind the navigator matches the mobile pane background. */
 .view-content.notebook-navigator.notebook-navigator-obsidian-1-11-plus-ios {
@@ -5822,6 +5866,12 @@ body.nn-resizing {
     overflow: visible;
 }
 
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane-scroller,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane-scroller {
+    display: flex;
+    flex-direction: column;
+}
+
 .notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane {
     --nn-bottom-fade-bg: var(--nn-theme-nav-bg);
 }
@@ -5830,17 +5880,24 @@ body.nn-resizing {
     --nn-bottom-fade-bg: var(--nn-theme-list-bg);
 }
 
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane::after,
-.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane::after {
+.notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-fade {
+    position: sticky;
+    bottom: 0;
+    z-index: 4;
+    height: 0;
+    pointer-events: none;
+    margin-top: auto;
+    margin-left: calc(-1 * var(--nn-scroller-padding));
+    margin-right: calc(-1 * var(--nn-scroller-padding));
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-fade::before {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
     height: calc(88px + var(--nn-mobile-safe-area-bottom, 0px));
-    pointer-events: none;
-    z-index: 4;
-    background: linear-gradient(to top, var(--nn-bottom-fade-bg) 0%, transparent 100%);
     background: linear-gradient(
         to top,
         color-mix(in srgb, var(--nn-bottom-fade-bg) 85%, transparent) 0%,
@@ -5851,7 +5908,7 @@ body.nn-resizing {
     );
 }
 
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true']::after {
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-fade {
     bottom: var(--nn-nav-calendar-height);
 }
 
@@ -5866,29 +5923,22 @@ body.nn-resizing {
     --nn-nav-calendar-safe-area: 0px;
 }
 
-.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar {
-    position: relative;
-    z-index: 5;
+.notebook-navigator-mobile.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
+.notebook-navigator-mobile.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
+    --nn-pane-bottom-toolbar-space: 64px;
 }
 
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane {
-    position: relative;
+.notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-toolbar {
+    bottom: 12px;
 }
 
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane-scroller,
-.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane-scroller {
-    padding-bottom: 64px;
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
+    bottom: calc(12px + var(--nn-nav-calendar-height));
 }
 
 /* Obsidian 1.11+ iOS glass toolbar */
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 12px;
     pointer-events: none;
-    z-index: 5;
-
     justify-content: space-between;
     background-color: transparent;
     border-top: none;
@@ -5898,34 +5948,6 @@ body.nn-resizing {
     padding-bottom: 0;
     height: 40px;
     min-height: 40px;
-}
-
-/* When the navigation calendar is visible, the scroller and toolbar need extra bottom space to avoid overlap. */
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-navigation-pane-scroller {
-    padding-bottom: calc(64px + var(--nn-nav-calendar-height));
-}
-
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-mobile-toolbar {
-    bottom: calc(12px + var(--nn-nav-calendar-height));
-}
-
-.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-navigation-pane[data-calendar='true'] .nn-mobile-toolbar {
-    /* Pre-1.11 iOS uses the standard fixed toolbar height. */
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: var(--nn-nav-calendar-height);
-    z-index: 5;
-
-    padding-bottom: 0;
-    height: 49px;
-    min-height: 49px;
-}
-
-.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios)
-    .nn-navigation-pane[data-calendar='true']
-    .nn-navigation-pane-scroller {
-    padding-bottom: calc(var(--nn-nav-calendar-height) + 49px);
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-left,

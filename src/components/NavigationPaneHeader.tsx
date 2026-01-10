@@ -49,8 +49,7 @@ export function NavigationPaneHeader({
     const uxPreferences = useUXPreferences();
     const { toggleShowCalendar } = useUXPreferenceActions();
     const showHiddenItems = uxPreferences.showHiddenItems;
-    // Calendar is only visible when enabled in settings and not hidden via UX preferences.
-    const isCalendarVisible = settings.showCalendar && uxPreferences.showCalendar;
+    const isCalendarVisible = uxPreferences.showCalendar;
     const uiState = useUIState();
     const selectionState = useSelectionState();
     const { hasProfiles, hasMultipleProfiles, activeProfileName, handleTriggerClick, handleTriggerKeyDown } = useVaultProfileMenu({
@@ -65,7 +64,7 @@ export function NavigationPaneHeader({
     const hasHiddenItems = hasHiddenItemSources(settings);
     const navigationVisibility = settings.toolbarVisibility.navigation;
     const showExpandCollapseButton = navigationVisibility.expandCollapse;
-    const showCalendarButton = navigationVisibility.calendar && settings.showCalendar;
+    const showCalendarButton = navigationVisibility.calendar;
     const showHiddenItemsButton = navigationVisibility.hiddenItems && hasHiddenItems;
     const showRootReorderButton = navigationVisibility.rootReorder;
     const showNewFolderButton = navigationVisibility.newFolder;

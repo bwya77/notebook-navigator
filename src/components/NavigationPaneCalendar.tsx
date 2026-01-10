@@ -377,7 +377,7 @@ export function NavigationPaneCalendar({ onWeekCountChange }: NavigationPaneCale
         if (!momentApi || !cursorDate) {
             return '';
         }
-        return cursorDate.clone().locale(displayLocale).format('MMM YYYY');
+        return cursorDate.clone().locale(displayLocale).format('MMMM YYYY');
     }, [cursorDate, displayLocale, momentApi]);
 
     const handleNavigateMonth = useCallback(
