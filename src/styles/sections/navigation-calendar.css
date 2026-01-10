@@ -40,13 +40,14 @@
 }
 
 .nn-navigation-calendar-overlay {
-    position: absolute;
-    left: 0;
-    right: 0;
+    position: sticky;
     bottom: 0;
     z-index: 6;
     box-sizing: border-box;
     height: var(--nn-nav-calendar-height);
+    margin-top: calc(-1 * var(--nn-nav-calendar-height));
+    margin-left: calc(-1 * var(--nn-scroller-padding));
+    margin-right: calc(-1 * var(--nn-scroller-padding));
     padding: var(--nn-nav-calendar-padding) calc(var(--nn-scroller-padding) + var(--nn-nav-calendar-scrollbar-gap))
         calc(var(--nn-nav-calendar-padding) + var(--nn-nav-calendar-safe-area)) var(--nn-scroller-padding);
 
