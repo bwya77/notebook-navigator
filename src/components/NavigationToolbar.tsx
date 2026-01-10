@@ -18,7 +18,7 @@
 
 import { useSelectionState } from '../context/SelectionContext';
 import { useSettingsState } from '../context/SettingsContext';
-import { useUXPreferences } from '../context/UXPreferencesContext';
+import { useUXPreferenceActions, useUXPreferences } from '../context/UXPreferencesContext';
 import { strings } from '../i18n';
 import { ServiceIcon } from './ServiceIcon';
 import { useNavigationActions } from '../hooks/useNavigationActions';
@@ -41,7 +41,9 @@ export function NavigationToolbar({
 }: NavigationToolbarProps) {
     const settings = useSettingsState();
     const uxPreferences = useUXPreferences();
+    const { toggleShowCalendar } = useUXPreferenceActions();
     const showHiddenItems = uxPreferences.showHiddenItems;
+    const isCalendarVisible = uxPreferences.showCalendar;
     const selectionState = useSelectionState();
     const navigationVisibility = settings.toolbarVisibility.navigation;
 
@@ -51,11 +53,14 @@ export function NavigationToolbar({
     const hasHiddenItems = hasHiddenItemSources(settings);
 
     const showExpandCollapseButton = navigationVisibility.expandCollapse;
+    const showCalendarButton = navigationVisibility.calendar;
     const showHiddenItemsButton = navigationVisibility.hiddenItems && hasHiddenItems;
     const showRootReorderButton = navigationVisibility.rootReorder;
     const showNewFolderButton = navigationVisibility.newFolder;
 
-    const leftButtonCount = [showExpandCollapseButton, showHiddenItemsButton, showRootReorderButton].filter(Boolean).length;
+    const leftButtonCount = [showExpandCollapseButton, showCalendarButton, showHiddenItemsButton, showRootReorderButton].filter(
+        Boolean
+    ).length;
     const totalButtonCount = leftButtonCount + (showNewFolderButton ? 1 : 0);
     const leftGroupClassName = leftButtonCount === 1 ? 'nn-mobile-toolbar-circle' : 'nn-mobile-toolbar-pill';
     const leftButtonBaseClassName =
@@ -92,6 +97,16 @@ export function NavigationToolbar({
                                         shouldCollapseItems() ? 'nav-collapse-all' : 'nav-expand-all'
                                     )}
                                 />
+                            </button>
+                        ) : null}
+                        {showCalendarButton ? (
+                            <button
+                                className={`${leftButtonBaseClassName}${isCalendarVisible ? ' nn-mobile-toolbar-button-active' : ''}`}
+                                aria-label={isCalendarVisible ? strings.paneHeader.hideCalendar : strings.paneHeader.showCalendar}
+                                onClick={toggleShowCalendar}
+                                tabIndex={-1}
+                            >
+                                <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'nav-calendar')} />
                             </button>
                         ) : null}
                         {showHiddenItemsButton ? (

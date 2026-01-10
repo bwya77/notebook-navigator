@@ -72,6 +72,23 @@ export const STRINGS_FA = {
         profileMenuAria: 'تغییر پروفایل خزانه'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'تقویم',
+        previousMonthAria: 'ماه قبل',
+        nextMonthAria: 'ماه بعد',
+        dailyNotesNotEnabled: 'افزونه یادداشت روزانه فعال نیست.',
+        createDailyNote: {
+            title: 'یادداشت روزانه جدید',
+            message: 'فایل {filename} وجود ندارد. آیا می‌خواهید آن را ایجاد کنید؟',
+            confirmButton: 'ایجاد'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'خواندن قالب یادداشت روزانه ناموفق بود.',
+        createFailed: 'ایجاد یادداشت روزانه ممکن نیست.'
+    },
+
     shortcuts: {
         folderExists: 'پوشه در میانبرها وجود دارد',
         noteExists: 'یادداشت در میانبرها وجود دارد',
@@ -93,6 +110,8 @@ export const STRINGS_FA = {
     paneHeader: {
         collapseAllFolders: 'جمع کردن آیتم‌ها',
         expandAllFolders: 'باز کردن همه آیتم‌ها',
+        showCalendar: 'نمایش تقویم',
+        hideCalendar: 'پنهان کردن تقویم',
         newFolder: 'پوشه جدید',
         newNote: 'یادداشت جدید',
         mobileBackToNavigation: 'بازگشت به ناوبری',
@@ -252,6 +271,7 @@ export const STRINGS_FA = {
                 'nav-recent-files': 'فایل‌های اخیر',
                 'nav-expand-all': 'باز کردن همه',
                 'nav-collapse-all': 'بستن همه',
+                'nav-calendar': 'تقویم',
                 'nav-tree-expand': 'فلش درختی: باز کردن',
                 'nav-tree-collapse': 'فلش درختی: بستن',
                 'nav-hidden-items': 'آیتم‌های مخفی',
@@ -857,6 +877,34 @@ export const STRINGS_FA = {
             pinRecentNotesWithShortcuts: {
                 name: 'سنجاق کردن یادداشت‌های اخیر با میانبرها',
                 desc: 'هنگام سنجاق کردن میانبرها، یادداشت‌های اخیر را نیز شامل شود.'
+            },
+            showCalendar: {
+                name: 'نمایش تقویم',
+                desc: 'نمایش تقویم در پایین پنل ناوبری.'
+            },
+            calendarLocale: {
+                name: 'زبان',
+                desc: 'شماره‌گذاری هفته و اولین روز هفته را کنترل می‌کند.',
+                options: {
+                    systemDefault: 'پیش‌فرض'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'هفته‌های نمایش داده شده',
+                desc: 'تعداد هفته‌های تقویم برای نمایش.',
+                options: {
+                    fullMonth: 'ماه کامل',
+                    oneWeek: '۱ هفته',
+                    weeksCount: '{count} هفته'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'نمایش شماره هفته',
+                desc: 'افزودن ستون شماره هفته.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'تأیید قبل از ایجاد',
+                desc: 'نمایش پنجره تأیید هنگام ایجاد یادداشت روزانه جدید.'
             },
             showTooltips: {
                 name: 'نمایش راهنماها',

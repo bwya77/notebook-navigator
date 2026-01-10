@@ -20,12 +20,27 @@ import { ButtonComponent, DropdownComponent, Setting, SliderComponent } from 'ob
 import { strings } from '../../i18n';
 import { NavigationBannerModal } from '../../modals/NavigationBannerModal';
 import { DEFAULT_SETTINGS } from '../defaultSettings';
-import type { ItemScope, ShortcutBadgeDisplayMode } from '../types';
+import type { CalendarWeeksToShow, ItemScope, ShortcutBadgeDisplayMode } from '../types';
 import type { SettingsTabContext } from './SettingsTabContext';
 import { runAsyncAction } from '../../utils/async';
 import { getActiveVaultProfile } from '../../utils/vaultProfiles';
 import { createSettingGroupFactory } from '../settingGroups';
 import { createSubSettingsContainer, wireToggleSettingWithSubSettings } from '../subSettings';
+import { getMomentApi } from '../../utils/moment';
+
+const CALENDAR_LOCALE_SYSTEM_DEFAULT = 'system-default';
+
+function parseCalendarWeeksToShow(value: string): CalendarWeeksToShow | null {
+    const parsed = Number.parseInt(value, 10);
+    if (!Number.isFinite(parsed) || parsed < 1 || parsed > 6) {
+        return null;
+    }
+    return parsed as CalendarWeeksToShow;
+}
+
+function formatCalendarWeeksOption(count: number): string {
+    return strings.settings.items.calendarWeeksToShow.options.weeksCount.replace('{count}', count.toString());
+}
 
 /** Renders the navigation pane settings tab */
 export function renderNavigationPaneTab(context: SettingsTabContext): void {
@@ -149,6 +164,92 @@ export function renderNavigationPaneTab(context: SettingsTabContext): void {
                     plugin.applyRecentNotesLimit();
                     await plugin.saveSettingsAndUpdate();
                 })
+        );
+
+    const calendarGroup = createGroup(strings.navigationCalendar.ariaLabel);
+
+    calendarGroup.addSetting(setting => {
+        setting
+            .setName(strings.settings.items.showCalendar.name)
+            .setDesc(strings.settings.items.showCalendar.desc)
+            .addToggle(toggle =>
+                toggle.setValue(plugin.getUXPreferences().showCalendar).onChange(value => {
+                    plugin.setShowCalendar(value);
+                })
+            );
+    });
+
+    const momentApi = getMomentApi();
+    // Offer moment locales as options; the selected locale is used for week rules (start-of-week + week numbering).
+    const localeOptions = momentApi ? [...momentApi.locales()].sort((a, b) => a.localeCompare(b)) : [];
+
+    // This is only used to show a hint in the UI for "system default".
+    const systemLocale = typeof navigator !== 'undefined' ? (navigator.language ?? '').toLowerCase() : '';
+    const currentLocale = momentApi?.locale() || systemLocale;
+
+    calendarGroup
+        .addSetting(setting => {
+            setting.setName(strings.settings.items.calendarLocale.name).setDesc(strings.settings.items.calendarLocale.desc);
+        })
+        .addDropdown((dropdown: DropdownComponent) => {
+            dropdown.addOption(
+                CALENDAR_LOCALE_SYSTEM_DEFAULT,
+                `${strings.settings.items.calendarLocale.options.systemDefault} (${currentLocale || 'en'})`
+            );
+            for (const locale of localeOptions) {
+                dropdown.addOption(locale, locale);
+            }
+
+            dropdown.setValue(plugin.settings.calendarLocale).onChange(async value => {
+                plugin.settings.calendarLocale = value;
+                await plugin.saveSettingsAndUpdate();
+            });
+        });
+
+    calendarGroup
+        .addSetting(setting => {
+            setting.setName(strings.settings.items.calendarWeeksToShow.name).setDesc(strings.settings.items.calendarWeeksToShow.desc);
+        })
+        .addDropdown((dropdown: DropdownComponent) => {
+            dropdown.addOption('1', strings.settings.items.calendarWeeksToShow.options.oneWeek);
+            for (let count = 2; count <= 5; count++) {
+                dropdown.addOption(String(count), formatCalendarWeeksOption(count));
+            }
+            dropdown.addOption('6', strings.settings.items.calendarWeeksToShow.options.fullMonth);
+
+            dropdown.setValue(String(plugin.settings.calendarWeeksToShow)).onChange(async value => {
+                const parsed = parseCalendarWeeksToShow(value);
+                if (parsed === null) {
+                    return;
+                }
+
+                plugin.settings.calendarWeeksToShow = parsed;
+                await plugin.saveSettingsAndUpdate();
+            });
+        });
+
+    calendarGroup
+        .addSetting(setting => {
+            setting.setName(strings.settings.items.calendarShowWeekNumber.name).setDesc(strings.settings.items.calendarShowWeekNumber.desc);
+        })
+        .addToggle(toggle =>
+            toggle.setValue(plugin.settings.calendarShowWeekNumber).onChange(async value => {
+                plugin.settings.calendarShowWeekNumber = value;
+                await plugin.saveSettingsAndUpdate();
+            })
+        );
+
+    calendarGroup
+        .addSetting(setting => {
+            setting
+                .setName(strings.settings.items.calendarConfirmBeforeCreate.name)
+                .setDesc(strings.settings.items.calendarConfirmBeforeCreate.desc);
+        })
+        .addToggle(toggle =>
+            toggle.setValue(plugin.settings.calendarConfirmBeforeCreate).onChange(async value => {
+                plugin.settings.calendarConfirmBeforeCreate = value;
+                await plugin.saveSettingsAndUpdate();
+            })
         );
 
     const appearanceGroup = createGroup(strings.settings.groups.navigation.appearance);

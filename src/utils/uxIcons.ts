@@ -26,6 +26,7 @@ export type UXIconId =
     | 'nav-shortcuts'
     | 'nav-expand-all'
     | 'nav-collapse-all'
+    | 'nav-calendar'
     | 'nav-hidden-items'
     | 'nav-root-reorder'
     | 'nav-new-folder'
@@ -61,6 +62,7 @@ export const UX_ICON_DEFINITIONS: UXIconDefinition[] = [
     { id: 'nav-shortcuts', category: 'navigationPane', defaultIconId: 'star' },
     { id: 'nav-expand-all', category: 'navigationPane', defaultIconId: 'chevrons-up-down' },
     { id: 'nav-collapse-all', category: 'navigationPane', defaultIconId: 'chevrons-down-up' },
+    { id: 'nav-calendar', category: 'navigationPane', defaultIconId: 'calendar-days' },
     { id: 'nav-hidden-items', category: 'navigationPane', defaultIconId: 'eye' },
     { id: 'nav-root-reorder', category: 'navigationPane', defaultIconId: 'list-tree' },
     { id: 'nav-new-folder', category: 'navigationPane', defaultIconId: 'folder-plus' },

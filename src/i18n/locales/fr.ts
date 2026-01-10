@@ -71,6 +71,23 @@ export const STRINGS_FR = {
         profileMenuAria: 'Changer le profil du coffre'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Calendrier',
+        previousMonthAria: 'Mois précédent',
+        nextMonthAria: 'Mois suivant',
+        dailyNotesNotEnabled: "Le plugin de notes quotidiennes n'est pas activé.",
+        createDailyNote: {
+            title: 'Nouvelle note quotidienne',
+            message: "Le fichier {filename} n'existe pas. Voulez-vous le créer ?",
+            confirmButton: 'Créer'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Échec de la lecture du modèle de note quotidienne.',
+        createFailed: 'Impossible de créer la note quotidienne.'
+    },
+
     shortcuts: {
         folderExists: 'Le dossier est déjà dans les raccourcis',
         noteExists: 'La note est déjà dans les raccourcis',
@@ -92,6 +109,8 @@ export const STRINGS_FR = {
     paneHeader: {
         collapseAllFolders: 'Replier les éléments', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'Déplier tous les éléments', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'Afficher le calendrier',
+        hideCalendar: 'Masquer le calendrier',
         newFolder: 'Nouveau dossier', // Tooltip for create new folder button (English: New folder)
         newNote: 'Nouvelle note', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'Retour à la navigation', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_FR = {
                 'nav-recent-files': 'Fichiers récents',
                 'nav-expand-all': 'Tout déplier',
                 'nav-collapse-all': 'Tout replier',
+                'nav-calendar': 'Calendrier',
                 'nav-tree-expand': "Chevron d'arbre : déplier",
                 'nav-tree-collapse': "Chevron d'arbre : replier",
                 'nav-hidden-items': 'Éléments cachés',
@@ -859,6 +879,34 @@ export const STRINGS_FR = {
             pinRecentNotesWithShortcuts: {
                 name: 'Épingler les notes récentes avec les raccourcis',
                 desc: "Inclure les notes récentes lors de l'épinglage des raccourcis."
+            },
+            showCalendar: {
+                name: 'Afficher le calendrier',
+                desc: 'Afficher un calendrier en bas du panneau de navigation.'
+            },
+            calendarLocale: {
+                name: 'Langue',
+                desc: 'Contrôle la numérotation des semaines et le premier jour de la semaine.',
+                options: {
+                    systemDefault: 'Par défaut'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Semaines à afficher',
+                desc: 'Nombre de semaines du calendrier à afficher.',
+                options: {
+                    fullMonth: 'Mois complet',
+                    oneWeek: '1 semaine',
+                    weeksCount: '{count} semaines'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Afficher le numéro de semaine',
+                desc: 'Ajouter une colonne avec le numéro de semaine.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Confirmer avant de créer',
+                desc: "Afficher une boîte de dialogue de confirmation lors de la création d'une nouvelle note quotidienne."
             },
             showTooltips: {
                 name: 'Afficher les infobulles',

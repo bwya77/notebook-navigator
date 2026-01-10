@@ -332,12 +332,6 @@ body {
     border: none;
 }
 
-/* Obsidian 1.11+ iOS: view container background */
-/* Targets Obsidian's `.view-content` wrapper to ensure the area behind the navigator matches the mobile pane background. */
-.view-content.notebook-navigator.notebook-navigator-obsidian-1-11-plus-ios {
-    background-color: var(--nn-theme-mobile-bg);
-}
-
 /* Main container - establishes the plugin's layout foundation */
 .notebook-navigator {
     height: 100%;
@@ -687,6 +681,7 @@ body {
     flex-direction: column;
     overflow: hidden;
     background-color: var(--nn-theme-nav-bg);
+    position: relative; /* Enables absolute positioning for overlays */
 
     /* Performance optimization for virtualized content */
     contain: layout style;
@@ -784,6 +779,74 @@ body {
 /* Pane divider resize handle active state - maintains visibility during resize */
 .nn-split-container.nn-resizing .nn-resize-handle {
     background-color: var(--nn-theme-divider-resize-handle-hover-bg);
+}
+
+/* ========================================================================
+   Single-pane Layout
+   ======================================================================== */
+
+/* Single-pane container - use grid for consistent structure while allowing sliding */
+.nn-split-container.nn-single-pane {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 100%;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+
+/* Single-pane panes - positioned in grid and animated with transforms */
+.nn-split-container.nn-single-pane .nn-navigation-pane,
+.nn-split-container.nn-single-pane .nn-list-pane {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100%;
+    grid-column: 1;
+    grid-row: 1;
+    transition: transform var(--nn-pane-transition-duration) var(--nn-pane-transition-timing);
+}
+
+.nn-split-container.nn-single-pane.nn-pane-transitioning .nn-navigation-pane,
+.nn-split-container.nn-single-pane.nn-pane-transitioning .nn-list-pane {
+    will-change: transform;
+}
+
+/* Single-pane view states - show navigation view */
+.nn-split-container.nn-single-pane.show-navigation .nn-navigation-pane {
+    transform: none;
+}
+
+.nn-split-container.nn-single-pane.show-navigation .nn-list-pane {
+    transform: translateX(100%);
+}
+
+/* Single-pane view states - show files view */
+.nn-split-container.nn-single-pane.show-files .nn-navigation-pane {
+    transform: translateX(-100%);
+}
+
+.nn-split-container.nn-single-pane.show-files .nn-list-pane {
+    transform: none;
+}
+
+/* ========================================================================
+   Mobile Layout
+   ======================================================================== */
+
+/* Make navigation pane flexible on mobile to handle resize gracefully */
+.notebook-navigator-mobile .nn-navigation-pane {
+    flex: 1;
+    background-color: var(--nn-theme-nav-bg) !important;
+}
+
+/* Hide resize handle on mobile */
+.notebook-navigator-mobile .nn-resize-handle {
+    display: none !important;
+}
+
+/* Add touch-action to prevent browser gestures interfering */
+.notebook-navigator-mobile .nn-split-container {
+    touch-action: pan-y;
 }
 /* Source: src/styles/sections/ui-headers.css */
 
@@ -927,6 +990,145 @@ body {
 
 .nn-pane-header-profile .nn-pane-header-text {
     flex: 0 1 auto;
+}
+
+/* ========================================================================
+   Mobile Headers + Breadcrumb
+   ======================================================================== */
+
+/* Mobile header - adjust for back button */
+.notebook-navigator-mobile .nn-pane-header {
+    flex-shrink: 0;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--nn-file-item-padding-horizontal);
+    background-color: var(--nn-theme-list-bg);
+}
+
+/* Simplified mobile headers */
+.notebook-navigator-mobile .nn-pane-header-simple {
+    justify-content: center;
+    text-align: center;
+}
+
+.notebook-navigator-mobile .nn-navigation-pane .nn-pane-header-simple {
+    justify-content: center;
+    text-align: center;
+}
+
+.notebook-navigator-mobile .nn-pane-header-simple .nn-pane-header-profile {
+    width: 100%;
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+}
+
+.notebook-navigator-mobile .nn-pane-header-simple .nn-pane-header-title {
+    font-size: var(--nn-mobile-header-font-size);
+    font-weight: var(--nn-theme-mobile-list-header-breadcrumb-font-weight);
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
+    width: 100%;
+    text-align: center;
+}
+
+.notebook-navigator-mobile .nn-pane-header-simple .nn-pane-header-profile .nn-pane-header-text {
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
+}
+
+/* Mobile header container */
+.notebook-navigator-mobile .nn-mobile-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Scrollable breadcrumb container */
+.notebook-navigator-mobile .nn-breadcrumb-scroll {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    margin-left: 44px; /* Start right after the arrow button */
+}
+
+/* Add right margin when no icon for centering */
+.notebook-navigator-mobile .nn-mobile-header-no-icon .nn-breadcrumb-scroll {
+    margin-right: 44px;
+}
+
+.notebook-navigator-mobile .nn-breadcrumb-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Fade overlay positioned just right of back arrow */
+.notebook-navigator-mobile .nn-breadcrumb-fade {
+    position: absolute;
+    left: 44px; /* Position just right of the back arrow */
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, var(--background-primary) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Mobile back button */
+.notebook-navigator-mobile .nn-back-button {
+    position: absolute;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+    z-index: 1;
+    opacity: 1 !important;
+}
+
+/* Increase stroke width for back button arrow and apply link color */
+.notebook-navigator-mobile .nn-back-button svg {
+    stroke: var(--nn-theme-mobile-list-header-link-color) !important;
+    width: 20px !important; /* Default size for Android */
+    height: 20px !important;
+}
+
+/* iOS/iPadOS-specific back button adjustments */
+.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-back-button {
+    padding: 4px !important; /* Reduce padding to allow larger icon (44px - 8px padding = 36px space) */
+}
+
+/* iOS/iPadOS-specific back button chevron styling (36px actual, ~32px visual due to Lucide padding) */
+.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-back-button svg {
+    width: 36px !important;
+    height: 36px !important;
+}
+
+/* Mobile header title */
+.notebook-navigator-mobile .nn-mobile-title {
+    font-weight: var(--nn-theme-mobile-list-header-breadcrumb-font-weight);
+    font-size: var(--nn-mobile-header-font-size);
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
+    white-space: nowrap;
+    padding-left: 12px; /* Standard padding for snap position */
+}
+
+/* Breadcrumb current segment - desktop uses list header color, mobile uses navitem color */
+.nn-path-current {
+    color: var(--nn-theme-list-header-breadcrumb-color);
+}
+
+/* Mobile breadcrumb current segment - use mobile-specific theme color */
+.notebook-navigator-mobile .nn-path-current {
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
+}
+
+/* Mobile breadcrumb separator - use same color as current segment */
+.notebook-navigator-mobile .nn-path-separator {
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
 }
 
 /* Search bar container */
@@ -1108,11 +1310,6 @@ body {
     justify-content: center;
 }
 
-.nn-search-clear-button:hover,
-.nn-search-star-button:hover {
-    color: var(--nn-theme-header-button-active-icon-color);
-}
-
 .nn-search-clear-button:focus-visible,
 .nn-search-star-button:focus-visible {
     outline: 2px solid var(--interactive-accent);
@@ -1156,10 +1353,6 @@ body {
     cursor: pointer;
 }
 
-.nn-path-segment:hover {
-    text-decoration: underline;
-}
-
 /* On mobile, use link color for clickable segments */
 .is-mobile .nn-path-segment {
     color: var(--nn-theme-mobile-list-header-link-color);
@@ -1170,6 +1363,18 @@ body {
 .is-mobile .nn-path-segment:active,
 .is-mobile .nn-path-segment:focus {
     text-decoration: none;
+}
+
+/* Hover effects only apply on hover-capable devices (prevents "stuck hover" on touch). */
+@media (hover: hover) and (pointer: fine) {
+    .nn-search-clear-button:hover,
+    .nn-search-star-button:hover {
+        color: var(--nn-theme-header-button-active-icon-color);
+    }
+
+    .nn-path-segment:hover {
+        text-decoration: underline;
+    }
 }
 /* Source: src/styles/sections/ui-buttons.css */
 
@@ -1265,11 +1470,6 @@ body {
     stroke-width: 2;
     fill: none;
 }
-
-/* Remove line-height from icon span to prevent vertical offset */
-.nn-icon-button > span {
-    line-height: 0;
-}
 /* Source: src/styles/sections/layout-spacers.css */
 
 /* ========================================================================
@@ -1347,6 +1547,14 @@ body {
 
     /* Ensure scroll events work properly with virtualization */
     position: relative;
+}
+
+.nn-navigation-pane-content {
+    padding-bottom: calc(var(--nn-pane-bottom-toolbar-space) + var(--nn-pane-bottom-calendar-space));
+}
+
+.notebook-navigator-mobile .nn-navigation-pane-scroller {
+    border-right: none;
 }
 
 .nn-navigation-pane-scroller[data-banner='true'] {
@@ -1595,6 +1803,11 @@ body {
     contain: layout style;
 }
 
+/* Touch-friendly tap targets on mobile */
+.notebook-navigator-mobile .nn-navitem {
+    height: var(--nn-setting-nav-item-height-mobile); /* Fixed height for virtualizer accuracy */
+}
+
 /* Nav rows that display a background overlay need positioning for the pseudo elements */
 .nn-navitem.nn-has-custom-background,
 .nn-navitem.nn-has-search-match,
@@ -1743,6 +1956,15 @@ body {
     justify-content: center;
     flex-shrink: 0;
     color: var(--nn-theme-navitem-chevron-color);
+}
+
+/* Larger touch targets for chevrons on mobile */
+.notebook-navigator-mobile .nn-navitem-chevron {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Chevron states for folders without children */
@@ -2125,11 +2347,282 @@ body {
     opacity: 0.5;
     pointer-events: none;
 }
+/* Source: src/styles/sections/navigation-calendar.css */
+
+/* ========================================================================
+   Navigation Pane Calendar (bottom overlay)
+   ======================================================================== */
+
+.nn-navigation-pane {
+    /* CSS vars are used to compute the overlay height and to coordinate scroller padding + mobile toolbar positioning. */
+    --nn-nav-calendar-week-count: 6;
+    --nn-nav-calendar-scrollbar-gap: var(--scrollbar-size, 12px);
+    --nn-nav-calendar-week-row-height: 28px;
+    --nn-nav-calendar-week-gap: 1px;
+    --nn-nav-calendar-weekday-row-height: 14px;
+    --nn-nav-calendar-header-row-height: 28px;
+    --nn-nav-calendar-section-gap: 6px;
+    --nn-nav-calendar-padding: 8px;
+    --nn-nav-calendar-safe-area: 0px;
+    --nn-nav-calendar-height: 0px;
+    --nn-pane-bottom-toolbar-space: 0px;
+    --nn-pane-bottom-calendar-space: 0px;
+}
+
+.notebook-navigator-mobile .nn-navigation-pane {
+    --nn-nav-calendar-safe-area: var(--nn-mobile-safe-area-bottom);
+    --nn-nav-calendar-scrollbar-gap: 0px;
+}
+
+.nn-navigation-pane[data-calendar='true'] {
+    --nn-nav-calendar-height: calc(
+        (var(--nn-nav-calendar-padding) * 2) + var(--nn-nav-calendar-safe-area) + var(--nn-nav-calendar-header-row-height) +
+            var(--nn-nav-calendar-weekday-row-height) + (2 * var(--nn-nav-calendar-section-gap)) +
+            (var(--nn-nav-calendar-week-count) * var(--nn-nav-calendar-week-row-height)) +
+            ((var(--nn-nav-calendar-week-count) - 1) * var(--nn-nav-calendar-week-gap))
+    );
+    --nn-pane-bottom-calendar-space: var(--nn-nav-calendar-height);
+}
+
+.nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
+    bottom: var(--nn-nav-calendar-height);
+}
+
+.nn-navigation-calendar-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 6;
+    box-sizing: border-box;
+    height: var(--nn-nav-calendar-height);
+    padding: var(--nn-nav-calendar-padding) calc(var(--nn-scroller-padding) + var(--nn-nav-calendar-scrollbar-gap))
+        calc(var(--nn-nav-calendar-padding) + var(--nn-nav-calendar-safe-area)) var(--nn-scroller-padding);
+
+    background: color-mix(in srgb, var(--nn-theme-nav-bg) calc(var(--nn-theme-pane-overlay-opacity, 85) * 1%), transparent);
+    -webkit-backdrop-filter: var(--nn-theme-pane-overlay-filter);
+    backdrop-filter: var(--nn-theme-pane-overlay-filter);
+
+    border-top: 1px solid var(--nn-theme-divider-border-color);
+}
+
+.notebook-navigator-mobile .nn-navigation-calendar-overlay {
+    border-top: none;
+}
+
+.nn-navigation-calendar {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--nn-nav-calendar-section-gap);
+    user-select: none;
+}
+
+.nn-navigation-calendar-header {
+    height: var(--nn-nav-calendar-header-row-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.nn-navigation-calendar-month {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.nn-navigation-calendar-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nn-navigation-calendar-nav-button {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none !important;
+    border-radius: 6px;
+    background: transparent !important;
+    color: var(--text-normal);
+    cursor: pointer;
+    padding: 0;
+    box-shadow: none !important;
+    line-height: 0;
+    transition:
+        background-color 120ms ease,
+        filter 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.nn-navigation-calendar-nav-button:focus-visible {
+    outline: 2px solid var(--interactive-accent);
+    outline-offset: 2px;
+}
+
+.nn-navigation-calendar-today {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none !important;
+    background: transparent !important;
+    color: var(--text-normal);
+    font: inherit;
+    font-size: 12px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition:
+        background-color 120ms ease,
+        filter 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.nn-navigation-calendar-today:focus-visible {
+    outline: 2px solid var(--interactive-accent);
+    outline-offset: 2px;
+}
+
+/* Calendar month navigation icon sizing (ServiceIcon renders an SVG). */
+.nn-navigation-calendar-nav-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.nn-navigation-calendar-weekdays {
+    height: var(--nn-nav-calendar-weekday-row-height);
+    display: grid;
+    align-items: center;
+    column-gap: 1px;
+    grid-template-columns: repeat(7, 1fr);
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1;
+}
+
+.nn-navigation-calendar-weekdays[data-weeknumbers='true'] {
+    grid-template-columns: 24px repeat(7, 1fr);
+}
+
+.nn-navigation-calendar-weekday,
+.nn-navigation-calendar-weeknumber-spacer {
+    text-align: center;
+}
+
+.nn-navigation-calendar-weeks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nn-nav-calendar-week-gap);
+}
+
+.nn-navigation-calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    column-gap: 1px;
+}
+
+.nn-navigation-calendar-weeks[data-weeknumbers='true'] .nn-navigation-calendar-week {
+    grid-template-columns: 24px repeat(7, 1fr);
+}
+
+.nn-navigation-calendar-weeknumber {
+    height: var(--nn-nav-calendar-week-row-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 10px;
+    line-height: 1;
+}
+
+.nn-navigation-calendar-day {
+    -webkit-appearance: none;
+    appearance: none;
+    height: var(--nn-nav-calendar-week-row-height);
+    border: none !important;
+    border-radius: 6px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent !important;
+    color: var(--text-normal);
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: none !important;
+    transition:
+        background-color 120ms ease,
+        filter 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.nn-navigation-calendar-day:focus-visible {
+    outline: 2px solid var(--interactive-accent);
+    outline-offset: 2px;
+}
+
+/* Hover effects only apply on hover-capable devices (prevents "stuck hover" on touch). */
+@media (hover: hover) and (pointer: fine) {
+    .nn-navigation-calendar-nav-button:hover {
+        background-color: var(--background-modifier-hover) !important;
+    }
+
+    .nn-navigation-calendar-today:hover {
+        background-color: var(--background-modifier-hover) !important;
+    }
+
+    .nn-navigation-calendar-day:hover {
+        filter: brightness(1.05);
+        box-shadow: inset 0 0 0 1px var(--background-modifier-border);
+    }
+
+    .nn-navigation-calendar-day:hover:not(.has-feature-image):not(.has-daily-note) {
+        background-color: var(--background-modifier-hover) !important;
+    }
+}
+
+.nn-navigation-calendar-day.is-outside-month:not(.has-daily-note):not(.has-feature-image) {
+    opacity: 0.6;
+}
+
+.nn-navigation-calendar-day.has-daily-note {
+    background-color: var(--text-selection) !important;
+    color: white;
+}
+
+.nn-navigation-calendar-day.has-feature-image {
+    color: white;
+}
+
+.nn-navigation-calendar-day.has-feature-image .nn-navigation-calendar-day-number {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+.nn-navigation-calendar-day-number {
+    font-size: 12px;
+    line-height: 1;
+}
 /* Source: src/styles/sections/list-files.css */
 
 /* ========================================================================
    File List Styles
    ======================================================================== */
+
+.nn-list-pane {
+    --nn-pane-bottom-toolbar-space: 0px;
+}
 
 /* File list container - scrollable area for files */
 .nn-list-pane-scroller {
@@ -2138,6 +2631,10 @@ body {
     padding: 0 var(--nn-scroller-padding);
     background-color: var(--nn-theme-list-bg); /* Opaque background for GPU scroll layer optimization */
     position: relative;
+}
+
+.nn-list-pane-content {
+    padding-bottom: var(--nn-pane-bottom-toolbar-space);
 }
 
 .nn-list-title-area {
@@ -3169,6 +3666,15 @@ body.nn-resizing {
 .nn-list-pane-scroller.nn-drag-over {
     outline: 2px solid var(--text-selection);
     outline-offset: -2px;
+}
+
+/* Disable drag and drop feedback on mobile */
+.notebook-navigator-mobile [draggable='true'] {
+    cursor: default !important;
+}
+
+.notebook-navigator-mobile .nn-drag-over {
+    background-color: transparent !important;
 }
 
 /* Special visual feedback for tag drop zones - uses pre-composited solid color */
@@ -4613,300 +5119,6 @@ body.nn-resizing {
 .nn-local-cache-stats-setting .nn-stats-text {
     text-align: center;
 }
-
-/* Platform-specific safe area definitions */
-.notebook-navigator-ios {
-    /* iOS uses env() for dynamic safe areas (notch, home indicator) */
-    --nn-mobile-safe-area-bottom: env(safe-area-inset-bottom, 8px);
-}
-
-/* Obsidian 1.11+ iOS: bottom padding inside the navigator viewport */
-/* Applied to the internal split container so the bottom edge doesn't touch the view chrome and the toolbar shadow can render into the padding (8px matches the top spacer). */
-.notebook-navigator-obsidian-1-11-plus-ios .nn-split-container {
-    padding-bottom: 8px;
-    box-sizing: border-box;
-}
-
-/* iOS (Obsidian 1.11+) bottom fade gradient - overlays list content behind the toolbar */
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
-.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
-    position: relative;
-}
-
-/* Allow the iOS glass toolbar shadow to render into the split container padding */
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
-.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
-    overflow: visible;
-}
-
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane {
-    --nn-bottom-fade-bg: var(--nn-theme-nav-bg);
-}
-
-.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
-    --nn-bottom-fade-bg: var(--nn-theme-list-bg);
-}
-
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane::after,
-.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: calc(88px + var(--nn-mobile-safe-area-bottom, 0px));
-    pointer-events: none;
-    z-index: 4;
-    background: linear-gradient(to top, var(--nn-bottom-fade-bg) 0%, transparent 100%);
-    background: linear-gradient(
-        to top,
-        color-mix(in srgb, var(--nn-bottom-fade-bg) 85%, transparent) 0%,
-        color-mix(in srgb, var(--nn-bottom-fade-bg) 55%, transparent) 38%,
-        color-mix(in srgb, var(--nn-bottom-fade-bg) 25%, transparent) 68%,
-        color-mix(in srgb, var(--nn-bottom-fade-bg) 10%, transparent) 86%,
-        transparent 100%
-    );
-}
-
-.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar {
-    position: relative;
-    z-index: 5;
-}
-
-/* Single-pane container - use grid for consistent structure while allowing sliding */
-.nn-split-container.nn-single-pane {
-    display: grid;
-    grid-template-columns: 100%;
-    grid-template-rows: 100%;
-    position: relative;
-    overflow: hidden;
-    height: 100%;
-}
-
-/* Single-pane panes - positioned in grid and animated with transforms */
-.nn-split-container.nn-single-pane .nn-navigation-pane,
-.nn-split-container.nn-single-pane .nn-list-pane {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100%;
-    grid-column: 1;
-    grid-row: 1;
-    transition: transform var(--nn-pane-transition-duration) var(--nn-pane-transition-timing);
-}
-
-.nn-split-container.nn-single-pane.nn-pane-transitioning .nn-navigation-pane,
-.nn-split-container.nn-single-pane.nn-pane-transitioning .nn-list-pane {
-    will-change: transform;
-}
-
-/* Single-pane view states - show navigation view */
-.nn-split-container.nn-single-pane.show-navigation .nn-navigation-pane {
-    transform: none;
-}
-
-.nn-split-container.nn-single-pane.show-navigation .nn-list-pane {
-    transform: translateX(100%);
-}
-
-/* Single-pane view states - show files view */
-.nn-split-container.nn-single-pane.show-files .nn-navigation-pane {
-    transform: translateX(-100%);
-}
-
-.nn-split-container.nn-single-pane.show-files .nn-list-pane {
-    transform: none;
-}
-
-/* Make navigation pane flexible on mobile to handle resize gracefully */
-.notebook-navigator-mobile .nn-navigation-pane {
-    flex: 1;
-    background-color: var(--nn-theme-nav-bg) !important;
-}
-
-/* Hide resize handle on mobile */
-.notebook-navigator-mobile .nn-resize-handle {
-    display: none !important;
-}
-
-/* Add touch-action to prevent browser gestures interfering */
-.notebook-navigator-mobile .nn-split-container {
-    touch-action: pan-y;
-}
-
-/* Mobile header - adjust for back button */
-.notebook-navigator-mobile .nn-pane-header {
-    flex-shrink: 0;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    padding: 0 var(--nn-file-item-padding-horizontal);
-    background-color: var(--nn-theme-list-bg);
-}
-
-/* Simplified mobile headers */
-.notebook-navigator-mobile .nn-pane-header-simple {
-    justify-content: center;
-    text-align: center;
-}
-
-.notebook-navigator-mobile .nn-navigation-pane .nn-pane-header-simple {
-    justify-content: center;
-    text-align: center;
-}
-
-.notebook-navigator-mobile .nn-pane-header-simple .nn-pane-header-profile {
-    width: 100%;
-    flex: 1 1 auto;
-    justify-content: center;
-    text-align: center;
-}
-
-.notebook-navigator-mobile .nn-pane-header-simple .nn-pane-header-title {
-    font-size: var(--nn-mobile-header-font-size);
-    font-weight: var(--nn-theme-mobile-list-header-breadcrumb-font-weight);
-    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
-    width: 100%;
-    text-align: center;
-}
-
-.notebook-navigator-mobile .nn-pane-header-simple .nn-pane-header-profile .nn-pane-header-text {
-    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
-}
-
-/* Mobile header container */
-.notebook-navigator-mobile .nn-mobile-header {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-
-/* Scrollable breadcrumb container */
-.notebook-navigator-mobile .nn-breadcrumb-scroll {
-    flex: 1;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    margin-left: 44px; /* Start right after the arrow button */
-}
-
-/* Add right margin when no icon for centering */
-.notebook-navigator-mobile .nn-mobile-header-no-icon .nn-breadcrumb-scroll {
-    margin-right: 44px;
-}
-
-.notebook-navigator-mobile .nn-breadcrumb-scroll::-webkit-scrollbar {
-    display: none;
-}
-
-/* Fade overlay positioned just right of back arrow */
-.notebook-navigator-mobile .nn-breadcrumb-fade {
-    position: absolute;
-    left: 44px; /* Position just right of the back arrow */
-    top: 0;
-    bottom: 0;
-    width: 24px;
-    background: linear-gradient(to right, var(--background-primary) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* Mobile back button */
-.notebook-navigator-mobile .nn-back-button {
-    position: absolute;
-    left: 0;
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 10px;
-    z-index: 1;
-    opacity: 1 !important;
-}
-
-/* Increase stroke width for back button arrow and apply link color */
-.notebook-navigator-mobile .nn-back-button svg {
-    stroke: var(--nn-theme-mobile-list-header-link-color) !important;
-    width: 20px !important; /* Default size for Android */
-    height: 20px !important;
-}
-
-/* iOS/iPadOS-specific back button adjustments */
-.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-back-button {
-    padding: 4px !important; /* Reduce padding to allow larger icon (44px - 8px padding = 36px space) */
-}
-
-/* iOS/iPadOS-specific back button chevron styling (36px actual, ~32px visual due to Lucide padding) */
-.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-back-button svg {
-    width: 36px !important;
-    height: 36px !important;
-}
-
-/* Mobile header title */
-.notebook-navigator-mobile .nn-mobile-title {
-    font-weight: var(--nn-theme-mobile-list-header-breadcrumb-font-weight);
-    font-size: var(--nn-mobile-header-font-size);
-    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
-    white-space: nowrap;
-    padding-left: 12px; /* Standard padding for snap position */
-}
-
-/* Breadcrumb current segment - desktop uses list header color, mobile uses navitem color */
-.nn-path-current {
-    color: var(--nn-theme-list-header-breadcrumb-color);
-}
-
-/* Mobile breadcrumb current segment - use mobile-specific theme color */
-.notebook-navigator-mobile .nn-path-current {
-    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
-}
-
-/* Mobile breadcrumb separator - use same color as current segment */
-.notebook-navigator-mobile .nn-path-separator {
-    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
-}
-
-/* Ensure scrollers fill available space on mobile */
-.notebook-navigator-mobile .nn-navigation-pane-scroller,
-.notebook-navigator-mobile .nn-list-pane-scroller {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Hide navigation pane border on mobile and apply navigation background */
-.notebook-navigator-mobile .nn-navigation-pane-scroller {
-    border-right: none;
-    background-color: var(--nn-theme-nav-bg); /* Opaque background on scroller for GPU scroll layer (see .nn-navigation-pane-scroller) */
-}
-
-/* Note: Bottom spacing is handled by a spacer item in the virtualized list */
-
-/* Disable drag and drop cursors on mobile */
-.notebook-navigator-mobile [draggable='true'] {
-    cursor: default !important;
-}
-
-/* Disable drag-over states on mobile */
-.notebook-navigator-mobile .nn-drag-over {
-    background-color: transparent !important;
-}
-
-/* Touch-friendly tap targets on mobile */
-.notebook-navigator-mobile .nn-navitem {
-    height: var(--nn-setting-nav-item-height-mobile); /* Fixed height instead of min-height */
-}
-
-/* Larger touch targets for chevrons on mobile */
-.notebook-navigator-mobile .nn-navitem-chevron {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 /* Source: src/styles/sections/modal-color-picker.css */
 
 /* ========================================================================
@@ -5493,15 +5705,28 @@ body.nn-resizing {
     min-height: calc(49px + var(--nn-mobile-safe-area-bottom));
 }
 
-/* Mobile toolbars: distribute buttons evenly except on Obsidian 1.11+ iOS glass toolbar */
-.notebook-navigator-mobile:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-mobile-toolbar {
+/* Mobile toolbars: distribute buttons evenly; Obsidian 1.11+ iOS overrides this via platform stylesheet. */
+.notebook-navigator-mobile .nn-mobile-toolbar {
     justify-content: space-evenly;
 }
 
-.notebook-navigator-mobile:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-mobile-toolbar-left,
-.notebook-navigator-mobile:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-mobile-toolbar-right,
-.notebook-navigator-mobile:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-mobile-toolbar-pill,
-.notebook-navigator-mobile:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-mobile-toolbar-circle {
+.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-navigation-pane,
+.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-list-pane {
+    --nn-pane-bottom-toolbar-space: calc(49px + var(--nn-mobile-safe-area-bottom));
+}
+
+.nn-pane-bottom-toolbar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin-left: calc(-1 * var(--nn-scroller-padding));
+    margin-right: calc(-1 * var(--nn-scroller-padding));
+}
+
+.notebook-navigator-mobile .nn-mobile-toolbar-left,
+.notebook-navigator-mobile .nn-mobile-toolbar-right,
+.notebook-navigator-mobile .nn-mobile-toolbar-pill,
+.notebook-navigator-mobile .nn-mobile-toolbar-circle {
     display: contents;
 }
 
@@ -5531,24 +5756,190 @@ body.nn-resizing {
     justify-content: center;
 }
 
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane {
+/* Mobile toolbar buttons */
+.nn-mobile-toolbar-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none;
+    border-radius: var(--radius-m);
+    color: var(--nn-theme-mobile-toolbar-button-icon-color);
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: none !important;
+}
+
+.nn-mobile-toolbar-button-circle {
+    border-radius: 999px;
+}
+
+/* Mobile toolbar button icons */
+.nn-mobile-toolbar-button svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 1.5;
+    stroke: var(--nn-theme-mobile-toolbar-button-icon-color);
+}
+
+/* Mobile toolbar button tap feedback */
+.nn-mobile-toolbar-button:active {
+    opacity: 0.7;
+}
+
+/* Active mobile toolbar button state - toggled on */
+.nn-mobile-toolbar-button-active {
+    color: var(--nn-theme-mobile-toolbar-button-active-icon-color) !important;
+    background-color: var(--nn-theme-mobile-toolbar-button-active-bg) !important;
+}
+
+.nn-mobile-toolbar-button-active svg {
+    stroke: var(--nn-theme-mobile-toolbar-button-active-icon-color) !important;
+    stroke-width: 2;
+}
+
+/* Disabled mobile toolbar button */
+.nn-mobile-toolbar-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+/* Source: src/styles/sections/platform-ios-obsidian-1-11.css */
+
+/* ========================================================================
+   iOS + Obsidian 1.11+ iOS Platform Overrides
+   ======================================================================== */
+
+/* Platform-specific safe area definitions */
+.notebook-navigator-ios {
+    /* iOS uses env() for dynamic safe areas (notch, home indicator) */
+    --nn-mobile-safe-area-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios {
+    /* Obsidian 1.11+ already accounts for iOS safe areas in the view chrome. */
+    --nn-mobile-safe-area-bottom: 0px;
+}
+
+.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-navigation-pane[data-calendar='true'] {
+    /* The calendar overlay accounts for the safe area; keep the bottom toolbar at the fixed 49px height above it. */
+    --nn-pane-bottom-toolbar-space: 49px;
+}
+
+.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios)
+    .nn-navigation-pane[data-calendar='true']
+    .nn-pane-bottom-toolbar
+    .nn-mobile-toolbar {
+    padding-bottom: 0;
+    height: 49px;
+    min-height: 49px;
+}
+
+/* Obsidian 1.11+ iOS: view container background */
+/* Targets Obsidian's `.view-content` wrapper to ensure the area behind the navigator matches the mobile pane background. */
+.view-content.notebook-navigator.notebook-navigator-obsidian-1-11-plus-ios {
+    background-color: var(--nn-theme-mobile-bg);
+}
+
+/* Obsidian 1.11+ iOS: bottom padding inside the navigator viewport */
+/* Applied to the internal split container so the bottom edge doesn't touch the view chrome and the toolbar shadow can render into the padding (8px matches the top spacer). */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-split-container {
+    padding-bottom: 8px;
+    box-sizing: border-box;
+}
+
+/* iOS (Obsidian 1.11+) bottom fade gradient - overlays list content behind the toolbar */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
     position: relative;
+}
+
+/* Allow the iOS glass toolbar shadow to render into the split container padding */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
+    overflow: visible;
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane-scroller,
 .notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane-scroller {
-    padding-bottom: 64px;
+    display: flex;
+    flex-direction: column;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane {
+    --nn-bottom-fade-bg: var(--nn-theme-nav-bg);
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
+    --nn-bottom-fade-bg: var(--nn-theme-list-bg);
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-fade {
+    position: sticky;
+    bottom: 0;
+    z-index: 4;
+    height: 0;
+    pointer-events: none;
+    margin-top: auto;
+    margin-left: calc(-1 * var(--nn-scroller-padding));
+    margin-right: calc(-1 * var(--nn-scroller-padding));
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-fade::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(88px + var(--nn-mobile-safe-area-bottom, 0px));
+    background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 85%, transparent) 0%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 55%, transparent) 38%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 25%, transparent) 68%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 10%, transparent) 86%,
+        transparent 100%
+    );
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-fade {
+    bottom: var(--nn-nav-calendar-height);
+}
+
+/* Ensure the iOS glass toolbar shadow does not render on top of the calendar overlay. */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-calendar-overlay {
+    z-index: 6;
+}
+
+/* Navigation pane calendar safe area for Obsidian 1.11+ iOS */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane {
+    /* Obsidian 1.11+ already accounts for iOS safe areas in the view chrome. */
+    --nn-nav-calendar-safe-area: 0px;
+}
+
+.notebook-navigator-mobile.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
+.notebook-navigator-mobile.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
+    --nn-pane-bottom-toolbar-space: 64px;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-toolbar {
+    bottom: 12px;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
+    bottom: calc(12px + var(--nn-nav-calendar-height));
 }
 
 /* Obsidian 1.11+ iOS glass toolbar */
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 12px;
     pointer-events: none;
-    z-index: 5;
-
     justify-content: space-between;
     background-color: transparent;
     border-top: none;
@@ -5562,8 +5953,14 @@ body.nn-resizing {
 
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-left,
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-right {
+    display: flex;
     pointer-events: auto;
     flex: 0 0 auto;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-pill,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-circle {
+    display: flex;
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios {
@@ -5632,62 +6029,6 @@ body.nn-resizing {
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-button svg {
     stroke-width: 2;
 }
-
-/* Mobile toolbar buttons */
-.nn-mobile-toolbar-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
-    background: transparent !important;
-    background-color: transparent !important;
-    border: none;
-    border-radius: var(--radius-m);
-    color: var(--nn-theme-mobile-toolbar-button-icon-color);
-    transition:
-        background-color 0.15s ease,
-        color 0.15s ease;
-    cursor: pointer;
-    padding: 0;
-    box-shadow: none !important;
-}
-
-.nn-mobile-toolbar-button-circle {
-    border-radius: 999px;
-}
-
-/* Mobile toolbar button icons */
-.nn-mobile-toolbar-button svg {
-    width: 24px;
-    height: 24px;
-    stroke-width: 1.5;
-    stroke: var(--nn-theme-mobile-toolbar-button-icon-color);
-}
-
-/* Mobile toolbar button tap feedback */
-.nn-mobile-toolbar-button:active {
-    opacity: 0.7;
-}
-
-/* Active mobile toolbar button state - toggled on */
-.nn-mobile-toolbar-button-active {
-    color: var(--nn-theme-mobile-toolbar-button-active-icon-color) !important;
-    background-color: var(--nn-theme-mobile-toolbar-button-active-bg) !important;
-}
-
-.nn-mobile-toolbar-button-active svg {
-    stroke: var(--nn-theme-mobile-toolbar-button-active-icon-color) !important;
-    stroke-width: 2;
-}
-
-/* Disabled mobile toolbar button */
-.nn-mobile-toolbar-button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
 /* Source: src/styles/sections/android-toolbar.css */
 
 /* ========================================================================
@@ -5727,6 +6068,7 @@ body.nn-resizing {
 .notebook-navigator-mobile .nn-list-pane-scroller {
     flex: 1;
     min-height: 0; /* Important for proper scrolling */
+    -webkit-overflow-scrolling: touch;
     /* Prevent the rubber-band/glow overscroll effect on mobile. */
     overscroll-behavior: none;
 }
@@ -5905,6 +6247,29 @@ body.nn-resizing {
     width: 1em;
     height: 1em;
     font-size: inherit;
+}
+
+/* ========================================================================
+   ServiceIcon Alignment
+   ======================================================================== */
+
+/*
+ * `ServiceIcon` renders into a `<span>` container and injects an inline SVG.
+ * Ensure the span/SVG don't participate in baseline alignment, so icons stay vertically centered inside flex buttons.
+ */
+.nn-icon-button > span,
+.nn-mobile-toolbar-button > span,
+.nn-navigation-calendar-nav-button > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+.nn-icon-button > span > svg,
+.nn-mobile-toolbar-button > span > svg,
+.nn-navigation-calendar-nav-button > span > svg {
+    display: block;
 }
 
 /* Icon Picker Modal Styles */

@@ -71,6 +71,23 @@ export const STRINGS_ZH_CN = {
         profileMenuAria: '更改仓库配置文件'
     },
 
+    navigationCalendar: {
+        ariaLabel: '导航日历',
+        previousMonthAria: '上个月',
+        nextMonthAria: '下个月',
+        dailyNotesNotEnabled: '未启用每日笔记。请在 Obsidian 设置 → 核心插件中启用每日笔记。',
+        createDailyNote: {
+            title: '创建每日笔记',
+            message: '每日笔记 {filename} 不存在。是否创建？',
+            confirmButton: '创建'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: '读取每日笔记模板失败',
+        createFailed: '创建每日笔记失败'
+    },
+
     shortcuts: {
         folderExists: '文件夹已在快捷方式中',
         noteExists: '笔记已在快捷方式中',
@@ -92,6 +109,8 @@ export const STRINGS_ZH_CN = {
     paneHeader: {
         collapseAllFolders: '折叠项目', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: '展开所有项目', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: '显示日历',
+        hideCalendar: '隐藏日历',
         newFolder: '新建文件夹', // Tooltip for create new folder button (English: New folder)
         newNote: '新笔记', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: '返回导航', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_ZH_CN = {
                 'nav-recent-files': '最近文件',
                 'nav-expand-all': '全部展开',
                 'nav-collapse-all': '全部折叠',
+                'nav-calendar': '日历',
                 'nav-tree-expand': '树形箭头: 展开',
                 'nav-tree-collapse': '树形箭头: 折叠',
                 'nav-hidden-items': '隐藏项目',
@@ -855,6 +875,34 @@ export const STRINGS_ZH_CN = {
             pinRecentNotesWithShortcuts: {
                 name: '将最近笔记与快捷方式一起固定',
                 desc: '固定快捷方式时包含最近笔记。'
+            },
+            showCalendar: {
+                name: '显示日历',
+                desc: '在导航窗格中显示每日笔记日历。'
+            },
+            calendarLocale: {
+                name: '日历语言',
+                desc: '选择日历显示的语言。',
+                options: {
+                    systemDefault: '系统默认'
+                }
+            },
+            calendarWeeksToShow: {
+                name: '显示周数',
+                desc: '选择日历中显示的周数。',
+                options: {
+                    fullMonth: '完整月份',
+                    oneWeek: '1 周',
+                    weeksCount: '{count} 周'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: '显示周号',
+                desc: '在每行开头显示周号。'
+            },
+            calendarConfirmBeforeCreate: {
+                name: '创建前确认',
+                desc: '点击没有笔记的日期时显示确认对话框。'
             },
             showTooltips: {
                 name: '显示工具提示',

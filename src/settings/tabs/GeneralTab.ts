@@ -857,6 +857,7 @@ interface ToolbarButtonConfig<T extends string> {
 
 const NAVIGATION_TOOLBAR_BUTTONS: ToolbarButtonConfig<NavigationToolbarButtonId>[] = [
     { id: 'expandCollapse', icon: 'lucide-chevrons-up-down', label: strings.paneHeader.expandAllFolders },
+    { id: 'calendar', icon: 'lucide-calendar-days', label: strings.paneHeader.showCalendar },
     { id: 'hiddenItems', icon: 'lucide-eye', label: strings.paneHeader.showExcludedItems },
     { id: 'rootReorder', icon: 'lucide-list-tree', label: strings.paneHeader.reorderRootFolders },
     { id: 'newFolder', icon: 'lucide-folder-plus', label: strings.paneHeader.newFolder }

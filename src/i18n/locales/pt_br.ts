@@ -72,6 +72,23 @@ export const STRINGS_PT_BR = {
         profileMenuAria: 'Alterar perfil do cofre'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Calendário',
+        previousMonthAria: 'Mês anterior',
+        nextMonthAria: 'Próximo mês',
+        dailyNotesNotEnabled: 'O plugin de notas diárias não está ativado.',
+        createDailyNote: {
+            title: 'Nova nota diária',
+            message: 'O arquivo {filename} não existe. Deseja criá-lo?',
+            confirmButton: 'Criar'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Falha ao ler o modelo de nota diária.',
+        createFailed: 'Não foi possível criar a nota diária.'
+    },
+
     shortcuts: {
         folderExists: 'Pasta já está nos atalhos',
         noteExists: 'Nota já está nos atalhos',
@@ -93,6 +110,8 @@ export const STRINGS_PT_BR = {
     paneHeader: {
         collapseAllFolders: 'Recolher itens',
         expandAllFolders: 'Expandir todos os itens',
+        showCalendar: 'Mostrar calendário',
+        hideCalendar: 'Ocultar calendário',
         newFolder: 'Nova pasta',
         newNote: 'Nova nota',
         mobileBackToNavigation: 'Voltar à navegação',
@@ -252,6 +271,7 @@ export const STRINGS_PT_BR = {
                 'nav-recent-files': 'Arquivos recentes',
                 'nav-expand-all': 'Expandir tudo',
                 'nav-collapse-all': 'Recolher tudo',
+                'nav-calendar': 'Calendário',
                 'nav-tree-expand': 'Seta da árvore: expandir',
                 'nav-tree-collapse': 'Seta da árvore: recolher',
                 'nav-hidden-items': 'Itens ocultos',
@@ -854,6 +874,34 @@ export const STRINGS_PT_BR = {
             pinRecentNotesWithShortcuts: {
                 name: 'Fixar notas recentes com atalhos',
                 desc: 'Incluir notas recentes quando os atalhos estiverem fixados.'
+            },
+            showCalendar: {
+                name: 'Mostrar calendário',
+                desc: 'Mostrar um calendário na parte inferior do painel de navegação.'
+            },
+            calendarLocale: {
+                name: 'Idioma',
+                desc: 'Controla a numeração das semanas e o primeiro dia da semana.',
+                options: {
+                    systemDefault: 'Padrão'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Semanas a exibir',
+                desc: 'Número de semanas do calendário a exibir.',
+                options: {
+                    fullMonth: 'Mês completo',
+                    oneWeek: '1 semana',
+                    weeksCount: '{count} semanas'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Mostrar número da semana',
+                desc: 'Adicionar uma coluna com o número da semana.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Confirmar antes de criar',
+                desc: 'Mostrar uma caixa de diálogo de confirmação ao criar uma nova nota diária.'
             },
             showTooltips: {
                 name: 'Mostrar dicas',

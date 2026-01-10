@@ -1,0 +1,267 @@
+/* Source: src/styles/sections/navigation-calendar.css */
+
+/* ========================================================================
+   Navigation Pane Calendar (bottom overlay)
+   ======================================================================== */
+
+.nn-navigation-pane {
+    /* CSS vars are used to compute the overlay height and to coordinate scroller padding + mobile toolbar positioning. */
+    --nn-nav-calendar-week-count: 6;
+    --nn-nav-calendar-scrollbar-gap: var(--scrollbar-size, 12px);
+    --nn-nav-calendar-week-row-height: 28px;
+    --nn-nav-calendar-week-gap: 1px;
+    --nn-nav-calendar-weekday-row-height: 14px;
+    --nn-nav-calendar-header-row-height: 28px;
+    --nn-nav-calendar-section-gap: 6px;
+    --nn-nav-calendar-padding: 8px;
+    --nn-nav-calendar-safe-area: 0px;
+    --nn-nav-calendar-height: 0px;
+    --nn-pane-bottom-toolbar-space: 0px;
+    --nn-pane-bottom-calendar-space: 0px;
+}
+
+.notebook-navigator-mobile .nn-navigation-pane {
+    --nn-nav-calendar-safe-area: var(--nn-mobile-safe-area-bottom);
+    --nn-nav-calendar-scrollbar-gap: 0px;
+}
+
+.nn-navigation-pane[data-calendar='true'] {
+    --nn-nav-calendar-height: calc(
+        (var(--nn-nav-calendar-padding) * 2) + var(--nn-nav-calendar-safe-area) + var(--nn-nav-calendar-header-row-height) +
+            var(--nn-nav-calendar-weekday-row-height) + (2 * var(--nn-nav-calendar-section-gap)) +
+            (var(--nn-nav-calendar-week-count) * var(--nn-nav-calendar-week-row-height)) +
+            ((var(--nn-nav-calendar-week-count) - 1) * var(--nn-nav-calendar-week-gap))
+    );
+    --nn-pane-bottom-calendar-space: var(--nn-nav-calendar-height);
+}
+
+.nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
+    bottom: var(--nn-nav-calendar-height);
+}
+
+.nn-navigation-calendar-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 6;
+    box-sizing: border-box;
+    height: var(--nn-nav-calendar-height);
+    padding: var(--nn-nav-calendar-padding) calc(var(--nn-scroller-padding) + var(--nn-nav-calendar-scrollbar-gap))
+        calc(var(--nn-nav-calendar-padding) + var(--nn-nav-calendar-safe-area)) var(--nn-scroller-padding);
+
+    background: color-mix(in srgb, var(--nn-theme-nav-bg) calc(var(--nn-theme-pane-overlay-opacity, 85) * 1%), transparent);
+    -webkit-backdrop-filter: var(--nn-theme-pane-overlay-filter);
+    backdrop-filter: var(--nn-theme-pane-overlay-filter);
+
+    border-top: 1px solid var(--nn-theme-divider-border-color);
+}
+
+.notebook-navigator-mobile .nn-navigation-calendar-overlay {
+    border-top: none;
+}
+
+.nn-navigation-calendar {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--nn-nav-calendar-section-gap);
+    user-select: none;
+}
+
+.nn-navigation-calendar-header {
+    height: var(--nn-nav-calendar-header-row-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.nn-navigation-calendar-month {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.nn-navigation-calendar-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nn-navigation-calendar-nav-button {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none !important;
+    border-radius: 6px;
+    background: transparent !important;
+    color: var(--text-normal);
+    cursor: pointer;
+    padding: 0;
+    box-shadow: none !important;
+    line-height: 0;
+    transition:
+        background-color 120ms ease,
+        filter 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.nn-navigation-calendar-nav-button:focus-visible {
+    outline: 2px solid var(--interactive-accent);
+    outline-offset: 2px;
+}
+
+.nn-navigation-calendar-today {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none !important;
+    background: transparent !important;
+    color: var(--text-normal);
+    font: inherit;
+    font-size: 12px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition:
+        background-color 120ms ease,
+        filter 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.nn-navigation-calendar-today:focus-visible {
+    outline: 2px solid var(--interactive-accent);
+    outline-offset: 2px;
+}
+
+/* Calendar month navigation icon sizing (ServiceIcon renders an SVG). */
+.nn-navigation-calendar-nav-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.nn-navigation-calendar-weekdays {
+    height: var(--nn-nav-calendar-weekday-row-height);
+    display: grid;
+    align-items: center;
+    column-gap: 1px;
+    grid-template-columns: repeat(7, 1fr);
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1;
+}
+
+.nn-navigation-calendar-weekdays[data-weeknumbers='true'] {
+    grid-template-columns: 24px repeat(7, 1fr);
+}
+
+.nn-navigation-calendar-weekday,
+.nn-navigation-calendar-weeknumber-spacer {
+    text-align: center;
+}
+
+.nn-navigation-calendar-weeks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nn-nav-calendar-week-gap);
+}
+
+.nn-navigation-calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    column-gap: 1px;
+}
+
+.nn-navigation-calendar-weeks[data-weeknumbers='true'] .nn-navigation-calendar-week {
+    grid-template-columns: 24px repeat(7, 1fr);
+}
+
+.nn-navigation-calendar-weeknumber {
+    height: var(--nn-nav-calendar-week-row-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 10px;
+    line-height: 1;
+}
+
+.nn-navigation-calendar-day {
+    -webkit-appearance: none;
+    appearance: none;
+    height: var(--nn-nav-calendar-week-row-height);
+    border: none !important;
+    border-radius: 6px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent !important;
+    color: var(--text-normal);
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: none !important;
+    transition:
+        background-color 120ms ease,
+        filter 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.nn-navigation-calendar-day:focus-visible {
+    outline: 2px solid var(--interactive-accent);
+    outline-offset: 2px;
+}
+
+/* Hover effects only apply on hover-capable devices (prevents "stuck hover" on touch). */
+@media (hover: hover) and (pointer: fine) {
+    .nn-navigation-calendar-nav-button:hover {
+        background-color: var(--background-modifier-hover) !important;
+    }
+
+    .nn-navigation-calendar-today:hover {
+        background-color: var(--background-modifier-hover) !important;
+    }
+
+    .nn-navigation-calendar-day:hover {
+        filter: brightness(1.05);
+        box-shadow: inset 0 0 0 1px var(--background-modifier-border);
+    }
+
+    .nn-navigation-calendar-day:hover:not(.has-feature-image):not(.has-daily-note) {
+        background-color: var(--background-modifier-hover) !important;
+    }
+}
+
+.nn-navigation-calendar-day.is-outside-month:not(.has-daily-note):not(.has-feature-image) {
+    opacity: 0.6;
+}
+
+.nn-navigation-calendar-day.has-daily-note {
+    background-color: var(--text-selection) !important;
+    color: white;
+}
+
+.nn-navigation-calendar-day.has-feature-image {
+    color: white;
+}
+
+.nn-navigation-calendar-day.has-feature-image .nn-navigation-calendar-day-number {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+.nn-navigation-calendar-day-number {
+    font-size: 12px;
+    line-height: 1;
+}

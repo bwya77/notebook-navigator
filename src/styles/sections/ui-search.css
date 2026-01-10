@@ -53,11 +53,6 @@
     justify-content: center;
 }
 
-.nn-search-clear-button:hover,
-.nn-search-star-button:hover {
-    color: var(--nn-theme-header-button-active-icon-color);
-}
-
 .nn-search-clear-button:focus-visible,
 .nn-search-star-button:focus-visible {
     outline: 2px solid var(--interactive-accent);
@@ -101,10 +96,6 @@
     cursor: pointer;
 }
 
-.nn-path-segment:hover {
-    text-decoration: underline;
-}
-
 /* On mobile, use link color for clickable segments */
 .is-mobile .nn-path-segment {
     color: var(--nn-theme-mobile-list-header-link-color);
@@ -115,4 +106,16 @@
 .is-mobile .nn-path-segment:active,
 .is-mobile .nn-path-segment:focus {
     text-decoration: none;
+}
+
+/* Hover effects only apply on hover-capable devices (prevents "stuck hover" on touch). */
+@media (hover: hover) and (pointer: fine) {
+    .nn-search-clear-button:hover,
+    .nn-search-star-button:hover {
+        color: var(--nn-theme-header-button-active-icon-color);
+    }
+
+    .nn-path-segment:hover {
+        text-decoration: underline;
+    }
 }

@@ -12,6 +12,7 @@
     flex-direction: column;
     overflow: hidden;
     background-color: var(--nn-theme-nav-bg);
+    position: relative; /* Enables absolute positioning for overlays */
 
     /* Performance optimization for virtualized content */
     contain: layout style;
@@ -109,4 +110,72 @@
 /* Pane divider resize handle active state - maintains visibility during resize */
 .nn-split-container.nn-resizing .nn-resize-handle {
     background-color: var(--nn-theme-divider-resize-handle-hover-bg);
+}
+
+/* ========================================================================
+   Single-pane Layout
+   ======================================================================== */
+
+/* Single-pane container - use grid for consistent structure while allowing sliding */
+.nn-split-container.nn-single-pane {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 100%;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+
+/* Single-pane panes - positioned in grid and animated with transforms */
+.nn-split-container.nn-single-pane .nn-navigation-pane,
+.nn-split-container.nn-single-pane .nn-list-pane {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100%;
+    grid-column: 1;
+    grid-row: 1;
+    transition: transform var(--nn-pane-transition-duration) var(--nn-pane-transition-timing);
+}
+
+.nn-split-container.nn-single-pane.nn-pane-transitioning .nn-navigation-pane,
+.nn-split-container.nn-single-pane.nn-pane-transitioning .nn-list-pane {
+    will-change: transform;
+}
+
+/* Single-pane view states - show navigation view */
+.nn-split-container.nn-single-pane.show-navigation .nn-navigation-pane {
+    transform: none;
+}
+
+.nn-split-container.nn-single-pane.show-navigation .nn-list-pane {
+    transform: translateX(100%);
+}
+
+/* Single-pane view states - show files view */
+.nn-split-container.nn-single-pane.show-files .nn-navigation-pane {
+    transform: translateX(-100%);
+}
+
+.nn-split-container.nn-single-pane.show-files .nn-list-pane {
+    transform: none;
+}
+
+/* ========================================================================
+   Mobile Layout
+   ======================================================================== */
+
+/* Make navigation pane flexible on mobile to handle resize gracefully */
+.notebook-navigator-mobile .nn-navigation-pane {
+    flex: 1;
+    background-color: var(--nn-theme-nav-bg) !important;
+}
+
+/* Hide resize handle on mobile */
+.notebook-navigator-mobile .nn-resize-handle {
+    display: none !important;
+}
+
+/* Add touch-action to prevent browser gestures interfering */
+.notebook-navigator-mobile .nn-split-container {
+    touch-action: pan-y;
 }

@@ -87,11 +87,18 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
     showRecentNotes: true,
     recentNotesCount: 5,
 
+    // Navigation pane tab - Calendar
+    calendarLocale: 'system-default',
+    calendarWeeksToShow: 5,
+    calendarShowWeekNumber: false,
+    calendarConfirmBeforeCreate: true,
+
     // Navigation pane tab - Appearance
     colorIconOnly: false,
     toolbarVisibility: {
         navigation: {
             expandCollapse: true,
+            calendar: true,
             hiddenItems: true,
             rootReorder: true,
             newFolder: true

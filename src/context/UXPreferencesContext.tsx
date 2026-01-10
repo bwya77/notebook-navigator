@@ -39,6 +39,9 @@ interface UXPreferenceActions {
     setShowHiddenItems: (value: boolean) => void;
     toggleShowHiddenItems: () => void;
     setPinShortcuts: (value: boolean) => void;
+    // Per-device toggle for the navigation calendar overlay.
+    setShowCalendar: (value: boolean) => void;
+    toggleShowCalendar: () => void;
 }
 
 // Context for providing UX preference state values
@@ -73,7 +76,7 @@ export function UXPreferencesProvider({ children, plugin }: UXPreferencesProvide
 
     // Get current preferences from plugin, re-computing on version change
     const preferences = useMemo(() => {
-        void version; // Dependency to trigger recalculation
+        void version; // keep dependency so settings snapshot recreates when updates are published
         return plugin.getUXPreferences();
     }, [plugin, version]);
 
@@ -97,6 +100,12 @@ export function UXPreferencesProvider({ children, plugin }: UXPreferencesProvide
             },
             setPinShortcuts: (value: boolean) => {
                 plugin.setPinShortcuts(value);
+            },
+            setShowCalendar: (value: boolean) => {
+                plugin.setShowCalendar(value);
+            },
+            toggleShowCalendar: () => {
+                plugin.toggleShowCalendar();
             }
         }),
         [plugin]

@@ -282,6 +282,7 @@ export interface UXPreferences {
     includeDescendantNotes: boolean;
     showHiddenItems: boolean;
     pinShortcuts: boolean;
+    showCalendar: boolean;
 }
 
 export type VisibilityPreferences = Pick<UXPreferences, 'includeDescendantNotes' | 'showHiddenItems'>;

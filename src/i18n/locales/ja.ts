@@ -71,6 +71,23 @@ export const STRINGS_JA = {
         profileMenuAria: '保管庫のプロファイルを変更'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'カレンダー',
+        previousMonthAria: '前月',
+        nextMonthAria: '翌月',
+        dailyNotesNotEnabled: 'デイリーノートプラグインが有効になっていません。',
+        createDailyNote: {
+            title: '新規デイリーノート',
+            message: 'ファイル {filename} は存在しません。作成しますか？',
+            confirmButton: '作成'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'デイリーノートのテンプレートを読み込めませんでした。',
+        createFailed: 'デイリーノートを作成できませんでした。'
+    },
+
     shortcuts: {
         folderExists: 'フォルダは既にショートカットにあります',
         noteExists: 'ノートは既にショートカットにあります',
@@ -92,6 +109,8 @@ export const STRINGS_JA = {
     paneHeader: {
         collapseAllFolders: 'アイテムを折りたたむ', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'すべてのアイテムを展開', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'カレンダーを表示',
+        hideCalendar: 'カレンダーを非表示',
         newFolder: '新規フォルダ', // Tooltip for create new folder button (English: New folder)
         newNote: '新規ノート', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'ナビゲーションに戻る', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_JA = {
                 'nav-recent-files': '最近のファイル',
                 'nav-expand-all': 'すべて展開',
                 'nav-collapse-all': 'すべて折りたたむ',
+                'nav-calendar': 'カレンダー',
                 'nav-tree-expand': 'ツリー矢印: 展開',
                 'nav-tree-collapse': 'ツリー矢印: 折りたたみ',
                 'nav-hidden-items': '非表示項目',
@@ -858,6 +878,34 @@ export const STRINGS_JA = {
             pinRecentNotesWithShortcuts: {
                 name: '最近のノートをショートカットと一緒に固定',
                 desc: 'ショートカットを固定するときに最近のノートを含める。'
+            },
+            showCalendar: {
+                name: 'カレンダーを表示',
+                desc: 'ナビゲーションペインの下部にカレンダーを表示します。'
+            },
+            calendarLocale: {
+                name: 'ロケール',
+                desc: '週番号と週の開始曜日を制御します。',
+                options: {
+                    systemDefault: 'デフォルト'
+                }
+            },
+            calendarWeeksToShow: {
+                name: '表示週数',
+                desc: '表示するカレンダーの週数。',
+                options: {
+                    fullMonth: '月全体',
+                    oneWeek: '1週間',
+                    weeksCount: '{count}週間'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: '週番号を表示',
+                desc: '週番号の列を追加します。'
+            },
+            calendarConfirmBeforeCreate: {
+                name: '作成前に確認',
+                desc: '新しいデイリーノートを作成する際に確認ダイアログを表示します。'
             },
             showTooltips: {
                 name: 'ツールチップを表示',

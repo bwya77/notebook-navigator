@@ -348,7 +348,6 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             settings.showFilePreview && (!fileData || fileModified || fileData.previewStatus === 'unprocessed') && !isExcalidraw;
         const needsWordCount = !fileData || fileModified || fileData.wordCount === null;
         const needsWordCountContent = needsWordCount && !isExcalidraw;
-        const needsCustomProperty = customPropertyEnabled && (!fileData || fileModified || fileData.customProperty === null);
         const needsFeatureImage =
             settings.showFeatureImage &&
             (!fileData || fileModified || fileData.featureImageKey === null || fileData.featureImageStatus === 'unprocessed') &&
@@ -394,7 +393,11 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                         customPropertyNameFields,
                         customPropertyColorFields
                     );
-                    if (!fileData || fileData.customProperty === null || !areCustomPropertyItemsEqual(fileData.customProperty, nextCustomProperty)) {
+                    if (
+                        !fileData ||
+                        fileData.customProperty === null ||
+                        !areCustomPropertyItemsEqual(fileData.customProperty, nextCustomProperty)
+                    ) {
                         update.customProperty = nextCustomProperty;
                         hasSafeUpdate = true;
                     }
@@ -462,8 +465,7 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
 
             // Ensure word count can converge even if content reads fail repeatedly.
             if (needsWordCountContent) {
-                const shouldSetWordCountZero =
-                    !fileData || fileData.wordCount === null || (shouldFallback && fileData.wordCount !== 0);
+                const shouldSetWordCountZero = !fileData || fileData.wordCount === null || (shouldFallback && fileData.wordCount !== 0);
                 if (shouldSetWordCountZero) {
                     update.wordCount = 0;
                     hasSafeUpdate = true;
@@ -476,7 +478,11 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                     customPropertyNameFields,
                     customPropertyColorFields
                 );
-                if (!fileData || fileData.customProperty === null || !areCustomPropertyItemsEqual(fileData.customProperty, nextCustomProperty)) {
+                if (
+                    !fileData ||
+                    fileData.customProperty === null ||
+                    !areCustomPropertyItemsEqual(fileData.customProperty, nextCustomProperty)
+                ) {
                     update.customProperty = nextCustomProperty;
                     hasSafeUpdate = true;
                 }

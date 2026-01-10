@@ -45,7 +45,11 @@ export class ConfirmModal extends Modal {
         message: string,
         private onConfirm: () => MaybePromise,
         confirmButtonText?: string,
-        options?: { buildContent?: (container: HTMLElement) => void }
+        options?: {
+            buildContent?: (container: HTMLElement) => void;
+            // Allows callers to use Obsidian button intent classes like `mod-cta` instead of always warning.
+            confirmButtonClass?: string;
+        }
     ) {
         super(app);
         this.titleEl.setText(title);
@@ -71,7 +75,7 @@ export class ConfirmModal extends Modal {
 
         this.confirmBtn = buttonContainer.createEl('button', {
             text: confirmButtonText || strings.common.delete,
-            cls: 'mod-warning'
+            cls: options?.confirmButtonClass ?? 'mod-warning'
         });
         this.confirmBtn.addEventListener('click', this.confirmHandler);
 

@@ -88,10 +88,18 @@ const DEFAULT_UX_PREFERENCES: UXPreferences = {
     searchActive: false,
     includeDescendantNotes: true,
     showHiddenItems: false,
-    pinShortcuts: true
+    pinShortcuts: true,
+    // Per-device toggle for the navigation calendar overlay.
+    showCalendar: true
 };
 
-const UX_PREFERENCE_KEYS: (keyof UXPreferences)[] = ['searchActive', 'includeDescendantNotes', 'showHiddenItems', 'pinShortcuts'];
+const UX_PREFERENCE_KEYS: (keyof UXPreferences)[] = [
+    'searchActive',
+    'includeDescendantNotes',
+    'showHiddenItems',
+    'pinShortcuts',
+    'showCalendar'
+];
 
 interface LegacyVisibilityMigration {
     hiddenFolders: string[];
@@ -1234,6 +1242,15 @@ export default class NotebookNavigatorPlugin extends Plugin implements ISettings
 
     public setPinShortcuts(value: boolean): void {
         this.updateUXPreference('pinShortcuts', value);
+    }
+
+    public setShowCalendar(value: boolean): void {
+        // Stored in UX preferences (localStorage).
+        this.updateUXPreference('showCalendar', value);
+    }
+
+    public toggleShowCalendar(): void {
+        this.setShowCalendar(!this.uxPreferences.showCalendar);
     }
 
     private updateUXPreference(key: keyof UXPreferences, value: boolean): void {

@@ -26,6 +26,15 @@ body.nn-resizing {
     outline-offset: -2px;
 }
 
+/* Disable drag and drop feedback on mobile */
+.notebook-navigator-mobile [draggable='true'] {
+    cursor: default !important;
+}
+
+.notebook-navigator-mobile .nn-drag-over {
+    background-color: transparent !important;
+}
+
 /* Special visual feedback for tag drop zones - uses pre-composited solid color */
 [data-drop-zone='tag'].nn-drag-over {
     background-color: var(--nn-theme-tag-positive-bg-solid, var(--nn-theme-tag-positive-bg));

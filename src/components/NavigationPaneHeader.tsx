@@ -19,7 +19,7 @@
 import { useSelectionState } from '../context/SelectionContext';
 import { useServices } from '../context/ServicesContext';
 import { useSettingsState } from '../context/SettingsContext';
-import { useUXPreferences } from '../context/UXPreferencesContext';
+import { useUXPreferenceActions, useUXPreferences } from '../context/UXPreferencesContext';
 import { useUIState } from '../context/UIStateContext';
 import { useVaultProfileMenu } from '../hooks/useVaultProfileMenu';
 import { strings } from '../i18n';
@@ -47,7 +47,9 @@ export function NavigationPaneHeader({
     const { isMobile, plugin } = useServices();
     const settings = useSettingsState();
     const uxPreferences = useUXPreferences();
+    const { toggleShowCalendar } = useUXPreferenceActions();
     const showHiddenItems = uxPreferences.showHiddenItems;
+    const isCalendarVisible = uxPreferences.showCalendar;
     const uiState = useUIState();
     const selectionState = useSelectionState();
     const { hasProfiles, hasMultipleProfiles, activeProfileName, handleTriggerClick, handleTriggerKeyDown } = useVaultProfileMenu({
@@ -62,6 +64,7 @@ export function NavigationPaneHeader({
     const hasHiddenItems = hasHiddenItemSources(settings);
     const navigationVisibility = settings.toolbarVisibility.navigation;
     const showExpandCollapseButton = navigationVisibility.expandCollapse;
+    const showCalendarButton = navigationVisibility.calendar;
     const showHiddenItemsButton = navigationVisibility.hiddenItems && hasHiddenItems;
     const showRootReorderButton = navigationVisibility.rootReorder;
     const showNewFolderButton = navigationVisibility.newFolder;
@@ -161,6 +164,17 @@ export function NavigationPaneHeader({
                                     shouldCollapseItems() ? 'nav-collapse-all' : 'nav-expand-all'
                                 )}
                             />
+                        </button>
+                    ) : null}
+                    {showCalendarButton ? (
+                        <button
+                            className={`nn-icon-button ${isCalendarVisible ? 'nn-icon-button-active' : ''}`}
+                            aria-label={isCalendarVisible ? strings.paneHeader.hideCalendar : strings.paneHeader.showCalendar}
+                            onClick={toggleShowCalendar}
+                            tabIndex={-1}
+                            type="button"
+                        >
+                            <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'nav-calendar')} />
                         </button>
                     ) : null}
                     {showHiddenItemsButton ? (

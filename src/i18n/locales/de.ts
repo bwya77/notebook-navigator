@@ -71,6 +71,23 @@ export const STRINGS_DE = {
         profileMenuAria: 'Tresorprofil ändern'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Kalender',
+        previousMonthAria: 'Vorheriger Monat',
+        nextMonthAria: 'Nächster Monat',
+        dailyNotesNotEnabled: 'Das Kernplugin für tägliche Notizen ist nicht aktiviert.',
+        createDailyNote: {
+            title: 'Neue tägliche Notiz',
+            message: 'Datei {filename} existiert nicht. Möchten Sie sie erstellen?',
+            confirmButton: 'Erstellen'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Vorlage für tägliche Notizen konnte nicht gelesen werden.',
+        createFailed: 'Tägliche Notiz konnte nicht erstellt werden.'
+    },
+
     shortcuts: {
         folderExists: 'Ordner bereits in Lesezeichen vorhanden',
         noteExists: 'Notiz bereits in Lesezeichen vorhanden',
@@ -92,6 +109,8 @@ export const STRINGS_DE = {
     paneHeader: {
         collapseAllFolders: 'Elemente einklappen', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'Alle Elemente ausklappen', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'Kalender anzeigen',
+        hideCalendar: 'Kalender ausblenden',
         newFolder: 'Neuer Ordner', // Tooltip for create new folder button (English: New folder)
         newNote: 'Neue Notiz', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'Zurück zur Navigation', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_DE = {
                 'nav-recent-files': 'Zuletzt verwendete Dateien',
                 'nav-expand-all': 'Alle erweitern',
                 'nav-collapse-all': 'Alle einklappen',
+                'nav-calendar': 'Kalender',
                 'nav-tree-expand': 'Baumpfeil: erweitern',
                 'nav-tree-collapse': 'Baumpfeil: einklappen',
                 'nav-hidden-items': 'Ausgeblendete Elemente',
@@ -859,6 +879,34 @@ export const STRINGS_DE = {
             pinRecentNotesWithShortcuts: {
                 name: 'Neueste Notizen mit Lesezeichen anheften',
                 desc: 'Neueste Notizen beim Anheften von Lesezeichen einbeziehen.'
+            },
+            showCalendar: {
+                name: 'Kalender anzeigen',
+                desc: 'Zeigt einen Kalender am unteren Rand des Navigationsbereichs an.'
+            },
+            calendarLocale: {
+                name: 'Gebietsschema',
+                desc: 'Steuert Wochennummerierung und ersten Wochentag.',
+                options: {
+                    systemDefault: 'Standard'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Angezeigte Wochen',
+                desc: 'Anzahl der anzuzeigenden Kalenderwochen.',
+                options: {
+                    fullMonth: 'Ganzer Monat',
+                    oneWeek: '1 Woche',
+                    weeksCount: '{count} Wochen'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Wochennummer anzeigen',
+                desc: 'Spalte mit der Wochennummer hinzufügen.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Vor Erstellung bestätigen',
+                desc: 'Bestätigungsdialog beim Erstellen einer neuen täglichen Notiz anzeigen.'
             },
             showTooltips: {
                 name: 'Tooltips anzeigen',

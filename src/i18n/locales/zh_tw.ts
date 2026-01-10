@@ -71,6 +71,23 @@ export const STRINGS_ZH_TW = {
         profileMenuAria: '變更保險庫設定檔'
     },
 
+    navigationCalendar: {
+        ariaLabel: '導覽日曆',
+        previousMonthAria: '上個月',
+        nextMonthAria: '下個月',
+        dailyNotesNotEnabled: '未啟用每日筆記。請在 Obsidian 設定 → 核心外掛中啟用每日筆記。',
+        createDailyNote: {
+            title: '建立每日筆記',
+            message: '每日筆記 {filename} 不存在。是否建立？',
+            confirmButton: '建立'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: '讀取每日筆記範本失敗',
+        createFailed: '建立每日筆記失敗'
+    },
+
     shortcuts: {
         folderExists: '資料夾已在捷徑中',
         noteExists: '筆記已在捷徑中',
@@ -92,6 +109,8 @@ export const STRINGS_ZH_TW = {
     paneHeader: {
         collapseAllFolders: '摺疊項目',
         expandAllFolders: '展開所有項目',
+        showCalendar: '顯示日曆',
+        hideCalendar: '隱藏日曆',
         newFolder: '新建資料夾',
         newNote: '新筆記',
         mobileBackToNavigation: '返回導覽',
@@ -252,6 +271,7 @@ export const STRINGS_ZH_TW = {
                 'nav-recent-files': '最近檔案',
                 'nav-expand-all': '全部展開',
                 'nav-collapse-all': '全部摺疊',
+                'nav-calendar': '日曆',
                 'nav-tree-expand': '樹狀箭頭: 展開',
                 'nav-tree-collapse': '樹狀箭頭: 摺疊',
                 'nav-hidden-items': '隱藏項目',
@@ -855,6 +875,34 @@ export const STRINGS_ZH_TW = {
             pinRecentNotesWithShortcuts: {
                 name: '將最近筆記與捷徑一起釘選',
                 desc: '釘選捷徑時包含最近筆記。'
+            },
+            showCalendar: {
+                name: '顯示日曆',
+                desc: '在導覽窗格中顯示每日筆記日曆。'
+            },
+            calendarLocale: {
+                name: '日曆語言',
+                desc: '選擇日曆顯示的語言。',
+                options: {
+                    systemDefault: '系統預設'
+                }
+            },
+            calendarWeeksToShow: {
+                name: '顯示週數',
+                desc: '選擇日曆中顯示的週數。',
+                options: {
+                    fullMonth: '完整月份',
+                    oneWeek: '1 週',
+                    weeksCount: '{count} 週'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: '顯示週號',
+                desc: '在每行開頭顯示週號。'
+            },
+            calendarConfirmBeforeCreate: {
+                name: '建立前確認',
+                desc: '點按沒有筆記的日期時顯示確認對話方塊。'
             },
             showTooltips: {
                 name: '顯示工具提示',

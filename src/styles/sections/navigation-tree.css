@@ -23,6 +23,11 @@
     contain: layout style;
 }
 
+/* Touch-friendly tap targets on mobile */
+.notebook-navigator-mobile .nn-navitem {
+    height: var(--nn-setting-nav-item-height-mobile); /* Fixed height for virtualizer accuracy */
+}
+
 /* Nav rows that display a background overlay need positioning for the pseudo elements */
 .nn-navitem.nn-has-custom-background,
 .nn-navitem.nn-has-search-match,
@@ -171,6 +176,15 @@
     justify-content: center;
     flex-shrink: 0;
     color: var(--nn-theme-navitem-chevron-color);
+}
+
+/* Larger touch targets for chevrons on mobile */
+.notebook-navigator-mobile .nn-navitem-chevron {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Chevron states for folders without children */

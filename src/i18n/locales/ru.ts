@@ -72,6 +72,23 @@ export const STRINGS_RU = {
         profileMenuAria: 'Сменить профиль хранилища'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Календарь',
+        previousMonthAria: 'Предыдущий месяц',
+        nextMonthAria: 'Следующий месяц',
+        dailyNotesNotEnabled: 'Плагин ежедневных заметок не включён.',
+        createDailyNote: {
+            title: 'Новая ежедневная заметка',
+            message: 'Файл {filename} не существует. Хотите создать его?',
+            confirmButton: 'Создать'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Не удалось прочитать шаблон ежедневной заметки.',
+        createFailed: 'Невозможно создать ежедневную заметку.'
+    },
+
     shortcuts: {
         folderExists: 'Папка уже в ярлыках',
         noteExists: 'Заметка уже в ярлыках',
@@ -93,6 +110,8 @@ export const STRINGS_RU = {
     paneHeader: {
         collapseAllFolders: 'Свернуть элементы', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'Развернуть все элементы', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'Показать календарь',
+        hideCalendar: 'Скрыть календарь',
         newFolder: 'Новая папка', // Tooltip for create new folder button (English: New folder)
         newNote: 'Новая заметка', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'Назад к навигации', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_RU = {
                 'nav-recent-files': 'Недавние файлы',
                 'nav-expand-all': 'Развернуть все',
                 'nav-collapse-all': 'Свернуть все',
+                'nav-calendar': 'Календарь',
                 'nav-tree-expand': 'Стрелка дерева: развернуть',
                 'nav-tree-collapse': 'Стрелка дерева: свернуть',
                 'nav-hidden-items': 'Скрытые элементы',
@@ -858,6 +878,34 @@ export const STRINGS_RU = {
             pinRecentNotesWithShortcuts: {
                 name: 'Закрепить недавние заметки вместе с ярлыками',
                 desc: 'Включать недавние заметки при закреплении ярлыков.'
+            },
+            showCalendar: {
+                name: 'Показать календарь',
+                desc: 'Показать календарь в нижней части панели навигации.'
+            },
+            calendarLocale: {
+                name: 'Язык',
+                desc: 'Управляет нумерацией недель и первым днём недели.',
+                options: {
+                    systemDefault: 'По умолчанию'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Недель для отображения',
+                desc: 'Количество недель календаря для отображения.',
+                options: {
+                    fullMonth: 'Полный месяц',
+                    oneWeek: '1 неделя',
+                    weeksCount: '{count} недель'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Показать номер недели',
+                desc: 'Добавить колонку с номером недели.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Подтвердить перед созданием',
+                desc: 'Показать диалог подтверждения при создании новой ежедневной заметки.'
             },
             showTooltips: {
                 name: 'Показывать подсказки',

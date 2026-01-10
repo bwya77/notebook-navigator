@@ -51,6 +51,29 @@
     font-size: inherit;
 }
 
+/* ========================================================================
+   ServiceIcon Alignment
+   ======================================================================== */
+
+/*
+ * `ServiceIcon` renders into a `<span>` container and injects an inline SVG.
+ * Ensure the span/SVG don't participate in baseline alignment, so icons stay vertically centered inside flex buttons.
+ */
+.nn-icon-button > span,
+.nn-mobile-toolbar-button > span,
+.nn-navigation-calendar-nav-button > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+.nn-icon-button > span > svg,
+.nn-mobile-toolbar-button > span > svg,
+.nn-navigation-calendar-nav-button > span > svg {
+    display: block;
+}
+
 /* Icon Picker Modal Styles */
 .modal.nn-icon-picker-modal .modal-content {
     min-height: 380px;

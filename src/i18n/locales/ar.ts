@@ -72,6 +72,23 @@ export const STRINGS_AR = {
         profileMenuAria: 'تغيير ملف الخزنة'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'التقويم',
+        previousMonthAria: 'الشهر السابق',
+        nextMonthAria: 'الشهر التالي',
+        dailyNotesNotEnabled: 'إضافة الملاحظات اليومية غير مفعلة.',
+        createDailyNote: {
+            title: 'ملاحظة يومية جديدة',
+            message: 'الملف {filename} غير موجود. هل تريد إنشاءه؟',
+            confirmButton: 'إنشاء'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'فشل في قراءة قالب الملاحظة اليومية.',
+        createFailed: 'تعذر إنشاء الملاحظة اليومية.'
+    },
+
     shortcuts: {
         folderExists: 'المجلد موجود بالفعل في الاختصارات',
         noteExists: 'الملاحظة موجودة بالفعل في الاختصارات',
@@ -93,6 +110,8 @@ export const STRINGS_AR = {
     paneHeader: {
         collapseAllFolders: 'طي العناصر', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'توسيع جميع العناصر', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'عرض التقويم',
+        hideCalendar: 'إخفاء التقويم',
         newFolder: 'مجلد جديد', // Tooltip for create new folder button (English: New folder)
         newNote: 'ملاحظة جديدة', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'العودة للتنقل', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_AR = {
                 'nav-recent-files': 'الملفات الأخيرة',
                 'nav-expand-all': 'توسيع الكل',
                 'nav-collapse-all': 'طي الكل',
+                'nav-calendar': 'التقويم',
                 'nav-tree-expand': 'سهم الشجرة: توسيع',
                 'nav-tree-collapse': 'سهم الشجرة: طي',
                 'nav-hidden-items': 'العناصر المخفية',
@@ -857,6 +877,34 @@ export const STRINGS_AR = {
             pinRecentNotesWithShortcuts: {
                 name: 'تثبيت الملاحظات الحديثة مع الاختصارات',
                 desc: 'تضمين الملاحظات الحديثة عند تثبيت الاختصارات.'
+            },
+            showCalendar: {
+                name: 'عرض التقويم',
+                desc: 'عرض تقويم في أسفل لوحة التنقل.'
+            },
+            calendarLocale: {
+                name: 'اللغة',
+                desc: 'التحكم في ترقيم الأسابيع واليوم الأول من الأسبوع.',
+                options: {
+                    systemDefault: 'افتراضي'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'الأسابيع المعروضة',
+                desc: 'عدد أسابيع التقويم المعروضة.',
+                options: {
+                    fullMonth: 'شهر كامل',
+                    oneWeek: 'أسبوع واحد',
+                    weeksCount: '{count} أسابيع'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'عرض رقم الأسبوع',
+                desc: 'إضافة عمود برقم الأسبوع.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'تأكيد قبل الإنشاء',
+                desc: 'عرض مربع حوار تأكيد عند إنشاء ملاحظة يومية جديدة.'
             },
             showTooltips: {
                 name: 'إظهار التلميحات',

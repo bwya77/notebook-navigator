@@ -72,6 +72,23 @@ export const STRINGS_NL = {
         profileMenuAria: 'Kluis profiel wijzigen'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Kalender',
+        previousMonthAria: 'Vorige maand',
+        nextMonthAria: 'Volgende maand',
+        dailyNotesNotEnabled: 'De dagelijkse notities plugin is niet ingeschakeld.',
+        createDailyNote: {
+            title: 'Nieuwe dagelijkse notitie',
+            message: 'Bestand {filename} bestaat niet. Wilt u het aanmaken?',
+            confirmButton: 'Aanmaken'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Kan de sjabloon voor dagelijkse notities niet lezen.',
+        createFailed: 'Kan dagelijkse notitie niet aanmaken.'
+    },
+
     shortcuts: {
         folderExists: 'Map staat al in snelkoppelingen',
         noteExists: 'Notitie staat al in snelkoppelingen',
@@ -93,6 +110,8 @@ export const STRINGS_NL = {
     paneHeader: {
         collapseAllFolders: 'Items inklappen',
         expandAllFolders: 'Alle items uitklappen',
+        showCalendar: 'Kalender tonen',
+        hideCalendar: 'Kalender verbergen',
         newFolder: 'Nieuwe map',
         newNote: 'Nieuwe notitie',
         mobileBackToNavigation: 'Terug naar navigatie',
@@ -253,6 +272,7 @@ export const STRINGS_NL = {
                 'nav-recent-files': 'Recente bestanden',
                 'nav-expand-all': 'Alles uitvouwen',
                 'nav-collapse-all': 'Alles invouwen',
+                'nav-calendar': 'Kalender',
                 'nav-tree-expand': 'Boompijl: uitvouwen',
                 'nav-tree-collapse': 'Boompijl: invouwen',
                 'nav-hidden-items': 'Verborgen items',
@@ -859,6 +879,34 @@ export const STRINGS_NL = {
             pinRecentNotesWithShortcuts: {
                 name: 'Recente notities met snelkoppelingen vastpinnen',
                 desc: 'Recente notities opnemen wanneer snelkoppelingen zijn vastgepind.'
+            },
+            showCalendar: {
+                name: 'Kalender tonen',
+                desc: 'Toon een kalender onderaan het navigatiepaneel.'
+            },
+            calendarLocale: {
+                name: 'Taal',
+                desc: 'Bepaalt weeknummering en eerste dag van de week.',
+                options: {
+                    systemDefault: 'Standaard'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Weken om te tonen',
+                desc: 'Aantal kalenderweken om weer te geven.',
+                options: {
+                    fullMonth: 'Volledige maand',
+                    oneWeek: '1 week',
+                    weeksCount: '{count} weken'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Weeknummer tonen',
+                desc: 'Voeg een kolom toe met het weeknummer.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Bevestigen voor aanmaken',
+                desc: 'Toon een bevestigingsdialoog bij het aanmaken van een nieuwe dagelijkse notitie.'
             },
             showTooltips: {
                 name: 'Tooltips tonen',

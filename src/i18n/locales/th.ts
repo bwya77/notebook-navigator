@@ -72,6 +72,23 @@ export const STRINGS_TH = {
         profileMenuAria: 'เปลี่ยนโปรไฟล์ห้องนิรภัย'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'ปฏิทิน',
+        previousMonthAria: 'เดือนก่อนหน้า',
+        nextMonthAria: 'เดือนถัดไป',
+        dailyNotesNotEnabled: 'ปลั๊กอินบันทึกรายวันไม่ได้เปิดใช้งาน',
+        createDailyNote: {
+            title: 'บันทึกรายวันใหม่',
+            message: 'ไฟล์ {filename} ไม่มีอยู่ คุณต้องการสร้างหรือไม่?',
+            confirmButton: 'สร้าง'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'ไม่สามารถอ่านเทมเพลตบันทึกรายวัน',
+        createFailed: 'ไม่สามารถสร้างบันทึกรายวัน'
+    },
+
     shortcuts: {
         folderExists: 'โฟลเดอร์อยู่ในทางลัดแล้ว',
         noteExists: 'โน้ตอยู่ในทางลัดแล้ว',
@@ -93,6 +110,8 @@ export const STRINGS_TH = {
     paneHeader: {
         collapseAllFolders: 'ยุบรายการ',
         expandAllFolders: 'ขยายรายการทั้งหมด',
+        showCalendar: 'แสดงปฏิทิน',
+        hideCalendar: 'ซ่อนปฏิทิน',
         newFolder: 'โฟลเดอร์ใหม่',
         newNote: 'โน้ตใหม่',
         mobileBackToNavigation: 'กลับไปการนำทาง',
@@ -252,6 +271,7 @@ export const STRINGS_TH = {
                 'nav-recent-files': 'ไฟล์ล่าสุด',
                 'nav-expand-all': 'ขยายทั้งหมด',
                 'nav-collapse-all': 'ยุบทั้งหมด',
+                'nav-calendar': 'ปฏิทิน',
                 'nav-tree-expand': 'ลูกศรต้นไม้: ขยาย',
                 'nav-tree-collapse': 'ลูกศรต้นไม้: ยุบ',
                 'nav-hidden-items': 'รายการที่ซ่อน',
@@ -857,6 +877,34 @@ export const STRINGS_TH = {
             pinRecentNotesWithShortcuts: {
                 name: 'ปักหมุดโน้ตล่าสุดพร้อมทางลัด',
                 desc: 'รวมโน้ตล่าสุดเมื่อปักหมุดทางลัด'
+            },
+            showCalendar: {
+                name: 'แสดงปฏิทิน',
+                desc: 'แสดงปฏิทินที่ด้านล่างของแผงนำทาง'
+            },
+            calendarLocale: {
+                name: 'ภาษา',
+                desc: 'ควบคุมการนับสัปดาห์และวันแรกของสัปดาห์',
+                options: {
+                    systemDefault: 'ค่าเริ่มต้น'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'สัปดาห์ที่แสดง',
+                desc: 'จำนวนสัปดาห์ปฏิทินที่จะแสดง',
+                options: {
+                    fullMonth: 'เต็มเดือน',
+                    oneWeek: '1 สัปดาห์',
+                    weeksCount: '{count} สัปดาห์'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'แสดงหมายเลขสัปดาห์',
+                desc: 'เพิ่มคอลัมน์พร้อมหมายเลขสัปดาห์'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'ยืนยันก่อนสร้าง',
+                desc: 'แสดงกล่องยืนยันเมื่อสร้างบันทึกรายวันใหม่'
             },
             showTooltips: {
                 name: 'แสดง tooltips',

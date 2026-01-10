@@ -165,14 +165,7 @@ export function useCacheRebuildNotice(params: { app: App; stoppedRef: RefObject<
                     const needsWordCount = trackWordCount && isMarkdown && data.wordCount === null;
                     const needsCustomProperty = trackCustomProperty && isMarkdown && data.customProperty === null;
 
-                    if (
-                        !needsPreview &&
-                        !needsTags &&
-                        !needsFeatureImage &&
-                        !needsMetadata &&
-                        !needsWordCount &&
-                        !needsCustomProperty
-                    ) {
+                    if (!needsPreview && !needsTags && !needsFeatureImage && !needsMetadata && !needsWordCount && !needsCustomProperty) {
                         return;
                     }
 

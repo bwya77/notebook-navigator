@@ -72,6 +72,23 @@ export const STRINGS_ID = {
         profileMenuAria: 'Ubah profil vault'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Kalender',
+        previousMonthAria: 'Bulan sebelumnya',
+        nextMonthAria: 'Bulan berikutnya',
+        dailyNotesNotEnabled: 'Plugin catatan harian tidak diaktifkan.',
+        createDailyNote: {
+            title: 'Catatan harian baru',
+            message: 'File {filename} tidak ada. Apakah Anda ingin membuatnya?',
+            confirmButton: 'Buat'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Gagal membaca template catatan harian.',
+        createFailed: 'Tidak dapat membuat catatan harian.'
+    },
+
     shortcuts: {
         folderExists: 'Folder sudah ada di pintasan',
         noteExists: 'Catatan sudah ada di pintasan',
@@ -93,6 +110,8 @@ export const STRINGS_ID = {
     paneHeader: {
         collapseAllFolders: 'Ciutkan item',
         expandAllFolders: 'Luaskan semua item',
+        showCalendar: 'Tampilkan kalender',
+        hideCalendar: 'Sembunyikan kalender',
         newFolder: 'Folder baru',
         newNote: 'Catatan baru',
         mobileBackToNavigation: 'Kembali ke navigasi',
@@ -252,6 +271,7 @@ export const STRINGS_ID = {
                 'nav-recent-files': 'File terbaru',
                 'nav-expand-all': 'Perluas semua',
                 'nav-collapse-all': 'Tutup semua',
+                'nav-calendar': 'Kalender',
                 'nav-tree-expand': 'Panah pohon: perluas',
                 'nav-tree-collapse': 'Panah pohon: tutup',
                 'nav-hidden-items': 'Item tersembunyi',
@@ -857,6 +877,34 @@ export const STRINGS_ID = {
             pinRecentNotesWithShortcuts: {
                 name: 'Sematkan catatan terbaru bersama pintasan',
                 desc: 'Sertakan catatan terbaru saat pintasan disematkan.'
+            },
+            showCalendar: {
+                name: 'Tampilkan kalender',
+                desc: 'Tampilkan kalender di bagian bawah panel navigasi.'
+            },
+            calendarLocale: {
+                name: 'Bahasa',
+                desc: 'Mengontrol penomoran minggu dan hari pertama dalam seminggu.',
+                options: {
+                    systemDefault: 'Default'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Minggu yang ditampilkan',
+                desc: 'Jumlah minggu kalender yang ditampilkan.',
+                options: {
+                    fullMonth: 'Bulan penuh',
+                    oneWeek: '1 minggu',
+                    weeksCount: '{count} minggu'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Tampilkan nomor minggu',
+                desc: 'Tambahkan kolom dengan nomor minggu.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Konfirmasi sebelum membuat',
+                desc: 'Tampilkan dialog konfirmasi saat membuat catatan harian baru.'
             },
             showTooltips: {
                 name: 'Tampilkan tooltip',

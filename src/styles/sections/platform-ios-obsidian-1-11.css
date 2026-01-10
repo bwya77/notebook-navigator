@@ -1,0 +1,218 @@
+/* Source: src/styles/sections/platform-ios-obsidian-1-11.css */
+
+/* ========================================================================
+   iOS + Obsidian 1.11+ iOS Platform Overrides
+   ======================================================================== */
+
+/* Platform-specific safe area definitions */
+.notebook-navigator-ios {
+    /* iOS uses env() for dynamic safe areas (notch, home indicator) */
+    --nn-mobile-safe-area-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios {
+    /* Obsidian 1.11+ already accounts for iOS safe areas in the view chrome. */
+    --nn-mobile-safe-area-bottom: 0px;
+}
+
+.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-navigation-pane[data-calendar='true'] {
+    /* The calendar overlay accounts for the safe area; keep the bottom toolbar at the fixed 49px height above it. */
+    --nn-pane-bottom-toolbar-space: 49px;
+}
+
+.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios)
+    .nn-navigation-pane[data-calendar='true']
+    .nn-pane-bottom-toolbar
+    .nn-mobile-toolbar {
+    padding-bottom: 0;
+    height: 49px;
+    min-height: 49px;
+}
+
+/* Obsidian 1.11+ iOS: view container background */
+/* Targets Obsidian's `.view-content` wrapper to ensure the area behind the navigator matches the mobile pane background. */
+.view-content.notebook-navigator.notebook-navigator-obsidian-1-11-plus-ios {
+    background-color: var(--nn-theme-mobile-bg);
+}
+
+/* Obsidian 1.11+ iOS: bottom padding inside the navigator viewport */
+/* Applied to the internal split container so the bottom edge doesn't touch the view chrome and the toolbar shadow can render into the padding (8px matches the top spacer). */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-split-container {
+    padding-bottom: 8px;
+    box-sizing: border-box;
+}
+
+/* iOS (Obsidian 1.11+) bottom fade gradient - overlays list content behind the toolbar */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
+    position: relative;
+}
+
+/* Allow the iOS glass toolbar shadow to render into the split container padding */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
+    overflow: visible;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane-scroller,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane-scroller {
+    display: flex;
+    flex-direction: column;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane {
+    --nn-bottom-fade-bg: var(--nn-theme-nav-bg);
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
+    --nn-bottom-fade-bg: var(--nn-theme-list-bg);
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-fade {
+    position: sticky;
+    bottom: 0;
+    z-index: 4;
+    height: 0;
+    pointer-events: none;
+    margin-top: auto;
+    margin-left: calc(-1 * var(--nn-scroller-padding));
+    margin-right: calc(-1 * var(--nn-scroller-padding));
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-fade::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(88px + var(--nn-mobile-safe-area-bottom, 0px));
+    background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 85%, transparent) 0%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 55%, transparent) 38%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 25%, transparent) 68%,
+        color-mix(in srgb, var(--nn-bottom-fade-bg) 10%, transparent) 86%,
+        transparent 100%
+    );
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-fade {
+    bottom: var(--nn-nav-calendar-height);
+}
+
+/* Ensure the iOS glass toolbar shadow does not render on top of the calendar overlay. */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-calendar-overlay {
+    z-index: 6;
+}
+
+/* Navigation pane calendar safe area for Obsidian 1.11+ iOS */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane {
+    /* Obsidian 1.11+ already accounts for iOS safe areas in the view chrome. */
+    --nn-nav-calendar-safe-area: 0px;
+}
+
+.notebook-navigator-mobile.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
+.notebook-navigator-mobile.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
+    --nn-pane-bottom-toolbar-space: 64px;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-toolbar {
+    bottom: 12px;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
+    bottom: calc(12px + var(--nn-nav-calendar-height));
+}
+
+/* Obsidian 1.11+ iOS glass toolbar */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar {
+    pointer-events: none;
+    justify-content: space-between;
+    background-color: transparent;
+    border-top: none;
+    /* 2px for border effect + 2px to match Obsidian view selector dropdown */
+    padding-left: calc(var(--nn-scroller-padding) + 4px);
+    padding-right: calc(var(--nn-scroller-padding) + 4px);
+    padding-bottom: 0;
+    height: 40px;
+    min-height: 40px;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-left,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-right {
+    display: flex;
+    pointer-events: auto;
+    flex: 0 0 auto;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-pill,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-circle {
+    display: flex;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios {
+    --nn-theme-mobile-toolbar-button-icon-color: var(--text-normal);
+    --nn-ios-toolbar-glass-bg: color-mix(in srgb, var(--nn-theme-mobile-toolbar-glass-bg) 45%, transparent);
+    --nn-ios-toolbar-glass-outline: rgba(255, 255, 255, 0.6);
+    --nn-ios-toolbar-glass-shadow: 0 0 0 2px var(--nn-ios-toolbar-glass-outline), 0 16px 32px rgba(0, 0, 0, 0.09);
+    --nn-ios-toolbar-glass-filter: blur(3px) saturate(160%);
+    --nn-theme-mobile-toolbar-button-active-bg: transparent;
+}
+
+.theme-dark .notebook-navigator-obsidian-1-11-plus-ios {
+    --nn-ios-toolbar-glass-outline: rgba(255, 255, 255, 0.1);
+    --nn-ios-toolbar-glass-shadow: 0 0 0 2px var(--nn-ios-toolbar-glass-outline), 0 16px 32px rgba(0, 0, 0, 0.3);
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-pill,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-circle {
+    position: relative;
+    z-index: 0;
+    border-radius: 999px;
+    background: var(--nn-ios-toolbar-glass-bg);
+    border: 2px solid transparent;
+    -webkit-backdrop-filter: var(--nn-ios-toolbar-glass-filter);
+    backdrop-filter: var(--nn-ios-toolbar-glass-filter);
+    box-shadow: var(--nn-ios-toolbar-glass-shadow);
+    overflow: hidden;
+
+    /*
+     * Warped glass (disabled)
+     * Enable when WebKit supports SVG `url(#...)` values for `-webkit-backdrop-filter`.
+     *
+     * Requirements:
+     * - Inject the SVG filter defs into the document (filter id: `notebook-navigator-frosted`)
+     * - Set:
+     *   -webkit-backdrop-filter: url(#notebook-navigator-frosted);
+     *   backdrop-filter: url(#notebook-navigator-frosted);
+     */
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-pill > .nn-mobile-toolbar-button,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-circle > .nn-mobile-toolbar-button {
+    position: relative;
+    z-index: 1;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-pill {
+    width: auto;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 1px 10px;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-circle {
+    padding: 1px;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-button {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    border-radius: 999px;
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-button svg {
+    stroke-width: 2;
+}

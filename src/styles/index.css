@@ -48,6 +48,8 @@ Keep this list ordered: later files override earlier ones.
 @import './sections/navigation-scroller.css';
 /* navigation-tree.css: navigation rows (`.nn-navitem`), chevrons/icons/counts, shortcut rows, root reorder panel. */
 @import './sections/navigation-tree.css';
+/* navigation-calendar.css: bottom overlay calendar in navigation pane (`.nn-navigation-calendar*`). */
+@import './sections/navigation-calendar.css';
 /* list-files.css: list scroller (`.nn-list-pane-scroller`), overlay stack, list title area, file rows (`.nn-file`), separators, quick actions panel. */
 @import './sections/list-files.css';
 /* list-tags.css: file tag pills (`.nn-file-tag*`) and selected file text color rules. */
@@ -120,6 +122,8 @@ Keep this list ordered: later files override earlier ones.
 @import './sections/mobile-variables.css';
 /* mobile-tab-bars.css: mobile bottom navigation tabs, safe-area handling, and toolbar positioning rules. */
 @import './sections/mobile-tab-bars.css';
+/* platform-ios-obsidian-1-11.css: iOS safe areas + Obsidian 1.11+ iOS glass toolbar/overlays. */
+@import './sections/platform-ios-obsidian-1-11.css';
 /* android-toolbar.css: Android toolbar positioning overrides. */
 @import './sections/android-toolbar.css';
 /* android-textzoom.css: Android `textZoom` compensation variables and overrides. */

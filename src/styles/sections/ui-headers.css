@@ -142,6 +142,145 @@
     flex: 0 1 auto;
 }
 
+/* ========================================================================
+   Mobile Headers + Breadcrumb
+   ======================================================================== */
+
+/* Mobile header - adjust for back button */
+.notebook-navigator-mobile .nn-pane-header {
+    flex-shrink: 0;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--nn-file-item-padding-horizontal);
+    background-color: var(--nn-theme-list-bg);
+}
+
+/* Simplified mobile headers */
+.notebook-navigator-mobile .nn-pane-header-simple {
+    justify-content: center;
+    text-align: center;
+}
+
+.notebook-navigator-mobile .nn-navigation-pane .nn-pane-header-simple {
+    justify-content: center;
+    text-align: center;
+}
+
+.notebook-navigator-mobile .nn-pane-header-simple .nn-pane-header-profile {
+    width: 100%;
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+}
+
+.notebook-navigator-mobile .nn-pane-header-simple .nn-pane-header-title {
+    font-size: var(--nn-mobile-header-font-size);
+    font-weight: var(--nn-theme-mobile-list-header-breadcrumb-font-weight);
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
+    width: 100%;
+    text-align: center;
+}
+
+.notebook-navigator-mobile .nn-pane-header-simple .nn-pane-header-profile .nn-pane-header-text {
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
+}
+
+/* Mobile header container */
+.notebook-navigator-mobile .nn-mobile-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Scrollable breadcrumb container */
+.notebook-navigator-mobile .nn-breadcrumb-scroll {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    margin-left: 44px; /* Start right after the arrow button */
+}
+
+/* Add right margin when no icon for centering */
+.notebook-navigator-mobile .nn-mobile-header-no-icon .nn-breadcrumb-scroll {
+    margin-right: 44px;
+}
+
+.notebook-navigator-mobile .nn-breadcrumb-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Fade overlay positioned just right of back arrow */
+.notebook-navigator-mobile .nn-breadcrumb-fade {
+    position: absolute;
+    left: 44px; /* Position just right of the back arrow */
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, var(--background-primary) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Mobile back button */
+.notebook-navigator-mobile .nn-back-button {
+    position: absolute;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+    z-index: 1;
+    opacity: 1 !important;
+}
+
+/* Increase stroke width for back button arrow and apply link color */
+.notebook-navigator-mobile .nn-back-button svg {
+    stroke: var(--nn-theme-mobile-list-header-link-color) !important;
+    width: 20px !important; /* Default size for Android */
+    height: 20px !important;
+}
+
+/* iOS/iPadOS-specific back button adjustments */
+.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-back-button {
+    padding: 4px !important; /* Reduce padding to allow larger icon (44px - 8px padding = 36px space) */
+}
+
+/* iOS/iPadOS-specific back button chevron styling (36px actual, ~32px visual due to Lucide padding) */
+.notebook-navigator-mobile:not(.notebook-navigator-android) .nn-back-button svg {
+    width: 36px !important;
+    height: 36px !important;
+}
+
+/* Mobile header title */
+.notebook-navigator-mobile .nn-mobile-title {
+    font-weight: var(--nn-theme-mobile-list-header-breadcrumb-font-weight);
+    font-size: var(--nn-mobile-header-font-size);
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
+    white-space: nowrap;
+    padding-left: 12px; /* Standard padding for snap position */
+}
+
+/* Breadcrumb current segment - desktop uses list header color, mobile uses navitem color */
+.nn-path-current {
+    color: var(--nn-theme-list-header-breadcrumb-color);
+}
+
+/* Mobile breadcrumb current segment - use mobile-specific theme color */
+.notebook-navigator-mobile .nn-path-current {
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
+}
+
+/* Mobile breadcrumb separator - use same color as current segment */
+.notebook-navigator-mobile .nn-path-separator {
+    color: var(--nn-theme-mobile-list-header-breadcrumb-color);
+}
+
 /* Search bar container */
 .nn-search-bar-container {
     height: 0;

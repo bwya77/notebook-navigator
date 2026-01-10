@@ -37,6 +37,7 @@
 .notebook-navigator-mobile .nn-list-pane-scroller {
     flex: 1;
     min-height: 0; /* Important for proper scrolling */
+    -webkit-overflow-scrolling: touch;
     /* Prevent the rubber-band/glow overscroll effect on mobile. */
     overscroll-behavior: none;
 }

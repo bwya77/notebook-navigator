@@ -72,6 +72,23 @@ export const STRINGS_VI = {
         profileMenuAria: 'Đổi hồ sơ vault'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Lịch',
+        previousMonthAria: 'Tháng trước',
+        nextMonthAria: 'Tháng sau',
+        dailyNotesNotEnabled: 'Plugin ghi chú hàng ngày chưa được bật.',
+        createDailyNote: {
+            title: 'Ghi chú hàng ngày mới',
+            message: 'Tệp {filename} không tồn tại. Bạn có muốn tạo không?',
+            confirmButton: 'Tạo'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Không thể đọc mẫu ghi chú hàng ngày.',
+        createFailed: 'Không thể tạo ghi chú hàng ngày.'
+    },
+
     shortcuts: {
         folderExists: 'Thư mục đã có trong lối tắt',
         noteExists: 'Ghi chú đã có trong lối tắt',
@@ -93,6 +110,8 @@ export const STRINGS_VI = {
     paneHeader: {
         collapseAllFolders: 'Thu gọn các mục', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'Mở rộng tất cả các mục', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'Hiển thị lịch',
+        hideCalendar: 'Ẩn lịch',
         newFolder: 'Thư mục mới', // Tooltip for create new folder button (English: New folder)
         newNote: 'Ghi chú mới', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'Quay lại điều hướng', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_VI = {
                 'nav-recent-files': 'Tệp gần đây',
                 'nav-expand-all': 'Mở rộng tất cả',
                 'nav-collapse-all': 'Thu gọn tất cả',
+                'nav-calendar': 'Lịch',
                 'nav-tree-expand': 'Mũi tên cây: mở rộng',
                 'nav-tree-collapse': 'Mũi tên cây: thu gọn',
                 'nav-hidden-items': 'Mục ẩn',
@@ -857,6 +877,34 @@ export const STRINGS_VI = {
             pinRecentNotesWithShortcuts: {
                 name: 'Ghim ghi chú gần đây cùng lối tắt',
                 desc: 'Bao gồm ghi chú gần đây khi lối tắt được ghim.'
+            },
+            showCalendar: {
+                name: 'Hiển thị lịch',
+                desc: 'Hiển thị lịch ở dưới cùng của bảng điều hướng.'
+            },
+            calendarLocale: {
+                name: 'Ngôn ngữ',
+                desc: 'Điều khiển đánh số tuần và ngày đầu tuần.',
+                options: {
+                    systemDefault: 'Mặc định'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Số tuần hiển thị',
+                desc: 'Số tuần lịch để hiển thị.',
+                options: {
+                    fullMonth: 'Cả tháng',
+                    oneWeek: '1 tuần',
+                    weeksCount: '{count} tuần'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Hiển thị số tuần',
+                desc: 'Thêm cột với số tuần.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Xác nhận trước khi tạo',
+                desc: 'Hiển thị hộp thoại xác nhận khi tạo ghi chú hàng ngày mới.'
             },
             showTooltips: {
                 name: 'Hiện chú thích',

@@ -78,6 +78,13 @@ interface UseNavigationPaneScrollParams {
      * - scrollToIndex alignment below the chrome stack.
      */
     scrollMargin: number;
+    /**
+     * Bottom inset reserved by overlays that sit on top of the scroll content.
+     *
+     * The navigation pane can render a bottom calendar overlay; scrolling and scrollToIndex should
+     * keep the target row above that overlay.
+     */
+    scrollPaddingEnd: number;
 }
 
 /**
@@ -110,7 +117,8 @@ export function useNavigationPaneScroll({
     pathToIndex,
     isVisible,
     activeShortcutKey,
-    scrollMargin
+    scrollMargin,
+    scrollPaddingEnd
 }: UseNavigationPaneScrollParams): UseNavigationPaneScrollResult {
     const { isMobile } = useServices();
     const selectionState = useSelectionState();
@@ -254,6 +262,39 @@ export function useNavigationPaneScroll({
      * Initialize TanStack Virtual virtualizer with dynamic heights for navigation items
      */
     const effectiveScrollMargin = Number.isFinite(scrollMargin) && scrollMargin > 0 ? scrollMargin : 0;
+    const effectiveScrollPaddingEnd = Number.isFinite(scrollPaddingEnd) && scrollPaddingEnd > 0 ? scrollPaddingEnd : 0;
+
+    const ensureIndexNotCovered = useCallback(
+        (index: number) => {
+            const scrollElement = scrollContainerRef.current;
+            if (!scrollElement) {
+                return;
+            }
+
+            // Navigation rows set `data-index` in `src/components/NavigationPane.tsx`; use it to find the rendered row
+            // TanStack Virtual scrolled to so we can keep it within the safe viewport (top chrome + bottom overlays).
+            const row = scrollElement.querySelector(`[data-index="${index}"]`);
+            if (!(row instanceof HTMLElement)) {
+                return;
+            }
+
+            const containerRect = scrollElement.getBoundingClientRect();
+            const rowRect = row.getBoundingClientRect();
+            const safeTop = containerRect.top + effectiveScrollMargin;
+            const safeBottom = containerRect.bottom - effectiveScrollPaddingEnd;
+
+            if (rowRect.top < safeTop) {
+                scrollElement.scrollTop -= Math.round(safeTop - rowRect.top);
+                return;
+            }
+
+            if (rowRect.bottom > safeBottom) {
+                scrollElement.scrollTop += Math.round(rowRect.bottom - safeBottom);
+            }
+        },
+        [effectiveScrollMargin, effectiveScrollPaddingEnd]
+    );
+
     const rowVirtualizer = useVirtualizer({
         count: items.length,
         getScrollElement: () => scrollContainerRef.current,
@@ -261,6 +302,7 @@ export function useNavigationPaneScroll({
         scrollMargin: effectiveScrollMargin,
         // Ensure scrollToIndex aligns items below the pinned header instead of under it.
         scrollPaddingStart: effectiveScrollMargin,
+        scrollPaddingEnd: effectiveScrollPaddingEnd,
         estimateSize: index => {
             const item = items[index];
 
@@ -288,6 +330,25 @@ export function useNavigationPaneScroll({
         },
         overscan: OVERSCAN
     });
+
+    const scrollToIndexSafely = useCallback(
+        (index: number, align: Align) => {
+            // Use TanStack Virtual for the primary scroll, then run a small post-adjustment step to ensure the selected
+            // row is not covered by the sticky header/pinned stack or by a bottom overlay (calendar).
+            rowVirtualizer.scrollToIndex(index, { align });
+
+            let attempts = 0;
+            const adjust = () => {
+                attempts += 1;
+                ensureIndexNotCovered(index);
+                if (attempts < 3) {
+                    requestAnimationFrame(adjust);
+                }
+            };
+            requestAnimationFrame(adjust);
+        },
+        [ensureIndexNotCovered, rowVirtualizer]
+    );
 
     /**
      * Scroll to top handler for mobile header tap
@@ -378,7 +439,7 @@ export function useNavigationPaneScroll({
         const index = resolveIndex(selectedPath, currentSelectionType);
 
         if (index !== undefined && index >= 0) {
-            rowVirtualizer.scrollToIndex(index, { align: getNavAlign('selection') });
+            scrollToIndexSafely(index, getNavAlign('selection'));
         }
     }, [
         selectedPath,
@@ -390,7 +451,8 @@ export function useNavigationPaneScroll({
         selectionState.revealSource,
         resolveIndex,
         activeShortcutKey,
-        settings.skipAutoScroll
+        settings.skipAutoScroll,
+        scrollToIndexSafely
     ]);
 
     /**
@@ -439,7 +501,7 @@ export function useNavigationPaneScroll({
             const tagIndex = resolveIndex(selectionState.selectedTag, ItemType.TAG);
 
             if (tagIndex !== undefined && tagIndex >= 0) {
-                rowVirtualizer.scrollToIndex(tagIndex, { align: getNavAlign('selection') });
+                scrollToIndexSafely(tagIndex, getNavAlign('selection'));
             }
         }
     }, [
@@ -453,7 +515,8 @@ export function useNavigationPaneScroll({
         resolveIndex,
         activeShortcutKey,
         selectionState.revealSource,
-        settings.skipAutoScroll
+        settings.skipAutoScroll,
+        scrollToIndexSafely
     ]);
 
     /**
@@ -486,7 +549,7 @@ export function useNavigationPaneScroll({
 
         if (index !== undefined && index !== -1) {
             const finalAlign: Align = align ?? getNavAlign(intent);
-            rowVirtualizer.scrollToIndex(index, { align: finalAlign });
+            scrollToIndexSafely(index, finalAlign);
             pendingScrollRef.current = null;
 
             // Stabilization mechanism: Handle rare double rebuilds
@@ -512,7 +575,7 @@ export function useNavigationPaneScroll({
             }
         }
         // If index not found, keep the pending scroll for next rebuild
-    }, [rowVirtualizer, isScrollContainerReady, pendingScrollVersion, showHiddenItems, resolveIndex]);
+    }, [rowVirtualizer, isScrollContainerReady, pendingScrollVersion, showHiddenItems, resolveIndex, scrollToIndexSafely]);
 
     /**
      * Listen for mobile drawer visibility events
@@ -536,7 +599,7 @@ export function useNavigationPaneScroll({
             if (rowVirtualizer && isScrollContainerReady) {
                 const index = resolveIndex(selectedPath, targetType);
                 if (index !== undefined && index >= 0) {
-                    rowVirtualizer.scrollToIndex(index, { align: 'auto' });
+                    scrollToIndexSafely(index, 'auto');
                     return;
                 }
             }
@@ -554,7 +617,16 @@ export function useNavigationPaneScroll({
 
         window.addEventListener('notebook-navigator-visible', handleVisible);
         return () => window.removeEventListener('notebook-navigator-visible', handleVisible);
-    }, [isMobile, selectedPath, rowVirtualizer, selectionState.selectionType, resolveIndex, activeShortcutKey, isScrollContainerReady]);
+    }, [
+        isMobile,
+        selectedPath,
+        rowVirtualizer,
+        selectionState.selectionType,
+        resolveIndex,
+        activeShortcutKey,
+        isScrollContainerReady,
+        scrollToIndexSafely
+    ]);
 
     /**
      * Re-measure all items when line height settings change
@@ -587,7 +659,7 @@ export function useNavigationPaneScroll({
                 if (index !== undefined && index >= 0) {
                     // Use requestAnimationFrame to ensure measurements are complete
                     requestAnimationFrame(() => {
-                        rowVirtualizer.scrollToIndex(index, { align: 'auto' });
+                        scrollToIndexSafely(index, 'auto');
                     });
                 }
             }
@@ -603,7 +675,54 @@ export function useNavigationPaneScroll({
         rowVirtualizer,
         resolveIndex,
         selectionState.selectionType,
-        activeShortcutKey
+        activeShortcutKey,
+        scrollToIndexSafely
+    ]);
+
+    const prevScrollInsetsRef = useRef<{ top: number; bottom: number } | null>(null);
+    useEffect(() => {
+        if (!isScrollContainerReady) {
+            return;
+        }
+
+        const prevInsets = prevScrollInsetsRef.current;
+        const nextInsets = { top: effectiveScrollMargin, bottom: effectiveScrollPaddingEnd };
+        prevScrollInsetsRef.current = nextInsets;
+
+        if (!prevInsets) {
+            return;
+        }
+
+        if (prevInsets.top === nextInsets.top && prevInsets.bottom === nextInsets.bottom) {
+            return;
+        }
+
+        if (activeShortcutKey) {
+            return;
+        }
+
+        if (!selectedPath) {
+            return;
+        }
+
+        const selectedType = selectionState.selectionType === ItemType.TAG ? ItemType.TAG : ItemType.FOLDER;
+        const index = resolveIndex(selectedPath, selectedType);
+        if (index === undefined || index < 0) {
+            return;
+        }
+
+        requestAnimationFrame(() => {
+            scrollToIndexSafely(index, 'auto');
+        });
+    }, [
+        activeShortcutKey,
+        effectiveScrollMargin,
+        effectiveScrollPaddingEnd,
+        isScrollContainerReady,
+        resolveIndex,
+        scrollToIndexSafely,
+        selectedPath,
+        selectionState.selectionType
     ]);
 
     /**

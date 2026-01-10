@@ -71,6 +71,23 @@ export const STRINGS_KO = {
         profileMenuAria: '보관소 프로필 변경'
     },
 
+    navigationCalendar: {
+        ariaLabel: '달력',
+        previousMonthAria: '이전 달',
+        nextMonthAria: '다음 달',
+        dailyNotesNotEnabled: '데일리 노트 코어 플러그인이 활성화되어 있지 않습니다.',
+        createDailyNote: {
+            title: '새 데일리 노트',
+            message: '파일 {filename}이(가) 존재하지 않습니다. 생성하시겠습니까?',
+            confirmButton: '생성'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: '데일리 노트 템플릿을 읽을 수 없습니다.',
+        createFailed: '데일리 노트를 생성할 수 없습니다.'
+    },
+
     shortcuts: {
         folderExists: '폴더가 이미 바로가기에 있습니다',
         noteExists: '노트가 이미 바로가기에 있습니다',
@@ -92,6 +109,8 @@ export const STRINGS_KO = {
     paneHeader: {
         collapseAllFolders: '항목 접기', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: '모든 항목 펼치기', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: '달력 표시',
+        hideCalendar: '달력 숨기기',
         newFolder: '새 폴더', // Tooltip for create new folder button (English: New folder)
         newNote: '새 노트', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: '탐색으로 돌아가기', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -251,6 +270,7 @@ export const STRINGS_KO = {
                 'nav-recent-files': '최근 파일',
                 'nav-expand-all': '모두 펼치기',
                 'nav-collapse-all': '모두 접기',
+                'nav-calendar': '달력',
                 'nav-tree-expand': '트리 화살표: 펼치기',
                 'nav-tree-collapse': '트리 화살표: 접기',
                 'nav-hidden-items': '숨겨진 항목',
@@ -857,6 +877,34 @@ export const STRINGS_KO = {
             pinRecentNotesWithShortcuts: {
                 name: '바로가기와 함께 최근 노트 고정',
                 desc: '바로가기를 고정할 때 최근 노트를 포함합니다.'
+            },
+            showCalendar: {
+                name: '달력 표시',
+                desc: '탐색 창 하단에 달력을 표시합니다.'
+            },
+            calendarLocale: {
+                name: '지역',
+                desc: '주 번호와 한 주의 첫 번째 요일을 제어합니다.',
+                options: {
+                    systemDefault: '기본값'
+                }
+            },
+            calendarWeeksToShow: {
+                name: '표시할 주',
+                desc: '표시할 달력 주 수입니다.',
+                options: {
+                    fullMonth: '전체 월',
+                    oneWeek: '1주',
+                    weeksCount: '{count}주'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: '주 번호 표시',
+                desc: '주 번호 열을 추가합니다.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: '생성 전 확인',
+                desc: '새 데일리 노트를 생성할 때 확인 대화 상자를 표시합니다.'
             },
             showTooltips: {
                 name: '도구 설명 표시',

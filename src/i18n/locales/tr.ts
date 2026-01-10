@@ -72,6 +72,23 @@ export const STRINGS_TR = {
         profileMenuAria: 'Kasa profilini değiştir'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Takvim',
+        previousMonthAria: 'Önceki ay',
+        nextMonthAria: 'Sonraki ay',
+        dailyNotesNotEnabled: 'Günlük notlar eklentisi etkin değil.',
+        createDailyNote: {
+            title: 'Yeni günlük not',
+            message: '{filename} dosyası mevcut değil. Oluşturmak ister misiniz?',
+            confirmButton: 'Oluştur'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Günlük not şablonu okunamadı.',
+        createFailed: 'Günlük not oluşturulamadı.'
+    },
+
     shortcuts: {
         folderExists: 'Klasör zaten kısayollarda',
         noteExists: 'Not zaten kısayollarda',
@@ -93,6 +110,8 @@ export const STRINGS_TR = {
     paneHeader: {
         collapseAllFolders: 'Öğeleri daralt', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'Tüm öğeleri genişlet', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'Takvimi göster',
+        hideCalendar: 'Takvimi gizle',
         newFolder: 'Yeni klasör', // Tooltip for create new folder button (English: New folder)
         newNote: 'Yeni not', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'Gezinmeye dön', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_TR = {
                 'nav-recent-files': 'Son dosyalar',
                 'nav-expand-all': 'Tümünü genişlet',
                 'nav-collapse-all': 'Tümünü daralt',
+                'nav-calendar': 'Takvim',
                 'nav-tree-expand': 'Ağaç oku: genişlet',
                 'nav-tree-collapse': 'Ağaç oku: daralt',
                 'nav-hidden-items': 'Gizli öğeler',
@@ -857,6 +877,34 @@ export const STRINGS_TR = {
             pinRecentNotesWithShortcuts: {
                 name: 'Son notları kısayollarla birlikte sabitle',
                 desc: 'Kısayollar sabitlendiğinde son notları dahil et.'
+            },
+            showCalendar: {
+                name: 'Takvimi göster',
+                desc: 'Gezinme panelinin altında bir takvim göster.'
+            },
+            calendarLocale: {
+                name: 'Dil',
+                desc: 'Hafta numaralandırmasını ve haftanın ilk gününü kontrol eder.',
+                options: {
+                    systemDefault: 'Varsayılan'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Gösterilecek haftalar',
+                desc: 'Görüntülenecek takvim haftası sayısı.',
+                options: {
+                    fullMonth: 'Tam ay',
+                    oneWeek: '1 hafta',
+                    weeksCount: '{count} hafta'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Hafta numarasını göster',
+                desc: 'Hafta numarasıyla bir sütun ekle.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Oluşturmadan önce onayla',
+                desc: 'Yeni bir günlük not oluştururken onay iletişim kutusu göster.'
             },
             showTooltips: {
                 name: 'İpuçlarını göster',

@@ -92,8 +92,3 @@
     stroke-width: 2;
     fill: none;
 }
-
-/* Remove line-height from icon span to prevent vertical offset */
-.nn-icon-button > span {
-    line-height: 0;
-}

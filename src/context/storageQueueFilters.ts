@@ -76,13 +76,7 @@ export function filterFilesRequiringMetadataSources(
             const needsCustomProperty = customPropertyEnabled && record.customProperty === null;
             const needsWordCount = record.wordCount === null;
             const needsRefresh = record.markdownPipelineMtime !== file.stat.mtime;
-            if (
-                needsRefresh ||
-                needsPreview ||
-                needsFeatureImage ||
-                needsCustomProperty ||
-                needsWordCount
-            ) {
+            if (needsRefresh || needsPreview || needsFeatureImage || needsCustomProperty || needsWordCount) {
                 return true;
             }
         }

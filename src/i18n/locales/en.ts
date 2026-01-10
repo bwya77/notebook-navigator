@@ -72,6 +72,23 @@ export const STRINGS_EN = {
         profileMenuAria: 'Change vault profile'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Calendar',
+        previousMonthAria: 'Previous month',
+        nextMonthAria: 'Next month',
+        dailyNotesNotEnabled: 'Daily notes core plugin is not enabled.',
+        createDailyNote: {
+            title: 'New daily note',
+            message: 'File {filename} does not exist. Would you like to create it?',
+            confirmButton: 'Create'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Failed to read the daily note template.',
+        createFailed: 'Unable to create daily note.'
+    },
+
     shortcuts: {
         folderExists: 'Folder already in shortcuts',
         noteExists: 'Note already in shortcuts',
@@ -93,6 +110,8 @@ export const STRINGS_EN = {
     paneHeader: {
         collapseAllFolders: 'Collapse items', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'Expand all items', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'Show calendar',
+        hideCalendar: 'Hide calendar',
         newFolder: 'New folder', // Tooltip for create new folder button (English: New folder)
         newNote: 'New note', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'Back to navigation', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_EN = {
                 'nav-recent-files': 'Recent files',
                 'nav-expand-all': 'Expand all',
                 'nav-collapse-all': 'Collapse all',
+                'nav-calendar': 'Calendar',
                 'nav-tree-expand': 'Tree chevron: expand',
                 'nav-tree-collapse': 'Tree chevron: collapse',
                 'nav-hidden-items': 'Hidden items',
@@ -857,6 +877,34 @@ export const STRINGS_EN = {
             pinRecentNotesWithShortcuts: {
                 name: 'Pin recent notes with shortcuts',
                 desc: 'Include recent notes when shortcuts are pinned.'
+            },
+            showCalendar: {
+                name: 'Show calendar',
+                desc: 'Show a calendar at the bottom of the navigation pane.'
+            },
+            calendarLocale: {
+                name: 'Locale',
+                desc: 'Controls week numbering and first day of the week.',
+                options: {
+                    systemDefault: 'Default'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Weeks to show',
+                desc: 'Number of calendar weeks to display.',
+                options: {
+                    fullMonth: 'Full month',
+                    oneWeek: '1 week',
+                    weeksCount: '{count} weeks'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Show week number',
+                desc: 'Add a column with the week number.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Confirm before creating new note',
+                desc: 'Show a confirmation dialog when creating a new daily note.'
             },
             showTooltips: {
                 name: 'Show tooltips',

@@ -72,6 +72,23 @@ export const STRINGS_UK = {
         profileMenuAria: 'Змінити профіль сховища'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Календар',
+        previousMonthAria: 'Попередній місяць',
+        nextMonthAria: 'Наступний місяць',
+        dailyNotesNotEnabled: 'Плагін щоденних нотаток не увімкнено.',
+        createDailyNote: {
+            title: 'Нова щоденна нотатка',
+            message: 'Файл {filename} не існує. Бажаєте створити його?',
+            confirmButton: 'Створити'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Не вдалося прочитати шаблон щоденної нотатки.',
+        createFailed: 'Неможливо створити щоденну нотатку.'
+    },
+
     shortcuts: {
         folderExists: 'Папка вже в ярликах',
         noteExists: 'Нотатка вже в ярликах',
@@ -93,6 +110,8 @@ export const STRINGS_UK = {
     paneHeader: {
         collapseAllFolders: 'Згорнути елементи', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'Розгорнути всі елементи', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'Показати календар',
+        hideCalendar: 'Сховати календар',
         newFolder: 'Нова папка', // Tooltip for create new folder button (English: New folder)
         newNote: 'Нова нотатка', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'Назад до навігації', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -252,6 +271,7 @@ export const STRINGS_UK = {
                 'nav-recent-files': 'Нещодавні файли',
                 'nav-expand-all': 'Розгорнути все',
                 'nav-collapse-all': 'Згорнути все',
+                'nav-calendar': 'Календар',
                 'nav-tree-expand': 'Стрілка дерева: розгорнути',
                 'nav-tree-collapse': 'Стрілка дерева: згорнути',
                 'nav-hidden-items': 'Приховані елементи',
@@ -857,6 +877,34 @@ export const STRINGS_UK = {
             pinRecentNotesWithShortcuts: {
                 name: 'Закріпити останні нотатки разом з ярликами',
                 desc: 'Включати останні нотатки при закріпленні ярликів.'
+            },
+            showCalendar: {
+                name: 'Показати календар',
+                desc: 'Показати календар у нижній частині панелі навігації.'
+            },
+            calendarLocale: {
+                name: 'Мова',
+                desc: 'Керує нумерацією тижнів та першим днем тижня.',
+                options: {
+                    systemDefault: 'За замовчуванням'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Тижнів для показу',
+                desc: 'Кількість тижнів календаря для відображення.',
+                options: {
+                    fullMonth: 'Повний місяць',
+                    oneWeek: '1 тиждень',
+                    weeksCount: '{count} тижнів'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Показати номер тижня',
+                desc: 'Додати колонку з номером тижня.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Підтвердити перед створенням',
+                desc: 'Показати діалог підтвердження при створенні нової щоденної нотатки.'
             },
             showTooltips: {
                 name: 'Показувати підказки',

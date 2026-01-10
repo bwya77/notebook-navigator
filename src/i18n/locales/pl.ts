@@ -71,6 +71,23 @@ export const STRINGS_PL = {
         profileMenuAria: 'Zmień profil sejfu'
     },
 
+    navigationCalendar: {
+        ariaLabel: 'Kalendarz',
+        previousMonthAria: 'Poprzedni miesiąc',
+        nextMonthAria: 'Następny miesiąc',
+        dailyNotesNotEnabled: 'Wtyczka dziennych notatek nie jest włączona.',
+        createDailyNote: {
+            title: 'Nowa dzienna notatka',
+            message: 'Plik {filename} nie istnieje. Czy chcesz go utworzyć?',
+            confirmButton: 'Utwórz'
+        }
+    },
+
+    dailyNotes: {
+        templateReadFailed: 'Nie udało się odczytać szablonu dziennej notatki.',
+        createFailed: 'Nie można utworzyć dziennej notatki.'
+    },
+
     shortcuts: {
         folderExists: 'Folder już jest w skrótach',
         noteExists: 'Notatka już jest w skrótach',
@@ -92,6 +109,8 @@ export const STRINGS_PL = {
     paneHeader: {
         collapseAllFolders: 'Zwiń elementy', // Tooltip for button that collapses expanded items (English: Collapse items)
         expandAllFolders: 'Rozwiń wszystkie elementy', // Tooltip for button that expands all items (English: Expand all items)
+        showCalendar: 'Pokaż kalendarz',
+        hideCalendar: 'Ukryj kalendarz',
         newFolder: 'Nowy folder', // Tooltip for create new folder button (English: New folder)
         newNote: 'Nowa notatka', // Tooltip for create new note button (English: New note)
         mobileBackToNavigation: 'Wróć do nawigacji', // Mobile-only back button text to return to navigation pane (English: Back to navigation)
@@ -253,6 +272,7 @@ export const STRINGS_PL = {
                 'nav-recent-files': 'Ostatnie pliki',
                 'nav-expand-all': 'Rozwiń wszystkie',
                 'nav-collapse-all': 'Zwiń wszystkie',
+                'nav-calendar': 'Kalendarz',
                 'nav-tree-expand': 'Strzałka drzewa: rozwiń',
                 'nav-tree-collapse': 'Strzałka drzewa: zwiń',
                 'nav-hidden-items': 'Ukryte elementy',
@@ -859,6 +879,34 @@ export const STRINGS_PL = {
             pinRecentNotesWithShortcuts: {
                 name: 'Przypnij ostatnie notatki razem ze skrótami',
                 desc: 'Dołącz ostatnie notatki podczas przypinania skrótów.'
+            },
+            showCalendar: {
+                name: 'Pokaż kalendarz',
+                desc: 'Wyświetl kalendarz na dole panelu nawigacji.'
+            },
+            calendarLocale: {
+                name: 'Język',
+                desc: 'Kontroluje numerację tygodni i pierwszy dzień tygodnia.',
+                options: {
+                    systemDefault: 'Domyślny'
+                }
+            },
+            calendarWeeksToShow: {
+                name: 'Tygodnie do wyświetlenia',
+                desc: 'Liczba tygodni kalendarza do wyświetlenia.',
+                options: {
+                    fullMonth: 'Pełny miesiąc',
+                    oneWeek: '1 tydzień',
+                    weeksCount: '{count} tygodni'
+                }
+            },
+            calendarShowWeekNumber: {
+                name: 'Pokaż numer tygodnia',
+                desc: 'Dodaj kolumnę z numerem tygodnia.'
+            },
+            calendarConfirmBeforeCreate: {
+                name: 'Potwierdź przed utworzeniem',
+                desc: 'Pokaż okno potwierdzenia podczas tworzenia nowej dziennej notatki.'
             },
             showTooltips: {
                 name: 'Pokaż podpowiedzi',

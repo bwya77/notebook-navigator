@@ -4,6 +4,10 @@
    File List Styles
    ======================================================================== */
 
+.nn-list-pane {
+    --nn-pane-bottom-toolbar-space: 0px;
+}
+
 /* File list container - scrollable area for files */
 .nn-list-pane-scroller {
     flex: 1;
@@ -11,6 +15,10 @@
     padding: 0 var(--nn-scroller-padding);
     background-color: var(--nn-theme-list-bg); /* Opaque background for GPU scroll layer optimization */
     position: relative;
+}
+
+.nn-list-pane-content {
+    padding-bottom: var(--nn-pane-bottom-toolbar-space);
 }
 
 .nn-list-title-area {

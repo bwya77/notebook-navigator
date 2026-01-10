@@ -17,60 +17,16 @@
  */
 
 import { TFile } from 'obsidian';
-/*
- * Notebook Navigator - Plugin for Obsidian
- * Copyright (c) 2025 Johan Sanneblad
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
 
 import { format, parse, Locale } from 'date-fns';
-import * as locales from 'date-fns/locale';
 import { strings, getCurrentLanguage } from '../i18n';
 import { NotebookNavigatorSettings } from '../settings';
-
-// Type the locales object properly
-type LocalesMap = typeof locales & Record<string, Locale>;
+import { getDateFnsLocale } from './dateFnsLocale';
 
 // Default ISO 8601 date format used when no format is specified
 export const ISO_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
 export class DateUtils {
-    /**
-     * Map of Obsidian language codes to date-fns locale names
-     * Only define the special cases where names differ
-     *
-     * Based on Obsidian's supported languages:
-     * - 'en' = English
-     * - 'en-gb' = English (GB)
-     * - 'zh' = 简体中文 (Chinese Simplified)
-     * - 'zh-tw' = 繁體中文 (Chinese Traditional)
-     * - 'pt' = Português (Portuguese)
-     * - 'pt-br' = Português do Brasil (Brazilian Portuguese)
-     * - Other languages use their ISO code directly (de, es, fr, it, ja, ko, nl, no, pl, ru, tr, etc.)
-     */
-    private static localeExceptions: Record<string, string> = {
-        en: 'enUS', // English defaults to US
-        'en-gb': 'enGB', // English (GB)
-        zh: 'zhCN', // Chinese defaults to Simplified
-        'zh-cn': 'zhCN', // Chinese Simplified variants
-        'zh-tw': 'zhTW', // Chinese Traditional variants
-        pt: 'pt', // Portuguese (Portugal)
-        'pt-br': 'ptBR', // Portuguese (Brazil)
-        no: 'nb' // Norwegian (Bokmål) - date-fns uses 'nb' for Norwegian
-    };
-
     /**
      * Normalizes language codes for consistent lookups.
      */
@@ -126,13 +82,7 @@ export class DateUtils {
      */
     private static getDateFnsLocale(normalizedLanguage?: string): Locale {
         const normalizedLang = normalizedLanguage ?? DateUtils.getNormalizedLanguage();
-
-        // Check if this language has a different locale name in date-fns
-        const localeName = DateUtils.localeExceptions[normalizedLang] || normalizedLang;
-
-        // Safely access the locale from the imported locales object
-        const localesMap = locales as LocalesMap;
-        return localesMap[localeName] || locales.enUS;
+        return getDateFnsLocale(normalizedLang);
     }
 
     private static formatWithFallback(

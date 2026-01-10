@@ -88,7 +88,8 @@ export function useStorageContentQueue(params: {
 
             const metadataDependentTypes = getMetadataDependentTypes(settings);
             const hasCustomProperties = hasCustomPropertyFrontmatterFields(settings);
-            const contentEnabled = settings.showFilePreview || settings.showFeatureImage || hasCustomProperties || metadataDependentTypes.length > 0;
+            const contentEnabled =
+                settings.showFilePreview || settings.showFeatureImage || hasCustomProperties || metadataDependentTypes.length > 0;
 
             // If nothing in settings requires derived content, avoid any work.
             if (!contentEnabled) {

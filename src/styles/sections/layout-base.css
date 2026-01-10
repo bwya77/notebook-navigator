@@ -17,12 +17,6 @@
     border: none;
 }
 
-/* Obsidian 1.11+ iOS: view container background */
-/* Targets Obsidian's `.view-content` wrapper to ensure the area behind the navigator matches the mobile pane background. */
-.view-content.notebook-navigator.notebook-navigator-obsidian-1-11-plus-ios {
-    background-color: var(--nn-theme-mobile-bg);
-}
-
 /* Main container - establishes the plugin's layout foundation */
 .notebook-navigator {
     height: 100%;

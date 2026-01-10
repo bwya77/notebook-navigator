@@ -58,6 +58,9 @@ export type ListPaneTitleOption = 'header' | 'list' | 'hidden';
 /** Display options for shortcut row badges in the navigation pane */
 export type ShortcutBadgeDisplayMode = 'index' | 'count' | 'none';
 
+/** Number of calendar week rows shown in the navigation pane */
+export type CalendarWeeksToShow = 1 | 2 | 3 | 4 | 5 | 6;
+
 /** Default display modes for list items */
 export type ListDisplayMode = 'standard' | 'compact';
 
@@ -76,7 +79,7 @@ export function isCustomPropertyType(value: string): value is CustomPropertyType
 }
 
 /** Buttons available in the navigation toolbar */
-export type NavigationToolbarButtonId = 'expandCollapse' | 'hiddenItems' | 'rootReorder' | 'newFolder';
+export type NavigationToolbarButtonId = 'expandCollapse' | 'calendar' | 'hiddenItems' | 'rootReorder' | 'newFolder';
 
 /** Buttons available in the list toolbar */
 export type ListToolbarButtonId = 'search' | 'descendants' | 'sort' | 'appearance' | 'newNote';
@@ -147,6 +150,12 @@ export interface NotebookNavigatorSettings {
     skipAutoScroll: boolean;
     showRecentNotes: boolean;
     recentNotesCount: number;
+
+    // Navigation pane tab - Calendar
+    calendarLocale: string;
+    calendarWeeksToShow: CalendarWeeksToShow;
+    calendarShowWeekNumber: boolean;
+    calendarConfirmBeforeCreate: boolean;
 
     // Navigation pane tab - Appearance
     colorIconOnly: boolean;

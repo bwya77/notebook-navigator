@@ -19,6 +19,14 @@
     position: relative;
 }
 
+.nn-navigation-pane-content {
+    padding-bottom: calc(var(--nn-pane-bottom-toolbar-space) + var(--nn-pane-bottom-calendar-space));
+}
+
+.notebook-navigator-mobile .nn-navigation-pane-scroller {
+    border-right: none;
+}
+
 .nn-navigation-pane-scroller[data-banner='true'] {
     /* Classic Windows scrollbars consume layout width when they appear. Setting a stable gutter
        keeps the width constant so TanStack Virtual's ResizeObserver doesn't retrigger endlessly
