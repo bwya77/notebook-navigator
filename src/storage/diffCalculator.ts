@@ -74,14 +74,12 @@ export async function calculateFileDiff(
         });
     }
 
-    // Create a set of current file paths for quick lookup
-    const currentPaths = new Map<string, TFile>();
-    for (const file of currentFiles) {
-        currentPaths.set(file.path, file);
-    }
+    // Track current file paths for quick lookup when scanning for removals.
+    const currentPaths = new Set<string>();
 
     // Check each current file
     for (const file of currentFiles) {
+        currentPaths.add(file.path);
         const cached = cachedFilesMap.get(file.path);
 
         if (!cached) {

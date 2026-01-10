@@ -19,7 +19,7 @@
 import { useCallback, type Dispatch, type RefObject, type SetStateAction } from 'react';
 import { debounce, type TFile } from 'obsidian';
 import type { NotebookNavigatorAPI } from '../../api/NotebookNavigatorAPI';
-import type { ContentProviderType, FileContentType } from '../../interfaces/IContentProvider';
+import type { FileContentType } from '../../interfaces/IContentProvider';
 import type { ContentProviderRegistry } from '../../services/content/ContentProviderRegistry';
 import type { NotebookNavigatorSettings } from '../../settings';
 import { getDBInstance } from '../../storage/fileOperations';
@@ -51,7 +51,8 @@ export function useStorageCacheRebuild(params: {
     rebuildFileCacheRef: RefObject<ReturnType<typeof debounce> | null>;
     cancelTagTreeRebuildDebouncer: (options?: { reset?: boolean }) => void;
     disposeMetadataWaitDisposers: () => void;
-    pendingMetadataWaitPathsRef: RefObject<Map<string, Set<ContentProviderType>>>;
+    // Map: file path -> pending metadata-dependent wait mask (see `useMetadataCacheQueue`).
+    pendingMetadataWaitPathsRef: RefObject<Map<string, number>>;
     setFileData: Dispatch<SetStateAction<StorageFileData>>;
     tagTreeService: TagTreeServiceLike | null;
     setIsStorageReady: Dispatch<SetStateAction<boolean>>;

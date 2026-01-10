@@ -125,7 +125,8 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
     // Flag indicating whether all processing should be stopped (plugin disabled or view closed)
     const stoppedRef = useRef<boolean>(false);
     const metadataWaitDisposersRef = useRef<Set<() => void>>(new Set());
-    const pendingMetadataWaitPathsRef = useRef<Map<string, Set<ContentProviderType>>>(new Map());
+    // Map: file path -> pending metadata-dependent wait mask (used by `useMetadataCacheQueue`).
+    const pendingMetadataWaitPathsRef = useRef<Map<string, number>>(new Map());
     const pendingRenameDataRef = useRef<Map<string, DBFileData>>(new Map());
     const latestSettingsRef = useRef(settings);
     latestSettingsRef.current = settings;

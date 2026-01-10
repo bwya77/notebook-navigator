@@ -77,7 +77,7 @@ export class TagContentProvider extends BaseContentProvider {
     }
 
     protected async processFile(
-        job: { file: TFile; path: string[] },
+        job: { file: TFile; path: string },
         fileData: FileData | null,
         settings: NotebookNavigatorSettings
     ): Promise<ContentProviderProcessResult> {
@@ -92,7 +92,7 @@ export class TagContentProvider extends BaseContentProvider {
         try {
             const metadata = this.app.metadataCache.getFileCache(job.file);
             if (!metadata) {
-                this.emptyTagRetryCounts.delete(job.file.path);
+                this.emptyTagRetryCounts.delete(job.path);
                 return { update: null, processed: false };
             }
 
@@ -103,17 +103,17 @@ export class TagContentProvider extends BaseContentProvider {
                 fileData !== null && fileData.tagsMtime === 0 && fileData.tags !== null && fileData.tags.length > 0 && tags.length === 0;
 
             if (!shouldDeferClearing) {
-                this.emptyTagRetryCounts.delete(job.file.path);
+                this.emptyTagRetryCounts.delete(job.path);
             }
 
             if (shouldDeferClearing) {
-                const attempts = this.emptyTagRetryCounts.get(job.file.path) ?? 0;
+                const attempts = this.emptyTagRetryCounts.get(job.path) ?? 0;
                 if (attempts < TagContentProvider.EMPTY_TAGS_RETRY_LIMIT) {
-                    this.emptyTagRetryCounts.set(job.file.path, attempts + 1);
+                    this.emptyTagRetryCounts.set(job.path, attempts + 1);
                     return { update: null, processed: false };
                 }
 
-                this.emptyTagRetryCounts.delete(job.file.path);
+                this.emptyTagRetryCounts.delete(job.path);
             }
 
             // Only return update if tags changed
@@ -121,9 +121,9 @@ export class TagContentProvider extends BaseContentProvider {
                 return { update: null, processed: true };
             }
 
-            return { update: { path: job.file.path, tags }, processed: true };
+            return { update: { path: job.path, tags }, processed: true };
         } catch (error) {
-            console.error(`Error extracting tags for ${job.file.path}:`, error);
+            console.error(`Error extracting tags for ${job.path}:`, error);
             return { update: null, processed: false };
         }
     }

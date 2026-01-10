@@ -46,8 +46,15 @@ const EXTERNAL_REQUEST_MAX_LIFETIME_MS = 60000;
 // Maximum number of timed-out external requests that may continue running while new requests proceed.
 // This bounds oversubscription when releasing limiter slots on timeout.
 const EXTERNAL_REQUEST_TIMEOUT_DEBT_MAX = Platform.isMobile ? 0 : 2;
-// Maximum total pixels that can be decoded concurrently on mobile devices
-const MOBILE_IMAGE_DECODE_BUDGET_PIXELS = 120_000_000;
+// Maximum pixels allowed for a single source image on mobile (width * height).
+const MOBILE_MAX_IMAGE_PIXELS = 80_000_000;
+const DESKTOP_MAX_IMAGE_PIXELS = 200_000_000;
+// Maximum total pixels that can be decoded concurrently on mobile devices.
+// Keep this in sync with `MOBILE_MAX_IMAGE_PIXELS` so near-limit images decode one at a time.
+const MOBILE_IMAGE_DECODE_BUDGET_PIXELS = 100_000_000;
+// Maximum size (in bytes) of images read into memory before decoding/resizing.
+const MAX_LOCAL_IMAGE_BYTES = Platform.isMobile ? 15_000_000 : 50_000_000;
+const MAX_EXTERNAL_IMAGE_BYTES = Platform.isMobile ? 15_000_000 : 50_000_000;
 
 const SUPPORTED_IMAGE_MIME_TYPES = new Set([
     'image/jpeg',
@@ -195,7 +202,7 @@ export class FeatureImageContentProvider extends BaseContentProvider {
     }
 
     protected async processFile(
-        job: { file: TFile; path: string[] },
+        job: { file: TFile; path: string },
         fileData: FileData | null,
         settings: NotebookNavigatorSettings
     ): Promise<ContentProviderProcessResult> {
@@ -226,10 +233,10 @@ export class FeatureImageContentProvider extends BaseContentProvider {
             const thumbnail = await this.createThumbnailBlob(reference, settings);
             if (!thumbnail) {
                 const empty = this.createEmptyBlob();
-                return { update: { path: job.file.path, featureImage: empty, featureImageKey }, processed: true };
+                return { update: { path: job.path, featureImage: empty, featureImageKey }, processed: true };
             }
 
-            return { update: { path: job.file.path, featureImage: thumbnail, featureImageKey }, processed: true };
+            return { update: { path: job.path, featureImage: thumbnail, featureImageKey }, processed: true };
         }
 
         const nextKey = '';
@@ -239,7 +246,7 @@ export class FeatureImageContentProvider extends BaseContentProvider {
         if (fileData && fileData.featureImageKey === nextKey) {
             return { update: null, processed: true };
         }
-        return { update: { path: job.file.path, featureImage: nextImage, featureImageKey: nextKey }, processed: true };
+        return { update: { path: job.path, featureImage: nextImage, featureImageKey: nextKey }, processed: true };
     }
 
     protected createEmptyBlob(): Blob {
@@ -326,6 +333,14 @@ export class FeatureImageContentProvider extends BaseContentProvider {
     private async readLocalImage(file: TFile): Promise<ImageBuffer | null> {
         const mimeType = this.getMimeTypeFromExtension(file.extension);
         if (!mimeType) {
+            return null;
+        }
+
+        if (file.stat.size > MAX_LOCAL_IMAGE_BYTES) {
+            this.thumbnailRuntime.logOnce(
+                `featureImage-local-too-large:${MAX_LOCAL_IMAGE_BYTES}`,
+                `[${file.path}] Skipping local image (${file.stat.size} bytes) - file too large`
+            );
             return null;
         }
 
@@ -477,6 +492,14 @@ export class FeatureImageContentProvider extends BaseContentProvider {
                     return null;
                 }
 
+                if (response.arrayBuffer.byteLength > MAX_EXTERNAL_IMAGE_BYTES) {
+                    this.thumbnailRuntime.logOnce(
+                        `featureImage-external-too-large:${MAX_EXTERNAL_IMAGE_BYTES}:${trimmedUrl}`,
+                        `[${trimmedUrl}] Skipping external image (${response.arrayBuffer.byteLength} bytes) - file too large`
+                    );
+                    return null;
+                }
+
                 return { buffer: response.arrayBuffer, mimeType };
             } catch {
                 return null;
@@ -582,7 +605,7 @@ export class FeatureImageContentProvider extends BaseContentProvider {
 
         // Reject images exceeding platform-specific pixel limits to prevent out-of-memory crashes.
         const pixelCount = dimensions.width * dimensions.height;
-        const maxPixels = Platform.isMobile ? 80_000_000 : 200_000_000;
+        const maxPixels = Platform.isMobile ? MOBILE_MAX_IMAGE_PIXELS : DESKTOP_MAX_IMAGE_PIXELS;
         if (pixelCount > maxPixels) {
             this.thumbnailRuntime.logOnce(
                 `featureImage-too-large:${effectiveMimeType}:${dimensions.width}x${dimensions.height}:${source}`,

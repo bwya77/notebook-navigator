@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useEffect, type RefObject } from 'react';
+import { useCallback, useEffect, useRef, type RefObject } from 'react';
 import { EventRef, TFile, type App } from 'obsidian';
 import type { ContentProviderRegistry } from '../../services/content/ContentProviderRegistry';
 import type { ContentProviderType } from '../../interfaces/IContentProvider';
@@ -24,15 +24,59 @@ import type { NotebookNavigatorSettings } from '../../settings';
 import { filterFilesRequiringMetadataSources } from '../storageQueueFilters';
 import { getMetadataDependentTypes, resolveMetadataDependentTypes } from './storageContentTypes';
 
+type PendingMetadataWaitMask = number;
+
+// Bitmask tracking which metadata-dependent content types are still waiting on `metadataCache` per file path.
+const PENDING_METADATA_WAIT_MARKDOWN_PIPELINE = 1;
+const PENDING_METADATA_WAIT_TAGS = 2;
+const PENDING_METADATA_WAIT_METADATA = 4;
+
+function getPendingMetadataWaitMask(type: ContentProviderType): PendingMetadataWaitMask {
+    switch (type) {
+        case 'markdownPipeline':
+            return PENDING_METADATA_WAIT_MARKDOWN_PIPELINE;
+        case 'tags':
+            return PENDING_METADATA_WAIT_TAGS;
+        case 'metadata':
+            return PENDING_METADATA_WAIT_METADATA;
+        default:
+            // Types that do not depend on `metadataCache` are not tracked by this hook.
+            return 0;
+    }
+}
+
+function getPendingMetadataWaitMaskForTypes(types: ContentProviderType[]): PendingMetadataWaitMask {
+    let mask = 0;
+    for (const type of types) {
+        mask |= getPendingMetadataWaitMask(type);
+    }
+    return mask;
+}
+
+function getTypesForPendingMetadataWaitMask(mask: PendingMetadataWaitMask): ContentProviderType[] {
+    // Converts a pending mask into `include` types for `ContentProviderRegistry.queueFilesForAllProviders`.
+    const types: ContentProviderType[] = [];
+    if ((mask & PENDING_METADATA_WAIT_MARKDOWN_PIPELINE) !== 0) {
+        types.push('markdownPipeline');
+    }
+    if ((mask & PENDING_METADATA_WAIT_TAGS) !== 0) {
+        types.push('tags');
+    }
+    if ((mask & PENDING_METADATA_WAIT_METADATA) !== 0) {
+        types.push('metadata');
+    }
+    return types;
+}
+
 /**
  * Queues metadata-dependent content providers once Obsidian's metadata cache is ready.
  *
  * Obsidian populates `app.metadataCache` asynchronously. Some providers (tags, frontmatter metadata, and
  * custom-property extraction) must not run until `metadataCache.getFileCache(file)` returns a value.
  *
- * This hook implements a two-phase flow:
+ * Flow:
  * 1) Queue files that already have metadata cache entries.
- * 2) For the remaining files, attach temporary `metadataCache` listeners and queue them once all are ready.
+ * 2) Track remaining paths and queue them as their metadata cache entries appear (via `metadataCache` events).
  *
  * The `pendingMetadataWaitPathsRef` map is a per-path guard against duplicated listeners when multiple callers
  * request the same content types for the same files.
@@ -44,7 +88,7 @@ export function useMetadataCacheQueue(params: {
     stoppedRef: RefObject<boolean>;
     contentRegistryRef: RefObject<ContentProviderRegistry | null>;
     metadataWaitDisposersRef: RefObject<Set<() => void>>;
-    pendingMetadataWaitPathsRef: RefObject<Map<string, Set<ContentProviderType>>>;
+    pendingMetadataWaitPathsRef: RefObject<Map<string, PendingMetadataWaitMask>>;
 }): {
     queueMetadataContentWhenReady: (
         files: TFile[],
@@ -80,15 +124,16 @@ export function useMetadataCacheQueue(params: {
      * no longer be scheduled.
      */
     useEffect(() => {
-        const activeTypes = new Set(getMetadataDependentTypes(settings));
-        pendingMetadataWaitPathsRef.current.forEach((types, path) => {
-            for (const type of Array.from(types)) {
-                if (!activeTypes.has(type)) {
-                    types.delete(type);
-                }
-            }
-            if (types.size === 0) {
+        const activeMask = getPendingMetadataWaitMaskForTypes(getMetadataDependentTypes(settings));
+        pendingMetadataWaitPathsRef.current.forEach((mask, path) => {
+            // Clear bits for providers that are disabled by the latest settings.
+            const nextMask = mask & activeMask;
+            if (nextMask === 0) {
                 pendingMetadataWaitPathsRef.current.delete(path);
+                return;
+            }
+            if (nextMask !== mask) {
+                pendingMetadataWaitPathsRef.current.set(path, nextMask);
             }
         });
     }, [pendingMetadataWaitPathsRef, settings]);
@@ -107,180 +152,366 @@ export function useMetadataCacheQueue(params: {
         pendingMetadataWaitPathsRef.current.clear();
     }, [disposeMetadataWaitDisposers, pendingMetadataWaitPathsRef, settings]);
 
-    const waitForMetadataCache = useCallback(
-        (files: TFile[], callback: () => void): (() => void) => {
+    const metadataWaitCleanupRef = useRef<(() => void) | null>(null);
+    // Batches ready files by the mask they were waiting on so each flush can enqueue the same `include` set.
+    const pendingReadyFilesByMaskRef = useRef<Map<PendingMetadataWaitMask, TFile[]>>(new Map());
+    const flushTimeoutIdRef = useRef<number | null>(null);
+    const sweepIteratorRef = useRef<Iterator<string> | null>(null);
+    const sweepTimeoutIdRef = useRef<number | null>(null);
+    const warningTimeoutIdRef = useRef<number | null>(null);
+
+    const clearWarningTimer = useCallback(() => {
+        if (warningTimeoutIdRef.current === null) {
+            return;
+        }
+        if (typeof window !== 'undefined') {
+            window.clearTimeout(warningTimeoutIdRef.current);
+        }
+        warningTimeoutIdRef.current = null;
+    }, []);
+
+    const scheduleWarning = useCallback(() => {
+        if (warningTimeoutIdRef.current !== null) {
+            return;
+        }
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        const METADATA_WAIT_WARNING_MS = 10_000;
+
+        warningTimeoutIdRef.current = window.setTimeout(() => {
+            warningTimeoutIdRef.current = null;
+            const totalPending = pendingMetadataWaitPathsRef.current.size;
+            if (totalPending === 0) {
+                return;
+            }
+
+            const unresolved: string[] = [];
+            for (const path of pendingMetadataWaitPathsRef.current.keys()) {
+                unresolved.push(path);
+                if (unresolved.length >= 20) {
+                    break;
+                }
+            }
+
+            console.error('Notebook Navigator could not resolve metadata for all files.', {
+                unresolved,
+                totalPending,
+                hint: 'Reduce file size, fix invalid frontmatter, exclude the files, or disable metadata-dependent providers.'
+            });
+        }, METADATA_WAIT_WARNING_MS);
+    }, [pendingMetadataWaitPathsRef]);
+
+    const maybeDisposeMetadataWaitListeners = useCallback(() => {
+        const cleanup = metadataWaitCleanupRef.current;
+        if (!cleanup) {
+            return;
+        }
+
+        if (pendingMetadataWaitPathsRef.current.size > 0) {
+            return;
+        }
+
+        if (flushTimeoutIdRef.current !== null) {
+            return;
+        }
+
+        if (sweepTimeoutIdRef.current !== null) {
+            return;
+        }
+
+        if (sweepIteratorRef.current) {
+            return;
+        }
+
+        if (pendingReadyFilesByMaskRef.current.size > 0) {
+            return;
+        }
+
+        cleanup();
+    }, [
+        flushTimeoutIdRef,
+        metadataWaitCleanupRef,
+        pendingMetadataWaitPathsRef,
+        pendingReadyFilesByMaskRef,
+        sweepIteratorRef,
+        sweepTimeoutIdRef
+    ]);
+
+    const flushReadyFiles = useCallback(() => {
+        if (stoppedRef.current) {
+            pendingReadyFilesByMaskRef.current.clear();
+            return;
+        }
+
+        const registry = contentRegistryRef.current;
+        if (!registry) {
+            pendingReadyFilesByMaskRef.current.clear();
+            return;
+        }
+
+        const latestSettings = latestSettingsRef.current;
+        const activeMask = getPendingMetadataWaitMaskForTypes(getMetadataDependentTypes(latestSettings));
+        if (activeMask === 0) {
+            pendingReadyFilesByMaskRef.current.clear();
+            return;
+        }
+
+        const batches = pendingReadyFilesByMaskRef.current;
+        pendingReadyFilesByMaskRef.current = new Map();
+
+        for (const [mask, files] of batches) {
             if (files.length === 0) {
-                callback();
-                return () => {};
+                continue;
             }
-
-            // Waiting is only meaningful for real markdown files that still exist in the vault.
-            const trackedPaths = new Set(files.filter((file): file is TFile => file instanceof TFile).map(file => file.path));
-
-            // Checks which files have metadata ready and removes them from tracking
-            const removeReadyPaths = (paths: Iterable<string>) => {
-                for (const path of paths) {
-                    // Skip paths not being tracked
-                    if (!trackedPaths.has(path)) {
-                        continue;
-                    }
-                    const abstract = app.vault.getAbstractFileByPath(path);
-                    // Remove deleted or non-file paths from tracking
-                    if (!abstract || !(abstract instanceof TFile)) {
-                        trackedPaths.delete(path);
-                        continue;
-                    }
-                    // Check if metadata cache has data for this file
-                    const metadata = app.metadataCache.getFileCache(abstract);
-                    // Remove from tracking if metadata is available
-                    if (metadata !== null && metadata !== undefined) {
-                        trackedPaths.delete(path);
-                    }
-                }
-            };
-
-            removeReadyPaths(trackedPaths);
-
-            if (trackedPaths.size === 0) {
-                callback();
-                return () => {};
+            const effectiveMask = mask & activeMask;
+            if (effectiveMask === 0) {
+                continue;
             }
+            const include = getTypesForPendingMetadataWaitMask(effectiveMask);
+            if (include.length === 0) {
+                continue;
+            }
+            registry.queueFilesForAllProviders(files, latestSettings, { include });
+        }
 
-            let resolvedEventRef: EventRef | null = null;
-            let changedEventRef: EventRef | null = null;
-            let disposed = false;
-            let warningTimeoutId: number | null = null;
+        maybeDisposeMetadataWaitListeners();
+    }, [contentRegistryRef, latestSettingsRef, maybeDisposeMetadataWaitListeners, stoppedRef]);
 
-            // Obsidian's initial metadata indexing is usually quick. If it takes a long time for these specific
-            // files, tags/metadata providers will stay gated. Emit a single diagnostic after a fixed delay with
-            // sample paths so the user can identify which files are blocking metadata cache readiness.
-            const METADATA_WAIT_WARNING_MS = 10_000;
+    const scheduleFlushReadyFiles = useCallback(() => {
+        if (flushTimeoutIdRef.current !== null) {
+            return;
+        }
+        if (typeof window === 'undefined') {
+            flushReadyFiles();
+            return;
+        }
+        // Coalesce multiple `metadataCache` events into a single registry enqueue pass.
+        flushTimeoutIdRef.current = window.setTimeout(() => {
+            flushTimeoutIdRef.current = null;
+            flushReadyFiles();
+        }, 0);
+    }, [flushReadyFiles]);
 
-            // Clears the warning timer if it's currently scheduled
-            const clearWarningTimer = () => {
-                if (warningTimeoutId !== null && typeof window !== 'undefined') {
-                    window.clearTimeout(warningTimeoutId);
-                    warningTimeoutId = null;
-                }
-            };
-
-            // Schedules a warning message after 10 seconds if metadata hasn't resolved
-            const scheduleWarning = () => {
-                // Don't schedule if already scheduled
-                if (warningTimeoutId !== null) {
-                    return;
-                }
-                // Skip in non-browser environments
-                if (typeof window === 'undefined') {
-                    return;
-                }
-                warningTimeoutId = window.setTimeout(() => {
-                    warningTimeoutId = null;
-                    // Don't warn if all files resolved
-                    if (trackedPaths.size === 0) {
-                        return;
-                    }
-                    // Log first 20 unresolved files for debugging
-                    const unresolved = Array.from(trackedPaths).slice(0, 20);
-                    console.error(
-                        'Notebook Navigator could not resolve metadata for all files. Tags remain disabled until metadata becomes available.',
-                        {
-                            unresolved,
-                            totalPending: trackedPaths.size,
-                            hint: 'Reduce file size, fix invalid frontmatter, exclude the files, or disable tags.'
-                        }
-                    );
-                }, METADATA_WAIT_WARNING_MS);
-            };
-
-            const cleanup = () => {
-                if (disposed) {
-                    return;
-                }
-                disposed = true;
-                clearWarningTimer();
-                if (resolvedEventRef) {
-                    try {
-                        app.metadataCache.offref(resolvedEventRef);
-                    } catch {
-                        // ignore
-                    }
-                    resolvedEventRef = null;
-                }
-                if (changedEventRef) {
-                    try {
-                        app.metadataCache.offref(changedEventRef);
-                    } catch {
-                        // ignore
-                    }
-                    changedEventRef = null;
-                }
-            };
-
-            const maybeFinish = () => {
-                if (!disposed && trackedPaths.size === 0) {
-                    cleanup();
-                    callback();
-                }
-            };
-
-            // Listen for Obsidian's initial metadata indexing completion
-            resolvedEventRef = app.metadataCache.on('resolved', () => {
-                // Clear any existing warning timer since we're checking again
-                clearWarningTimer();
-                // Check all tracked paths for metadata availability
-                removeReadyPaths(trackedPaths);
-                // Schedule warning if files remain unresolved
-                if (trackedPaths.size > 0) {
-                    scheduleWarning();
-                }
-                // Fire callback if all files are ready
-                maybeFinish();
-            });
-
-            // Listen for individual file metadata updates
-            changedEventRef = app.metadataCache.on('changed', file => {
-                // Ignore non-file events
-                if (!file || !(file instanceof TFile)) {
-                    return;
-                }
-                // Ignore files we're not tracking
-                if (!trackedPaths.has(file.path)) {
-                    return;
-                }
-                // Check if this file's metadata is now ready
-                removeReadyPaths([file.path]);
-                // Fire callback if all files are ready
-                maybeFinish();
-            });
-
-            // Schedule a warning in case metadata never resolves after the initial sweep.
-            scheduleWarning();
-
-            return cleanup;
+    const queueReadyFile = useCallback(
+        (file: TFile, pendingMask: PendingMetadataWaitMask) => {
+            const existing = pendingReadyFilesByMaskRef.current.get(pendingMask);
+            if (existing) {
+                existing.push(file);
+            } else {
+                pendingReadyFilesByMaskRef.current.set(pendingMask, [file]);
+            }
+            scheduleFlushReadyFiles();
         },
-        [app]
+        [scheduleFlushReadyFiles]
     );
+
+    const maybeQueuePendingFile = useCallback(
+        (file: TFile) => {
+            const pendingMask = pendingMetadataWaitPathsRef.current.get(file.path) ?? 0;
+            if (pendingMask === 0) {
+                return;
+            }
+
+            const cacheReady = Boolean(app.metadataCache.getFileCache(file));
+            if (!cacheReady) {
+                return;
+            }
+
+            // Preserve the pending mask so the flush can enqueue only the content types requested for this path.
+            pendingMetadataWaitPathsRef.current.delete(file.path);
+            queueReadyFile(file, pendingMask);
+
+            if (pendingMetadataWaitPathsRef.current.size === 0) {
+                clearWarningTimer();
+            }
+        },
+        [app, clearWarningTimer, pendingMetadataWaitPathsRef, queueReadyFile]
+    );
+
+    const runSweepChunk = useCallback(() => {
+        if (sweepTimeoutIdRef.current !== null && typeof window !== 'undefined') {
+            window.clearTimeout(sweepTimeoutIdRef.current);
+        }
+        sweepTimeoutIdRef.current = null;
+
+        if (stoppedRef.current) {
+            sweepIteratorRef.current = null;
+            return;
+        }
+
+        const iterator = sweepIteratorRef.current;
+        if (!iterator) {
+            return;
+        }
+
+        const stepLimit = 500;
+        for (let step = 0; step < stepLimit; step += 1) {
+            const next = iterator.next();
+            if (next.done) {
+                sweepIteratorRef.current = null;
+                break;
+            }
+
+            const path = next.value;
+            const pendingMask = pendingMetadataWaitPathsRef.current.get(path) ?? 0;
+            if (pendingMask === 0) {
+                continue;
+            }
+
+            // Resolve the latest `TFile` for the path; pending paths can be removed/renamed while waiting.
+            const abstract = app.vault.getAbstractFileByPath(path);
+            if (!(abstract instanceof TFile) || abstract.extension !== 'md') {
+                pendingMetadataWaitPathsRef.current.delete(path);
+                continue;
+            }
+
+            const cacheReady = Boolean(app.metadataCache.getFileCache(abstract));
+            if (!cacheReady) {
+                continue;
+            }
+
+            pendingMetadataWaitPathsRef.current.delete(path);
+            queueReadyFile(abstract, pendingMask);
+        }
+
+        if (sweepIteratorRef.current) {
+            if (typeof window !== 'undefined') {
+                sweepTimeoutIdRef.current = window.setTimeout(() => {
+                    sweepTimeoutIdRef.current = null;
+                    runSweepChunk();
+                }, 0);
+            } else {
+                runSweepChunk();
+            }
+            return;
+        }
+
+        if (pendingMetadataWaitPathsRef.current.size === 0) {
+            clearWarningTimer();
+            maybeDisposeMetadataWaitListeners();
+        }
+    }, [app, clearWarningTimer, maybeDisposeMetadataWaitListeners, pendingMetadataWaitPathsRef, queueReadyFile, stoppedRef]);
+
+    const startSweep = useCallback(() => {
+        if (sweepIteratorRef.current) {
+            return;
+        }
+        if (pendingMetadataWaitPathsRef.current.size === 0) {
+            return;
+        }
+
+        sweepIteratorRef.current = pendingMetadataWaitPathsRef.current.keys();
+
+        if (typeof window !== 'undefined') {
+            sweepTimeoutIdRef.current = window.setTimeout(() => {
+                sweepTimeoutIdRef.current = null;
+                runSweepChunk();
+            }, 0);
+        } else {
+            runSweepChunk();
+        }
+    }, [pendingMetadataWaitPathsRef, runSweepChunk]);
+
+    const ensureMetadataWaitListeners = useCallback(() => {
+        if (metadataWaitCleanupRef.current) {
+            return;
+        }
+
+        // One listener pair for the shared pending map, disposed once all pending work has flushed.
+        let resolvedEventRef: EventRef | null = null;
+        let changedEventRef: EventRef | null = null;
+        let disposed = false;
+
+        const cleanup = () => {
+            if (disposed) {
+                return;
+            }
+            disposed = true;
+
+            clearWarningTimer();
+
+            if (flushTimeoutIdRef.current !== null && typeof window !== 'undefined') {
+                window.clearTimeout(flushTimeoutIdRef.current);
+            }
+            flushTimeoutIdRef.current = null;
+            pendingReadyFilesByMaskRef.current.clear();
+
+            if (sweepTimeoutIdRef.current !== null && typeof window !== 'undefined') {
+                window.clearTimeout(sweepTimeoutIdRef.current);
+            }
+            sweepTimeoutIdRef.current = null;
+            sweepIteratorRef.current = null;
+
+            if (resolvedEventRef) {
+                try {
+                    app.metadataCache.offref(resolvedEventRef);
+                } catch {
+                    // ignore
+                }
+                resolvedEventRef = null;
+            }
+            if (changedEventRef) {
+                try {
+                    app.metadataCache.offref(changedEventRef);
+                } catch {
+                    // ignore
+                }
+                changedEventRef = null;
+            }
+
+            metadataWaitDisposersRef.current.delete(cleanup);
+            metadataWaitCleanupRef.current = null;
+        };
+
+        resolvedEventRef = app.metadataCache.on('resolved', () => {
+            clearWarningTimer();
+            startSweep();
+            if (pendingMetadataWaitPathsRef.current.size > 0) {
+                scheduleWarning();
+            }
+        });
+
+        changedEventRef = app.metadataCache.on('changed', file => {
+            // `changed` fires for specific files; enqueue immediately when the cache entry exists.
+            if (!(file instanceof TFile) || file.extension !== 'md') {
+                return;
+            }
+            maybeQueuePendingFile(file);
+        });
+
+        metadataWaitCleanupRef.current = cleanup;
+        metadataWaitDisposersRef.current.add(cleanup);
+
+        startSweep();
+        if (pendingMetadataWaitPathsRef.current.size > 0) {
+            scheduleWarning();
+        }
+    }, [app, clearWarningTimer, maybeQueuePendingFile, metadataWaitDisposersRef, pendingMetadataWaitPathsRef, scheduleWarning, startSweep]);
 
     const queueMetadataContentWhenReady = useCallback(
         (files: TFile[], includeTypes?: ContentProviderType[], settingsOverride?: NotebookNavigatorSettings) => {
             const baseSettings = settingsOverride ?? latestSettingsRef.current;
             const requestedTypes = resolveMetadataDependentTypes(baseSettings, includeTypes);
+            const requestedMask = getPendingMetadataWaitMaskForTypes(requestedTypes);
 
-            if (requestedTypes.length === 0) {
+            if (requestedTypes.length === 0 || requestedMask === 0) {
                 return;
             }
 
-            // Deduplicate files by path
-            const uniqueFiles = new Map<string, TFile>();
+            const markdownFiles: TFile[] = [];
+            const seenPaths = new Set<string>();
             for (const file of files) {
-                if (!uniqueFiles.has(file.path)) {
-                    uniqueFiles.set(file.path, file);
+                if (file.extension !== 'md') {
+                    continue;
                 }
+                if (seenPaths.has(file.path)) {
+                    continue;
+                }
+                seenPaths.add(file.path);
+                markdownFiles.push(file);
             }
-
-            // Filter to markdown files only
-            const markdownFiles = Array.from(uniqueFiles.values()).filter(file => file.extension === 'md');
             if (markdownFiles.length === 0) {
                 return;
             }
@@ -297,12 +528,11 @@ export function useMetadataCacheQueue(params: {
 
             // Split files into those with metadata cache ready and those waiting
             const immediateFiles: TFile[] = [];
-            const waitingFiles: TFile[] = [];
+            let addedPending = false;
 
             for (const file of filesNeedingContent) {
-                const pendingTypes = pendingMetadataWaitPathsRef.current.get(file.path);
-                const hasAllPending = pendingTypes ? requestedTypes.every(type => pendingTypes.has(type)) : false;
-                // Skip files already waiting for all requested types
+                const pendingMask = pendingMetadataWaitPathsRef.current.get(file.path) ?? 0;
+                const hasAllPending = (pendingMask & requestedMask) === requestedMask;
                 if (hasAllPending) {
                     continue;
                 }
@@ -311,7 +541,8 @@ export function useMetadataCacheQueue(params: {
                 if (cacheReady) {
                     immediateFiles.push(file);
                 } else {
-                    waitingFiles.push(file);
+                    pendingMetadataWaitPathsRef.current.set(file.path, pendingMask | requestedMask);
+                    addedPending = true;
                 }
             }
 
@@ -333,93 +564,26 @@ export function useMetadataCacheQueue(params: {
                 queueFilesForTypes(immediateFiles);
             }
 
-            if (waitingFiles.length === 0) {
+            if (addedPending) {
+                ensureMetadataWaitListeners();
                 return;
             }
 
-            const trackedPaths = waitingFiles.map(file => file.path);
-
-            // Marks file paths as pending for the requested content types
-            const markPending = () => {
-                for (const path of trackedPaths) {
-                    const existing = pendingMetadataWaitPathsRef.current.get(path) ?? new Set<ContentProviderType>();
-                    requestedTypes.forEach(type => existing.add(type));
-                    pendingMetadataWaitPathsRef.current.set(path, existing);
-                }
-            };
-
-            // Removes requested types from pending list for tracked paths
-            const releaseTrackedPaths = () => {
-                for (const path of trackedPaths) {
-                    const pending = pendingMetadataWaitPathsRef.current.get(path);
-                    if (!pending) {
-                        continue;
-                    }
-                    requestedTypes.forEach(type => pending.delete(type));
-                    if (pending.size === 0) {
-                        pendingMetadataWaitPathsRef.current.delete(path);
-                    }
-                }
-            };
-
-            markPending();
-
-            let cleanupWrapper: (() => void) | null = null;
-            let firedImmediately = false;
-
-            // Called when metadata cache is ready for all waiting files
-            const handleReady = () => {
-                firedImmediately = true;
-                releaseTrackedPaths();
-                // If we registered a disposer, remove it before queueing so a later global cleanup does not
-                // touch this operation after it has already completed.
-                if (cleanupWrapper) {
-                    metadataWaitDisposersRef.current.delete(cleanupWrapper);
-                    cleanupWrapper = null;
-                }
-                queueFilesForTypes(waitingFiles);
-            };
-
-            let rawCleanup: (() => void) | null = null;
-            try {
-                rawCleanup = waitForMetadataCache(waitingFiles, handleReady);
-            } catch (error: unknown) {
-                releaseTrackedPaths();
-                throw error;
-            }
-
-            // Track cleanup function if callback didn't fire immediately
-            if (!firedImmediately && rawCleanup) {
-                cleanupWrapper = () => {
-                    releaseTrackedPaths();
-                    try {
-                        rawCleanup();
-                    } catch {
-                        // ignore cleanup errors
-                    }
-                };
-                metadataWaitDisposersRef.current.add(cleanupWrapper);
-            } else if (!firedImmediately) {
-                // Some code paths can return a cleanup without firing the callback (for example if the caller
-                // passes a list that becomes empty during the initial sweep). Ensure pending types are released.
-                releaseTrackedPaths();
-                if (rawCleanup) {
-                    try {
-                        rawCleanup();
-                    } catch {
-                        // ignore cleanup errors
-                    }
-                }
+            // Disposers can run while the pending path map is non-empty (for example, when a storage hook re-runs
+            // during settings changes). If a follow-up queue call contains only already-pending paths, it won't
+            // set `addedPending`. Ensure listeners are still attached so pending files can flush when ready.
+            if (pendingMetadataWaitPathsRef.current.size > 0 && !metadataWaitCleanupRef.current) {
+                ensureMetadataWaitListeners();
             }
         },
         [
             app,
             contentRegistryRef,
+            ensureMetadataWaitListeners,
             latestSettingsRef,
-            metadataWaitDisposersRef,
+            metadataWaitCleanupRef,
             pendingMetadataWaitPathsRef,
-            stoppedRef,
-            waitForMetadataCache
+            stoppedRef
         ]
     );
 

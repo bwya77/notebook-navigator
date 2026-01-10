@@ -174,7 +174,7 @@ export class MetadataContentProvider extends BaseContentProvider {
     }
 
     protected async processFile(
-        job: { file: TFile; path: string[] },
+        job: { file: TFile; path: string },
         fileData: FileData | null,
         settings: NotebookNavigatorSettings
     ): Promise<ContentProviderProcessResult> {
@@ -207,9 +207,10 @@ export class MetadataContentProvider extends BaseContentProvider {
 
             if (shouldTrackHidden && job.file.extension === 'md') {
                 let hiddenValue: boolean;
-                if (this.pendingHiddenStates.has(job.file.path)) {
-                    hiddenValue = this.pendingHiddenStates.get(job.file.path) as boolean;
-                    this.pendingHiddenStates.delete(job.file.path);
+                const pendingHiddenState = this.pendingHiddenStates.get(job.path);
+                if (pendingHiddenState !== undefined) {
+                    hiddenValue = pendingHiddenState;
+                    this.pendingHiddenStates.delete(job.path);
                 } else {
                     hiddenValue = shouldExcludeFile(job.file, hiddenFiles, this.app);
                 }
@@ -223,9 +224,9 @@ export class MetadataContentProvider extends BaseContentProvider {
                 return { update: null, processed: true };
             }
 
-            return { update: { path: job.file.path, metadata: newMetadata }, processed: true };
+            return { update: { path: job.path, metadata: newMetadata }, processed: true };
         } catch (error) {
-            console.error(`Error extracting metadata for ${job.file.path}:`, error);
+            console.error(`Error extracting metadata for ${job.path}:`, error);
             return { update: null, processed: false };
         }
     }

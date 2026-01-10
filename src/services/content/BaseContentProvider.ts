@@ -28,7 +28,7 @@ import { ContentReadCache } from './ContentReadCache';
 
 interface ContentJob {
     file: TFile;
-    path: string[];
+    path: string;
 }
 
 export type ContentProviderUpdate = {
@@ -59,7 +59,8 @@ export abstract class BaseContentProvider implements IContentProvider {
     private static readonly RETRY_MAX_DELAY_MS = 30000;
     private static readonly RETRY_MAX_ATTEMPTS = 5;
 
-    protected queue: ContentJob[] = [];
+    // Work queue of file paths; resolved to `TFile` at processing time.
+    protected queue: string[] = [];
     protected isProcessing = false;
     protected abortController: AbortController | null = null;
     protected queueDebounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -69,8 +70,8 @@ export abstract class BaseContentProvider implements IContentProvider {
     protected processingFiles: Set<string> = new Set();
     // Track files already queued to avoid unbounded duplicate enqueues
     protected queuedFiles: Set<string> = new Set();
-    // Tracks files that were queued while already processing, to re-enqueue after the current batch finishes.
-    protected dirtyFilesDuringProcessing: Map<string, TFile> = new Map();
+    // Tracks file paths queued while already processing, re-enqueued after the current batch finishes.
+    protected dirtyFilesDuringProcessing: Set<string> = new Set();
 
     // Track provider stop state to prevent any post-stop scheduling or enqueues
     protected stopped = false;
@@ -139,21 +140,21 @@ export abstract class BaseContentProvider implements IContentProvider {
         this.scheduleRetryTimer(this.processingSession);
     }
 
-    private scheduleRetry(file: TFile, session: number): void {
+    private scheduleRetry(path: string, session: number): void {
         if (this.stopped || this.processingSession !== session) {
             return;
         }
 
-        const existing = this.retryState.get(file.path);
+        const existing = this.retryState.get(path);
         const attempts = existing ? existing.attempts + 1 : 1;
         if (attempts > BaseContentProvider.RETRY_MAX_ATTEMPTS) {
             if (existing) {
                 console.error('Content provider dropped file after retry exhaustion', {
                     provider: this.getContentType(),
-                    path: file.path,
+                    path,
                     attempts
                 });
-                this.retryState.delete(file.path);
+                this.retryState.delete(path);
                 this.scheduleRetryTimer(session);
             }
             return;
@@ -161,7 +162,7 @@ export abstract class BaseContentProvider implements IContentProvider {
 
         const delay = Math.min(BaseContentProvider.RETRY_INITIAL_DELAY_MS * 2 ** (attempts - 1), BaseContentProvider.RETRY_MAX_DELAY_MS);
 
-        this.retryState.set(file.path, { attempts, nextRetryAt: Date.now() + delay });
+        this.retryState.set(path, { attempts, nextRetryAt: Date.now() + delay });
         this.scheduleRetryTimer(session);
     }
 
@@ -251,20 +252,20 @@ export abstract class BaseContentProvider implements IContentProvider {
     queueFiles(files: TFile[]): void {
         if (this.stopped) return;
         // Filter out files that are currently being processed or already queued
-        const newJobs: ContentJob[] = [];
+        let queuedWork = false;
         for (const file of files) {
             const p = file.path;
             if (this.processingFiles.has(p)) {
-                this.dirtyFilesDuringProcessing.set(p, file);
+                this.dirtyFilesDuringProcessing.add(p);
                 continue;
             }
             if (this.queuedFiles.has(p)) continue;
-            newJobs.push({ file, path: p.split('/') });
+            this.queue.push(p);
             this.queuedFiles.add(p);
+            queuedWork = true;
         }
 
-        if (newJobs.length > 0) {
-            this.queue.push(...newJobs);
+        if (queuedWork) {
             if (!this.isProcessing && this.queueDebounceTimer === null && this.currentBatchSettings) {
                 // Schedule processing when work is queued while the provider is idle.
                 // `ContentProviderRegistry` calls `startProcessing()` explicitly, but direct callers might not.
@@ -328,17 +329,27 @@ export abstract class BaseContentProvider implements IContentProvider {
             const db = getDBInstance();
             const batch = this.queue.splice(0, this.QUEUE_BATCH_SIZE);
             // Remove from queued set now that they're moving to evaluation/processing
-            batch.forEach(job => this.queuedFiles.delete(job.file.path));
+            batch.forEach(path => this.queuedFiles.delete(path));
 
             // Filter jobs based on current settings and database state
             // Uses synchronous database access for immediate results
-            const jobsWithData = batch.map(job => {
-                const fileData = db.getFile(job.file.path);
-                const needsProcessing = this.needsProcessing(fileData, job.file, settings);
-                const type = this.getContentType();
+            const type = this.getContentType();
+            const jobsWithData: { job: ContentJob; fileData: FileData | null; needsProcessing: boolean; expectedProviderMtime: number }[] =
+                [];
+            for (const path of batch) {
+                // Re-resolve each path to pick up deletes/renames and avoid holding stale `TFile` references.
+                const abstract = this.app.vault.getAbstractFileByPath(path);
+                if (!(abstract instanceof TFile)) {
+                    continue;
+                }
+                const file = abstract;
+                // Use the current canonical path from the vault in case the file moved between enqueue and processing.
+                const canonicalPath = file.path;
+                const fileData = db.getFile(canonicalPath);
+                const needsProcessing = this.needsProcessing(fileData, file, settings);
                 const expectedProviderMtime = fileData ? fileData[getProviderProcessedMtimeField(type)] : 0;
-                return { job, fileData, needsProcessing, expectedProviderMtime };
-            });
+                jobsWithData.push({ job: { file, path: canonicalPath }, fileData, needsProcessing, expectedProviderMtime });
+            }
 
             activeJobs = jobsWithData.filter(item => item.needsProcessing);
 
@@ -348,7 +359,7 @@ export abstract class BaseContentProvider implements IContentProvider {
 
             // Mark files as being processed
             activeJobs.forEach(({ job }) => {
-                this.processingFiles.add(job.file.path);
+                this.processingFiles.add(job.path);
             });
 
             // Process files in parallel batches
@@ -386,24 +397,27 @@ export abstract class BaseContentProvider implements IContentProvider {
                 );
 
                 results.forEach(({ job, result, fileMtimeAtStart, expectedProviderMtime }) => {
+                    // `job.path` is derived at batch start; use the live `TFile` path for DB writes and logs.
+                    const currentPath = job.file.path;
                     if (this.processingSession === session && !this.stopped && !abortSignal.aborted) {
                         if (!result.processed) {
-                            this.scheduleRetry(job.file, session);
+                            this.scheduleRetry(currentPath, session);
                         } else {
-                            this.clearRetryForPath(job.file.path);
+                            this.clearRetryForPath(currentPath);
                         }
                     }
 
                     if (result.processed) {
                         processedMtimeUpdates.push({
-                            path: job.file.path,
+                            path: currentPath,
                             mtime: fileMtimeAtStart,
                             expectedPreviousMtime: expectedProviderMtime
                         });
                     }
 
                     if (result.update) {
-                        updates.push(result.update);
+                        // Normalize update path to the current file path before persisting.
+                        updates.push({ ...result.update, path: currentPath });
                     }
                 });
 
@@ -437,12 +451,18 @@ export abstract class BaseContentProvider implements IContentProvider {
             if (this.processingSession === session) {
                 // Remove processed files from tracking set
                 activeJobs.forEach(({ job }) => {
-                    this.processingFiles.delete(job.file.path);
+                    this.processingFiles.delete(job.path);
                 });
             }
 
             if (isActiveSession) {
-                const dirtyFiles = Array.from(this.dirtyFilesDuringProcessing.values());
+                const dirtyFiles: TFile[] = [];
+                for (const path of this.dirtyFilesDuringProcessing) {
+                    const abstract = this.app.vault.getAbstractFileByPath(path);
+                    if (abstract instanceof TFile) {
+                        dirtyFiles.push(abstract);
+                    }
+                }
                 this.dirtyFilesDuringProcessing.clear();
                 if (dirtyFiles.length > 0) {
                     this.queueFiles(dirtyFiles);

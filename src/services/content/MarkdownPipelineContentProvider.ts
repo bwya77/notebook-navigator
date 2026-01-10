@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { CachedMetadata, FrontMatterCache, TFile } from 'obsidian';
+import { Platform, type CachedMetadata, type FrontMatterCache, type TFile } from 'obsidian';
 import { type ContentProviderType } from '../../interfaces/IContentProvider';
 import { NotebookNavigatorSettings } from '../../settings';
 import { type CustomPropertyItem, FileData } from '../../storage/IndexedDBStorage';
@@ -308,7 +308,7 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
     }
 
     protected async processFile(
-        job: { file: TFile; path: string[] },
+        job: { file: TFile; path: string },
         fileData: FileData | null,
         settings: NotebookNavigatorSettings
     ): Promise<ContentProviderProcessResult> {
@@ -368,7 +368,56 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             featureImage?: Blob | null;
             featureImageKey?: string | null;
             customProperty?: FileData['customProperty'];
-        } = { path: job.file.path };
+        } = { path: job.path };
+
+        if (needsContent) {
+            const maxMarkdownReadBytes = Platform.isMobile ? 2_000_000 : 8_000_000;
+            if (job.file.stat.size > maxMarkdownReadBytes) {
+                // Avoid reading full markdown content for large files; only apply updates derived from cached metadata/frontmatter.
+                let hasSafeUpdate = false;
+
+                if (settings.showFilePreview && (!fileData || fileData.previewStatus === 'unprocessed')) {
+                    update.preview = '';
+                    hasSafeUpdate = true;
+                }
+
+                if (customPropertyEnabled && settings.customPropertyType === 'frontmatter') {
+                    const nextValue = resolveCustomPropertyItemsFromFrontmatter(
+                        frontmatter,
+                        customPropertyNameFields,
+                        customPropertyColorFields
+                    );
+                    if (!fileData || fileData.customProperty === null || !areCustomPropertyItemsEqual(fileData.customProperty, nextValue)) {
+                        update.customProperty = nextValue;
+                        hasSafeUpdate = true;
+                    }
+                } else if (
+                    customPropertyEnabled &&
+                    settings.customPropertyType === 'wordCount' &&
+                    !isExcalidraw &&
+                    (!fileData || fileData.customProperty === null)
+                ) {
+                    update.customProperty = [];
+                    hasSafeUpdate = true;
+                }
+
+                if (needsFeatureImage && !frontmatterFeatureImageReference) {
+                    const shouldMarkMissingFeatureImage =
+                        !fileData || fileData.featureImageKey === null || fileData.featureImageStatus === 'unprocessed';
+                    if (shouldMarkMissingFeatureImage) {
+                        update.featureImageKey = fileData?.featureImageKey ?? '';
+                        update.featureImage = this.createEmptyBlob();
+                        hasSafeUpdate = true;
+                    }
+                }
+
+                if (hasSafeUpdate) {
+                    return { update, processed: true };
+                }
+
+                return { update: null, processed: true };
+            }
+        }
 
         let content: string;
         let hasContent = false;
@@ -382,7 +431,7 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                 content = '';
             }
         } catch (error) {
-            console.error(`Error reading markdown content for ${job.file.path}:`, error);
+            console.error(`Error reading markdown content for ${job.path}:`, error);
             let hasSafeUpdate = false;
 
             if (customPropertyEnabled && settings.customPropertyType === 'frontmatter') {
