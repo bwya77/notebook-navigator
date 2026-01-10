@@ -246,7 +246,9 @@ export const NavigationPane = React.memo(
         // navigation scroller can be padded and the bottom chrome can be positioned correctly (desktop + mobile/iOS).
         const [calendarWeekCount, setCalendarWeekCount] = useState<number>(() => settings.calendarWeeksToShow);
         useEffect(() => {
-            setCalendarWeekCount(settings.calendarWeeksToShow);
+            if (settings.calendarWeeksToShow !== 6) {
+                setCalendarWeekCount(settings.calendarWeeksToShow);
+            }
         }, [settings.calendarWeeksToShow]);
         const { hiddenFolders, hiddenFileNamePatterns, fileVisibility } = activeProfile;
         // Resolves frontmatter exclusions, returns empty array when hidden items are shown
@@ -2828,12 +2830,12 @@ export const NavigationPane = React.memo(
                             />
                         </div>
                     )}
-                    {showCalendar ? (
-                        <div className="nn-navigation-calendar-overlay">
-                            <NavigationPaneCalendar onWeekCountChange={setCalendarWeekCount} />
-                        </div>
-                    ) : null}
                 </div>
+                {showCalendar ? (
+                    <div className="nn-navigation-calendar-overlay">
+                        <NavigationPaneCalendar onWeekCountChange={setCalendarWeekCount} />
+                    </div>
+                ) : null}
             </div>
         );
 

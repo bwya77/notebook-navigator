@@ -12,6 +12,7 @@
     flex-direction: column;
     overflow: hidden;
     background-color: var(--nn-theme-nav-bg);
+    position: relative; /* Enables absolute positioning for overlays */
 
     /* Performance optimization for virtualized content */
     contain: layout style;
