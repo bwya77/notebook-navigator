@@ -19,10 +19,43 @@
 
 import { deriveFileMetadata } from '../utils/pathMetadata';
 
+interface TestVault {
+    _files: Map<string, TFile>;
+    _folders: Map<string, TFolder>;
+    registerFile(file: TFile): void;
+    unregisterFile(path: string): void;
+    registerFolder(folder: TFolder): void;
+    unregisterFolder(path: string): void;
+    getFolderByPath(path: string): TFolder | null;
+    getAbstractFileByPath(path: string): TFile | TFolder | null;
+    cachedRead(file: TFile): Promise<string>;
+    adapter: {
+        readBinary(path: string): Promise<ArrayBuffer>;
+    };
+}
+
 export class App {
-    vault = {
-        getFolderByPath: () => null,
-        getAbstractFileByPath: () => null,
+    vault: TestVault = {
+        _files: new Map<string, TFile>(),
+        _folders: new Map<string, TFolder>(),
+        registerFile(file: TFile): void {
+            this._files.set(file.path, file);
+        },
+        unregisterFile(path: string): void {
+            this._files.delete(path);
+        },
+        registerFolder(folder: TFolder): void {
+            this._folders.set(folder.path, folder);
+        },
+        unregisterFolder(path: string): void {
+            this._folders.delete(path);
+        },
+        getFolderByPath(path: string): TFolder | null {
+            return this._folders.get(path) ?? null;
+        },
+        getAbstractFileByPath(path: string): TFile | TFolder | null {
+            return this._files.get(path) ?? this._folders.get(path) ?? null;
+        },
         cachedRead: async () => '',
         adapter: {
             readBinary: async () => new ArrayBuffer(0)

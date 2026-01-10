@@ -32,7 +32,7 @@ class TestFileThumbnailsProvider extends FeatureImageContentProvider {
     }
 
     async runProcessFile(file: TFile, fileData: FileData | null, settings: NotebookNavigatorSettings) {
-        return await this.processFile({ file, path: file.path.split('/') }, fileData, settings);
+        return await this.processFile({ file, path: file.path }, fileData, settings);
     }
 
     protected async createThumbnailBlob(_reference: FeatureImageReference, _settings: NotebookNavigatorSettings): Promise<Blob | null> {

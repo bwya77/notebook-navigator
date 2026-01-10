@@ -26,12 +26,12 @@ import { deriveFileMetadata } from '../utils/pathMetadata';
 
 class TestFeatureImageContentProvider extends MarkdownPipelineContentProvider {
     async runProcessFile(file: TFile, settings: NotebookNavigatorSettings) {
-        const result = await this.processFile({ file, path: file.path.split('/') }, null, settings);
+        const result = await this.processFile({ file, path: file.path }, null, settings);
         return result.update;
     }
 
     async runProcessFileWithData(file: TFile, fileData: FileData | null, settings: NotebookNavigatorSettings) {
-        const result = await this.processFile({ file, path: file.path.split('/') }, fileData, settings);
+        const result = await this.processFile({ file, path: file.path }, fileData, settings);
         return result.update;
     }
 

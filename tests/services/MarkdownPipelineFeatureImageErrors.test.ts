@@ -168,7 +168,9 @@ describe('MarkdownPipelineContentProvider feature image errors', () => {
             return path === imageFile.path ? imageFile : null;
         };
         app.vault.getAbstractFileByPath = (path: string) => {
-            return path === imageFile.path ? imageFile : null;
+            if (path === noteFile.path) return noteFile;
+            if (path === imageFile.path) return imageFile;
+            return null;
         };
 
         db.setFile(

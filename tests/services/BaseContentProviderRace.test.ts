@@ -223,6 +223,7 @@ describe('BaseContentProvider race handling', () => {
         const file = new TFile();
         file.path = 'notes/note.md';
         file.stat.mtime = 100;
+        app.vault.getAbstractFileByPath = (path: string) => (path === file.path ? file : null);
 
         db.setFile(
             file.path,
@@ -275,6 +276,7 @@ describe('BaseContentProvider race handling', () => {
         const file = new TFile();
         file.path = 'notes/note.md';
         file.stat.mtime = 200;
+        app.vault.getAbstractFileByPath = (path: string) => (path === file.path ? file : null);
 
         db.setFile(
             file.path,
