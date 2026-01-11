@@ -141,9 +141,9 @@ Priority order: folder note styles override custom color styles, which override 
 | `--nn-theme-file-parent-color`                    | `var(--text-faint)`                           | Text color for parent folder path (when showing subfolders)     |
 | `--nn-theme-file-tag-color`                       | `var(--text-muted)`                           | Text color for tag pills without custom colors                  |
 | `--nn-theme-file-tag-custom-color-text-color`     | `var(--nn-theme-navitem-name-color)`          | Text color for tags with custom backgrounds but no custom color |
-| `--nn-theme-file-tag-bg`                          | `var(--nn-theme-list-bg)`                     | Background color for tag pills without custom backgrounds       |
+| `--nn-theme-file-tag-bg`                          | `transparent`                                 | Background color for tag pills without custom backgrounds       |
 | `--nn-theme-file-custom-property-color`           | `var(--text-muted)`                           | Text color for custom property pill                             |
-| `--nn-theme-file-custom-property-bg`              | `var(--nn-theme-list-bg)`                     | Background color for custom property pill                       |
+| `--nn-theme-file-custom-property-bg`              | `transparent`                                 | Background color for custom property pill                       |
 | `--nn-theme-file-tag-border-radius`               | `10px`                                        | Corner radius for tag pills (0-10px)                            |
 | `--nn-theme-file-custom-property-border-radius`   | `10px`                                        | Corner radius for custom property pills (0-10px)                |
 | `--nn-theme-file-border-radius`                   | `8px`                                         | Corner radius for file items (0-16px)                           |
@@ -163,7 +163,7 @@ Priority order: folder note styles override custom color styles, which override 
 | `--nn-theme-file-selected-inactive-parent-color`  | `var(--nn-theme-file-selected-parent-color)`  | Parent folder color when selected and pane is inactive          |
 | `--nn-theme-file-selected-inactive-tag-color`     | `var(--nn-theme-file-selected-tag-color)`     | Tag text color when selected and pane is inactive               |
 | `--nn-theme-file-selected-inactive-tag-bg`        | `var(--nn-theme-file-tag-bg)`                 | Tag background color when selected and pane is inactive         |
-| `--nn-theme-file-selected-inactive-custom-property-color` | `var(--nn-theme-file-selected-custom-property-color)` | Custom property text color when selected and pane is inactive   |
+| `--nn-theme-file-selected-inactive-custom-property-color` | `var(--nn-theme-file-custom-property-color)`  | Custom property text color when selected and pane is inactive   |
 | `--nn-theme-file-selected-inactive-custom-property-bg`    | `var(--nn-theme-file-custom-property-bg)`     | Custom property background color when selected and pane is inactive |
 
 Tag pills with only a custom text color use the list pane background, and custom background pills use the navigation pane background. Both follow the background mode setting.

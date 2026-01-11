@@ -269,7 +269,7 @@ body {
     --nn-theme-file-selected-preview-color: var(--nn-theme-file-preview-color);
     --nn-theme-file-selected-date-color: var(--text-muted);
     --nn-theme-file-selected-parent-color: var(--text-muted);
-    --nn-theme-file-selected-tag-color: var(--text-normal);
+    --nn-theme-file-selected-tag-color: var(--nn-theme-file-tag-color);
     --nn-theme-file-selected-tag-bg: var(--nn-theme-file-tag-bg);
     --nn-theme-file-selected-custom-property-color: var(--nn-theme-file-custom-property-color);
     --nn-theme-file-selected-custom-property-bg: var(--nn-theme-file-custom-property-bg);
@@ -278,7 +278,7 @@ body {
     --nn-theme-file-selected-inactive-preview-color: var(--nn-theme-file-selected-preview-color);
     --nn-theme-file-selected-inactive-date-color: var(--nn-theme-file-selected-date-color);
     --nn-theme-file-selected-inactive-parent-color: var(--nn-theme-file-selected-parent-color);
-    --nn-theme-file-selected-inactive-tag-color: var(--text-normal);
+    --nn-theme-file-selected-inactive-tag-color: var(--nn-theme-file-selected-tag-color);
     --nn-theme-file-selected-inactive-tag-bg: var(--nn-theme-file-tag-bg);
     --nn-theme-file-selected-inactive-custom-property-color: var(--nn-theme-file-selected-custom-property-color);
     --nn-theme-file-selected-inactive-custom-property-bg: var(--nn-theme-file-custom-property-bg);
