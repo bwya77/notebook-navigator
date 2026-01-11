@@ -2376,6 +2376,8 @@ body {
     --nn-nav-calendar-section-gap: 6px;
     --nn-nav-calendar-padding: 8px;
     --nn-nav-calendar-safe-area: 0px;
+    --nn-nav-calendar-weeknumber-column-width: 28px;
+    --nn-nav-calendar-weeknumber-padding-right: 6px;
     --nn-nav-calendar-height: 0px;
     --nn-pane-bottom-toolbar-space: 0px;
     --nn-pane-bottom-calendar-space: 0px;
@@ -2429,6 +2431,13 @@ body {
     flex-direction: column;
     gap: var(--nn-nav-calendar-section-gap);
     user-select: none;
+}
+
+.nn-navigation-calendar-grid {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--nn-nav-calendar-section-gap);
 }
 
 .nn-navigation-calendar-header {
@@ -2516,7 +2525,7 @@ body {
 }
 
 .nn-navigation-calendar-weekdays[data-weeknumbers='true'] {
-    grid-template-columns: 24px repeat(7, 1fr);
+    grid-template-columns: var(--nn-nav-calendar-weeknumber-column-width) repeat(7, 1fr);
 }
 
 .nn-navigation-calendar-weekday,
@@ -2524,10 +2533,30 @@ body {
     text-align: center;
 }
 
+.nn-navigation-calendar-weekdays[data-weeknumbers='true'] .nn-navigation-calendar-weeknumber-spacer {
+    text-align: right;
+    padding-right: var(--nn-nav-calendar-weeknumber-padding-right);
+}
+
 .nn-navigation-calendar-weeks {
     display: flex;
     flex-direction: column;
     gap: var(--nn-nav-calendar-week-gap);
+}
+
+.nn-navigation-calendar-weeks[data-weeknumbers='true'] {
+    position: relative;
+}
+
+.nn-navigation-calendar-weeks[data-weeknumbers='true']::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--nn-nav-calendar-weeknumber-column-width) - 1px);
+    width: 1px;
+    background-color: var(--nn-theme-nav-calendar-hover-bg);
+    pointer-events: none;
 }
 
 .nn-navigation-calendar-week {
@@ -2537,14 +2566,15 @@ body {
 }
 
 .nn-navigation-calendar-weeks[data-weeknumbers='true'] .nn-navigation-calendar-week {
-    grid-template-columns: 24px repeat(7, 1fr);
+    grid-template-columns: var(--nn-nav-calendar-weeknumber-column-width) repeat(7, 1fr);
 }
 
 .nn-navigation-calendar-weeknumber {
     height: var(--nn-nav-calendar-week-row-height);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
+    padding-right: var(--nn-nav-calendar-weeknumber-padding-right);
     color: var(--nn-theme-nav-calendar-week-label-color);
     font-size: 10px;
     line-height: 1;
