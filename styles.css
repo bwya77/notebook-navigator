@@ -2376,6 +2376,7 @@ body {
     --nn-nav-calendar-section-gap: 6px;
     --nn-nav-calendar-padding: 8px;
     --nn-nav-calendar-safe-area: 0px;
+    --nn-nav-calendar-border-width: 1px;
     --nn-nav-calendar-weeknumber-column-width: 28px;
     --nn-nav-calendar-weeknumber-padding-right: 6px;
     --nn-nav-calendar-height: 0px;
@@ -2386,13 +2387,14 @@ body {
 .notebook-navigator-mobile .nn-navigation-pane {
     --nn-nav-calendar-safe-area: var(--nn-mobile-safe-area-bottom);
     --nn-nav-calendar-scrollbar-gap: 0px;
+    --nn-nav-calendar-border-width: 0px;
 }
 
 .nn-navigation-pane[data-calendar='true'] {
     --nn-nav-calendar-height: calc(
-        (var(--nn-nav-calendar-padding) * 2) + var(--nn-nav-calendar-safe-area) + var(--nn-nav-calendar-header-row-height) +
-            var(--nn-nav-calendar-weekday-row-height) + (2 * var(--nn-nav-calendar-section-gap)) +
-            (var(--nn-nav-calendar-week-count) * var(--nn-nav-calendar-week-row-height)) +
+        var(--nn-nav-calendar-border-width) + (var(--nn-nav-calendar-padding) * 2) + var(--nn-nav-calendar-safe-area) +
+            var(--nn-nav-calendar-header-row-height) + var(--nn-nav-calendar-weekday-row-height) +
+            (2 * var(--nn-nav-calendar-section-gap)) + (var(--nn-nav-calendar-week-count) * var(--nn-nav-calendar-week-row-height)) +
             ((var(--nn-nav-calendar-week-count) - 1) * var(--nn-nav-calendar-week-gap))
     );
     --nn-pane-bottom-calendar-space: var(--nn-nav-calendar-height);
@@ -2418,11 +2420,7 @@ body {
     -webkit-backdrop-filter: var(--nn-theme-pane-overlay-filter);
     backdrop-filter: var(--nn-theme-pane-overlay-filter);
 
-    border-top: 1px solid var(--nn-theme-divider-border-color);
-}
-
-.notebook-navigator-mobile .nn-navigation-calendar-overlay {
-    border-top: none;
+    border-top: var(--nn-nav-calendar-border-width) solid var(--nn-theme-divider-border-color);
 }
 
 .nn-navigation-calendar {
