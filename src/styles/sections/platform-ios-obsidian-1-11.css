@@ -79,11 +79,11 @@
     background-color: transparent;
     border-top: none;
     /* 2px for border effect + 2px to match Obsidian view selector dropdown */
-    padding-left: calc(var(--nn-scroller-padding) + 4px);
-    padding-right: calc(var(--nn-scroller-padding) + 4px);
-    padding-bottom: 0;
-    height: var(--nn-ios-toolbar-height);
-    min-height: var(--nn-ios-toolbar-height);
+    padding-left: calc(var(--nn-scroller-padding) + 4px); /* 4px horizontal spacer for glass pill */
+    padding-right: calc(var(--nn-scroller-padding) + 4px); /* 4px horizontal spacer for glass pill */
+    padding-bottom: 0; /* No extra bottom padding in iOS 1.11+ */
+    height: var(--nn-ios-toolbar-height); /* Toolbar box height */
+    min-height: var(--nn-ios-toolbar-height); /* Match toolbar box height */
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-left,
@@ -105,9 +105,9 @@
     --nn-ios-toolbar-glass-shadow: 0 0 0 2px var(--nn-ios-toolbar-glass-outline), 0 16px 32px rgba(0, 0, 0, 0.09);
     --nn-ios-toolbar-glass-filter: blur(3px) saturate(160%);
     --nn-theme-mobile-toolbar-button-active-bg: transparent;
-    --nn-ios-toolbar-height: 40px;
-    --nn-ios-pane-bottom-fade-height: 64px;
-    --nn-ios-pane-bottom-fade-opacity: 0.8;
+    --nn-ios-toolbar-height: 44px; /* 38px button + (1px padding + 2px border) * 2 */
+    --nn-ios-pane-bottom-fade-height: 64px; /* Fade height behind the toolbar */
+    --nn-ios-pane-bottom-fade-opacity: 0.8; /* Fade opacity behind the toolbar */
 }
 
 .theme-dark .notebook-navigator-obsidian-1-11-plus-ios {
@@ -121,7 +121,7 @@
     z-index: 0;
     border-radius: 999px;
     background: var(--nn-ios-toolbar-glass-bg);
-    border: 2px solid transparent;
+    border: 2px solid transparent; /* Glass outline thickness */
     -webkit-backdrop-filter: var(--nn-ios-toolbar-glass-filter);
     backdrop-filter: var(--nn-ios-toolbar-glass-filter);
     box-shadow: var(--nn-ios-toolbar-glass-shadow);
@@ -148,19 +148,19 @@
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-pill {
     width: auto;
     justify-content: flex-start;
-    gap: 6px;
-    padding: 1px 10px;
+    gap: 6px; /* Spacing between buttons inside the pill */
+    padding: 1px 10px; /* 1px vertical + 10px horizontal pill inset */
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-circle {
-    padding: 1px;
+    padding: 1px; /* 1px inset around the circular button */
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-button {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    width: 38px; /* Button diameter inside the glass pill */
+    height: 38px; /* Button diameter inside the glass pill */
+    min-width: 38px; /* Prevent button shrink */
+    min-height: 38px; /* Prevent button shrink */
     border-radius: 999px;
 }
 
@@ -179,7 +179,11 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: calc(-1 * (var(--nn-ios-pane-bottom-fade-height) - var(--nn-ios-toolbar-height)) + 12px);
+    bottom: clamp(
+        0px,
+        calc(-1 * (var(--nn-ios-pane-bottom-fade-height) - var(--nn-ios-toolbar-height)) + 12px),
+        calc(var(--nn-ios-toolbar-height) + 12px)
+    ); /* 12px matches the toolbar bottom offset */
     height: var(--nn-ios-pane-bottom-fade-height);
     pointer-events: none;
     background: linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(255 255 255 / var(--nn-ios-pane-bottom-fade-opacity)));
