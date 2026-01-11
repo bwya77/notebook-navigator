@@ -403,20 +403,9 @@ export function useNavigatorReveal({
                 source: revealSource
             });
 
-            // Determine whether to switch to files view in single pane mode
-            // Check if we're currently opening the homepage file
-            const isHomepageContext = Boolean(commandQueue?.isOpeningHomepage());
-            const shouldSkipSinglePaneSwitch = Boolean(
-                (options?.isStartupReveal && settings.startView === 'navigation') ||
-                    options?.preserveNavigationFocus ||
-                    (isHomepageContext && settings.startView === 'navigation')
-            );
-
-            if (uiState.singlePane && uiState.currentSinglePaneView === 'navigation' && !shouldSkipSinglePaneSwitch) {
-                uiDispatch({ type: 'SET_SINGLE_PANE_VIEW', view: 'files' });
-            }
-
-            // Don't change focus - let Obsidian handle focus naturally when opening files
+            // Implicit file reveals (auto-reveal, shortcuts, recent notes) update selection/expansion only.
+            // Keep the current single-pane view (no navigation → files switch) during external file opens.
+            // If we want reveal to force the list pane visible again, reintroduce a SET_SINGLE_PANE_VIEW('files') here.
 
             if (!targetTag && navigationPaneRef.current) {
                 const scrollFolder =
@@ -437,12 +426,9 @@ export function useNavigatorReveal({
             expansionState.expandedTags,
             expansionDispatch,
             selectionDispatch,
-            uiState,
-            uiDispatch,
             getDB,
             getRevealTargetFolder,
-            navigationPaneRef,
-            commandQueue
+            navigationPaneRef
         ]
     );
 

@@ -91,6 +91,7 @@ const RELEASE_NOTES: ReleaseNote[] = [
             'Internal: Major rewrite of the metadata processing chain. It is now a single sequential pipeline per file instead of multiple parallel providers. It reads markdown content at most once per file per run and writes just one merged database update per file. This should make the cache system handle vaults of virtually any size without memory spikes.'
         ],
         changed: [
+            '==Behavior change==: In single-pane mode, clicking on a file in shortcuts, recent notes, in calendar or changing notes in the editor (with auto reveal enabled) will no longer switch over to list pane automatically. The old behavior was implemented before we had shortcuts and recent notes, and it was time to change it.',
             'Folder notes no longer default to showing text in bold and underline, instead their icon is now a file icon. This can be changed in Style settings.',
             'Removed the two style setting variables **nn-navigation-pane-transparent** and **nn-list-pane-transparent** since they did not look good with the new overlay transparency. I will investigate best way forward for those who want full window transparency.'
         ],

@@ -1533,7 +1533,10 @@ export const NavigationPane = React.memo(
                     app.workspace.leftSplit.collapse();
                 }
 
-                uiDispatch({ type: 'SET_FOCUSED_PANE', pane: 'files' });
+                const focusPane = uiState.singlePane ? uiState.currentSinglePaneView : 'files';
+                // Keep shortcut note reveals from shifting focus away from the visible pane in single-pane mode.
+                // This pairs with useNavigatorReveal's implicit reveal behavior which keeps the current single-pane view.
+                uiDispatch({ type: 'SET_FOCUSED_PANE', pane: focusPane });
                 scheduleShortcutRelease();
             },
             [
@@ -1544,7 +1547,9 @@ export const NavigationPane = React.memo(
                 scheduleShortcutRelease,
                 app,
                 isMobile,
-                uiDispatch
+                uiDispatch,
+                uiState.currentSinglePaneView,
+                uiState.singlePane
             ]
         );
 
@@ -1581,9 +1586,21 @@ export const NavigationPane = React.memo(
                     app.workspace.leftSplit.collapse();
                 }
 
-                uiDispatch({ type: 'SET_FOCUSED_PANE', pane: 'files' });
+                const focusPane = uiState.singlePane ? uiState.currentSinglePaneView : 'files';
+                // Keep recent note reveals from shifting focus away from the visible pane in single-pane mode.
+                // This pairs with useNavigatorReveal's implicit reveal behavior which keeps the current single-pane view.
+                uiDispatch({ type: 'SET_FOCUSED_PANE', pane: focusPane });
             },
-            [selectionState.selectionType, onRevealFile, onRevealShortcutFile, app.workspace, isMobile, uiDispatch]
+            [
+                selectionState.selectionType,
+                onRevealFile,
+                onRevealShortcutFile,
+                app.workspace,
+                isMobile,
+                uiDispatch,
+                uiState.currentSinglePaneView,
+                uiState.singlePane
+            ]
         );
 
         // Handles search shortcut activation - executes saved search query
