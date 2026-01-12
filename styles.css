@@ -5969,9 +5969,16 @@ body.nn-resizing {
     padding-left: calc(var(--nn-scroller-padding) + 4px); /* 4px horizontal spacer for glass pill */
     padding-right: calc(var(--nn-scroller-padding) + 4px); /* 4px horizontal spacer for glass pill */
     padding-bottom: 0; /* No extra bottom padding in iOS 1.11+ */
+    /* The glass outline is painted via box-shadow and extends outside the pill/circle box. Add a small top spacer so
+       auto-revealed rows are not positioned behind the outline. */
+    padding-top: var(--nn-ios-toolbar-glass-visual-overlap-top);
     /* Adds an invisible spacer under the glass pills to create the visual bottom gap without shifting sticky positioning. */
-    height: calc(var(--nn-ios-toolbar-height) + var(--nn-ios-toolbar-bottom-offset)); /* Includes bottom offset spacer */
-    min-height: calc(var(--nn-ios-toolbar-height) + var(--nn-ios-toolbar-bottom-offset)); /* Match toolbar box height */
+    height: calc(
+        var(--nn-ios-toolbar-height) + var(--nn-ios-toolbar-bottom-offset) + var(--nn-ios-toolbar-glass-visual-overlap-top)
+    ); /* Includes bottom offset spacer + top overlap */
+    min-height: calc(
+        var(--nn-ios-toolbar-height) + var(--nn-ios-toolbar-bottom-offset) + var(--nn-ios-toolbar-glass-visual-overlap-top)
+    ); /* Match toolbar box height */
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-left,
@@ -5993,6 +6000,8 @@ body.nn-resizing {
     --nn-ios-toolbar-glass-shadow: 0 0 0 2px var(--nn-ios-toolbar-glass-outline), 0 16px 32px rgba(0, 0, 0, 0.09);
     --nn-ios-toolbar-glass-filter: blur(3px) saturate(160%);
     --nn-theme-mobile-toolbar-button-active-bg: transparent;
+    /* Visual overflow above the pills caused by the glass outline (box-shadow spread). */
+    --nn-ios-toolbar-glass-visual-overlap-top: 2px;
     /* Visual bottom gap between the glass pills and the view edge (implemented via toolbar height + fade, not sticky offset). */
     --nn-ios-toolbar-bottom-offset: 12px;
     --nn-ios-toolbar-height: 44px; /* 38px button + (1px padding + 2px border) * 2 */
