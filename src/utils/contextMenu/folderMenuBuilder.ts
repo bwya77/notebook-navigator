@@ -20,7 +20,7 @@ import { FileSystemAdapter, MenuItem, Platform, TFolder, TFile } from 'obsidian'
 import { FolderMenuBuilderParams } from './menuTypes';
 import { strings } from '../../i18n';
 import { showNotice } from '../noticeUtils';
-import { getInternalPlugin, isFolderAncestor, isPluginInstalled } from '../../utils/typeGuards';
+import { executeCommand, getInternalPlugin, isFolderAncestor, isPluginInstalled } from '../../utils/typeGuards';
 import { getFolderNote, createFolderNote } from '../../utils/folderNotes';
 import { cleanupExclusionPatterns, isFolderInExcludedFolder } from '../../utils/fileFilters';
 import { ItemType } from '../../types';
@@ -206,7 +206,7 @@ export function buildFolderCreationMenu(params: FolderMenuBuilderParams): void {
  */
 export function buildFolderMenu(params: FolderMenuBuilderParams): void {
     const { folder, menu, services, settings, state, dispatchers, options } = params;
-    const { app, fileSystemOps, metadataService } = services;
+    const { app, fileSystemOps, metadataService, plugin } = services;
     const { selectionState, expandedFolders } = state;
     const { selectionDispatch, expansionDispatch } = dispatchers;
 
@@ -375,6 +375,16 @@ export function buildFolderMenu(params: FolderMenuBuilderParams): void {
                 }
             });
     });
+
+    if (folder.path === '/') {
+        menu.addItem((item: MenuItem) => {
+            item.setTitle(strings.commands.navigateToFolder)
+                .setIcon('lucide-folder')
+                .onClick(() => {
+                    executeCommand(app, `${plugin.manifest.id}:navigate-to-folder`);
+                });
+        });
+    }
 
     menu.addSeparator();
 

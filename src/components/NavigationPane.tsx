@@ -76,6 +76,7 @@ import { useServices, useCommandQueue, useFileSystemOps, useMetadataService, use
 import { useSettingsState, useSettingsUpdate, useActiveProfile } from '../context/SettingsContext';
 import { useUXPreferences } from '../context/UXPreferencesContext';
 import { showNotice } from '../utils/noticeUtils';
+import { executeCommand } from '../utils/typeGuards';
 import { resolveUXIconForMenu } from '../utils/uxIcons';
 import { useFileCache } from '../context/StorageContext';
 import { useUIState, useUIDispatch } from '../context/UIStateContext';
@@ -1953,6 +1954,21 @@ export const NavigationPane = React.memo(
                     hasActions = true;
                 }
 
+                if (sectionId === NavigationSectionId.TAGS) {
+                    if (hasActions) {
+                        menu.addSeparator();
+                    }
+
+                    menu.addItem(item => {
+                        item.setTitle(strings.commands.navigateToTag)
+                            .setIcon('lucide-hash')
+                            .onClick(() => {
+                                executeCommand(app, `${plugin.manifest.id}:navigate-to-tag`);
+                            });
+                    });
+                    hasActions = true;
+                }
+
                 // Skip showing empty menu
                 if (!hasActions) {
                     return;
@@ -1960,7 +1976,16 @@ export const NavigationPane = React.memo(
 
                 menu.showAtMouseEvent(event.nativeEvent);
             },
-            [app, clearShortcuts, handleShortcutSplitToggle, metadataService, pinToggleLabel, shortcutsList.length, uiState.pinShortcuts]
+            [
+                app,
+                clearShortcuts,
+                handleShortcutSplitToggle,
+                metadataService,
+                pinToggleLabel,
+                plugin.manifest.id,
+                shortcutsList.length,
+                uiState.pinShortcuts
+            ]
         );
 
         // Calculates the note count for a folder shortcut, using cache when available

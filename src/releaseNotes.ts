@@ -83,7 +83,8 @@ const RELEASE_NOTES: ReleaseNote[] = [
             'Lots of new ==calendar settings==! You find them in Navigation pane > Calendar. Change locale, number of weeks or enable week numbers.',
             'New settings: ==Notes > Custom property==. You can now show properties or word count in file list! You can show multiple properties, and you can even color each property individually using other properties!',
             'Six new style and theme settings for custom property tag pills - text, background, selected x 2, selected inactive x 2.',
-            'New setting: ==Show parent folder icon==. Enable to show parent folder icons in the list pane. New default is disabled.'
+            'New setting: ==Show parent folder icon==. Enable to show parent folder icons in the list pane. New default is disabled.',
+            'Two new menu commands: Navigate to folder and Navigate to tag. Access them from the root folder or root tag folder context menu.'
         ],
         improved: [
             'Lots of UI polish to this release. Things look cleaner and should be easier on the eyes. If you want it to look like before just go to Style settings.',
