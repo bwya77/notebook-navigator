@@ -8,6 +8,13 @@
 
 .nn-navigation-pane-scroller {
     flex: 1;
+    /*
+     * Use a column flex layout so `.nn-navigation-pane-content` can expand to fill unused height.
+     * This keeps the bottom sticky overlays (`.nn-pane-bottom-toolbar`, `.nn-navigation-calendar-overlay`)
+     * anchored to the pane bottom when the navigation list is shorter than the viewport.
+     */
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0 var(--nn-scroller-padding);
@@ -17,6 +24,18 @@
 
     /* Ensure scroll events work properly with virtualization */
     position: relative;
+}
+
+/* Keep the chrome stacks and bottom overlays sized to their content; let the list content fill the remainder. */
+.nn-navigation-pane-scroller > .nn-navigation-pane-overlay,
+.nn-navigation-pane-scroller > .nn-navigation-pane-content,
+.nn-navigation-pane-scroller > .nn-pane-bottom-toolbar,
+.nn-navigation-pane-scroller > .nn-navigation-calendar-overlay {
+    flex-shrink: 0;
+}
+
+.nn-navigation-pane-scroller > .nn-navigation-pane-content {
+    flex: 1 0 auto;
 }
 
 .nn-navigation-pane-content {

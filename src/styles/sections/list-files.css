@@ -11,10 +11,28 @@
 /* File list container - scrollable area for files */
 .nn-list-pane-scroller {
     flex: 1;
+    /*
+     * Use a column flex layout so `.nn-list-pane-content` can expand to fill unused height.
+     * This keeps the bottom sticky toolbar (`.nn-pane-bottom-toolbar`) anchored to the pane bottom
+     * when the file list is shorter than the viewport.
+     */
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     padding: 0 var(--nn-scroller-padding);
     background-color: var(--nn-theme-list-bg); /* Opaque background for GPU scroll layer optimization */
     position: relative;
+}
+
+/* Keep the chrome stack and bottom toolbar sized to their content; let the list content fill the remainder. */
+.nn-list-pane-scroller > .nn-list-pane-overlay,
+.nn-list-pane-scroller > .nn-list-pane-content,
+.nn-list-pane-scroller > .nn-pane-bottom-toolbar {
+    flex-shrink: 0;
+}
+
+.nn-list-pane-scroller > .nn-list-pane-content {
+    flex: 1 0 auto;
 }
 
 .nn-list-pane-content {
