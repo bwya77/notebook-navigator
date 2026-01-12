@@ -124,6 +124,8 @@ Keep this list ordered: later files override earlier ones.
 @import './sections/mobile-tab-bars.css';
 /* platform-ios-obsidian-1-11.css: iOS safe areas + Obsidian 1.11+ iOS glass toolbar/overlays. */
 @import './sections/platform-ios-obsidian-1-11.css';
+/* platform-android-obsidian-1-11.css: Android tweaks for Obsidian 1.11+ view chrome. */
+@import './sections/platform-android-obsidian-1-11.css';
 /* android-toolbar.css: Android toolbar positioning overrides. */
 @import './sections/android-toolbar.css';
 /* android-textzoom.css: Android `textZoom` compensation variables and overrides. */

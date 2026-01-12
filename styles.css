@@ -6124,6 +6124,18 @@ body.nn-resizing {
     background: linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(255 255 255 / var(--nn-ios-pane-bottom-fade-opacity)));
     z-index: -1;
 }
+/* Source: src/styles/sections/platform-android-obsidian-1-11.css */
+
+/* ========================================================================
+   Android + Obsidian 1.11+ Platform Overrides
+   ======================================================================== */
+
+/* Obsidian 1.11+ Android: bottom padding inside the navigator viewport */
+/* Applied to the internal split container so the bottom edge doesn't touch the view chrome (8px matches the top spacer). */
+.notebook-navigator-obsidian-1-11-plus-android .nn-split-container {
+    padding-bottom: 8px;
+    box-sizing: border-box;
+}
 /* Source: src/styles/sections/android-toolbar.css */
 
 /* ========================================================================

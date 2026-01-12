@@ -126,6 +126,9 @@ export class NotebookNavigatorView extends ItemView {
             // Add platform-specific classes
             if (Platform.isAndroidApp) {
                 container.classList.add('notebook-navigator-android');
+                if (requireApiVersion('1.11.0')) {
+                    container.classList.add('notebook-navigator-obsidian-1-11-plus-android');
+                }
                 // Detect and compensate for Android textZoom BEFORE React renders
                 applyAndroidFontCompensation(container);
             } else if (Platform.isIosApp) {
@@ -248,7 +251,9 @@ export class NotebookNavigatorView extends ItemView {
         // Also remove mobile/platform-specific classes added on open
         container.classList.remove('notebook-navigator-mobile');
         container.classList.remove('notebook-navigator-android');
+        container.classList.remove('notebook-navigator-obsidian-1-11-plus-android');
         container.classList.remove('notebook-navigator-ios');
+        container.classList.remove('notebook-navigator-obsidian-1-11-plus-ios');
         this.root?.unmount();
         // Ensure container is cleared after unmount
         container.empty();
