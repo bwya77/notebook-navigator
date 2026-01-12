@@ -898,6 +898,10 @@ export const STRINGS_PT = {
                     weeksCount: '{count} semanas'
                 }
             },
+            calendarHighlightToday: {
+                name: 'Realçar a data de hoje',
+                desc: 'Mostrar um círculo vermelho e texto em negrito na data de hoje.'
+            },
             calendarShowWeekNumber: {
                 name: 'Mostrar número da semana',
                 desc: 'Adicionar uma coluna com o número da semana.'

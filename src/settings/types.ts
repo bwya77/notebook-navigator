@@ -154,6 +154,7 @@ export interface NotebookNavigatorSettings {
     // Navigation pane tab - Calendar
     calendarLocale: string;
     calendarWeeksToShow: CalendarWeeksToShow;
+    calendarHighlightToday: boolean;
     calendarShowWeekNumber: boolean;
     calendarConfirmBeforeCreate: boolean;
 

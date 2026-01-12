@@ -898,6 +898,10 @@ export const STRINGS_ID = {
                     weeksCount: '{count} minggu'
                 }
             },
+            calendarHighlightToday: {
+                name: 'Sorot tanggal hari ini',
+                desc: 'Tampilkan lingkaran merah dan teks tebal pada tanggal hari ini.'
+            },
             calendarShowWeekNumber: {
                 name: 'Tampilkan nomor minggu',
                 desc: 'Tambahkan kolom dengan nomor minggu.'

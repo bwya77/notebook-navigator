@@ -898,6 +898,10 @@ export const STRINGS_AR = {
                     weeksCount: '{count} أسابيع'
                 }
             },
+            calendarHighlightToday: {
+                name: 'تمييز تاريخ اليوم',
+                desc: 'إظهار دائرة حمراء ونص غامق على تاريخ اليوم.'
+            },
             calendarShowWeekNumber: {
                 name: 'عرض رقم الأسبوع',
                 desc: 'إضافة عمود برقم الأسبوع.'

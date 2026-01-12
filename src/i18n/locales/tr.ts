@@ -898,6 +898,10 @@ export const STRINGS_TR = {
                     weeksCount: '{count} hafta'
                 }
             },
+            calendarHighlightToday: {
+                name: 'Bugünün tarihini vurgula',
+                desc: 'Bugünün tarihinde kırmızı bir daire ve kalın metin göster.'
+            },
             calendarShowWeekNumber: {
                 name: 'Hafta numarasını göster',
                 desc: 'Hafta numarasıyla bir sütun ekle.'

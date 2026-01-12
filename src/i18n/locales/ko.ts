@@ -898,6 +898,10 @@ export const STRINGS_KO = {
                     weeksCount: '{count}주'
                 }
             },
+            calendarHighlightToday: {
+                name: '오늘 날짜 강조 표시',
+                desc: '오늘 날짜에 빨간 원과 굵은 텍스트를 표시합니다.'
+            },
             calendarShowWeekNumber: {
                 name: '주 번호 표시',
                 desc: '주 번호 열을 추가합니다.'

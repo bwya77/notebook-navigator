@@ -898,6 +898,10 @@ export const STRINGS_VI = {
                     weeksCount: '{count} tuần'
                 }
             },
+            calendarHighlightToday: {
+                name: 'Làm nổi bật ngày hôm nay',
+                desc: 'Hiển thị vòng tròn đỏ và chữ in đậm cho ngày hôm nay.'
+            },
             calendarShowWeekNumber: {
                 name: 'Hiển thị số tuần',
                 desc: 'Thêm cột với số tuần.'

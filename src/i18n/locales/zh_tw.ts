@@ -896,6 +896,10 @@ export const STRINGS_ZH_TW = {
                     weeksCount: '{count} 週'
                 }
             },
+            calendarHighlightToday: {
+                name: '醒目顯示今天日期',
+                desc: '在今天日期上顯示紅色圓圈和粗體文字。'
+            },
             calendarShowWeekNumber: {
                 name: '顯示週號',
                 desc: '在每行開頭顯示週號。'

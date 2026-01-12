@@ -464,9 +464,15 @@ export function NavigationPaneCalendar({ onWeekCountChange }: NavigationPaneCale
     }
 
     const showWeekNumbers = settings.calendarShowWeekNumber;
+    const highlightToday = settings.calendarHighlightToday;
 
     return (
-        <div className="nn-navigation-calendar" role="group" aria-labelledby={calendarLabelId}>
+        <div
+            className="nn-navigation-calendar"
+            role="group"
+            aria-labelledby={calendarLabelId}
+            data-highlight-today={highlightToday ? 'true' : undefined}
+        >
             <span id={calendarLabelId} className="nn-visually-hidden">
                 {strings.navigationCalendar.ariaLabel}
             </span>

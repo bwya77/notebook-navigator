@@ -900,6 +900,10 @@ export const STRINGS_FR = {
                     weeksCount: '{count} semaines'
                 }
             },
+            calendarHighlightToday: {
+                name: "Mettre en évidence la date d'aujourd'hui",
+                desc: "Afficher un cercle rouge et du texte en gras sur la date d'aujourd'hui."
+            },
             calendarShowWeekNumber: {
                 name: 'Afficher le numéro de semaine',
                 desc: 'Ajouter une colonne avec le numéro de semaine.'

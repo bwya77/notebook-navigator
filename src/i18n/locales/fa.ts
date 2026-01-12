@@ -898,6 +898,10 @@ export const STRINGS_FA = {
                     weeksCount: '{count} هفته'
                 }
             },
+            calendarHighlightToday: {
+                name: 'برجسته کردن تاریخ امروز',
+                desc: 'نمایش دایره قرمز و متن پررنگ در تاریخ امروز.'
+            },
             calendarShowWeekNumber: {
                 name: 'نمایش شماره هفته',
                 desc: 'افزودن ستون شماره هفته.'

@@ -898,6 +898,10 @@ export const STRINGS_UK = {
                     weeksCount: '{count} тижнів'
                 }
             },
+            calendarHighlightToday: {
+                name: 'Виділяти сьогоднішню дату',
+                desc: 'Показувати червоне коло та жирний текст на сьогоднішній даті.'
+            },
             calendarShowWeekNumber: {
                 name: 'Показати номер тижня',
                 desc: 'Додати колонку з номером тижня.'

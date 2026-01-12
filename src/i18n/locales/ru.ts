@@ -899,6 +899,10 @@ export const STRINGS_RU = {
                     weeksCount: '{count} недель'
                 }
             },
+            calendarHighlightToday: {
+                name: 'Выделять сегодняшнюю дату',
+                desc: 'Показывать красный круг и жирный текст на сегодняшней дате.'
+            },
             calendarShowWeekNumber: {
                 name: 'Показать номер недели',
                 desc: 'Добавить колонку с номером недели.'

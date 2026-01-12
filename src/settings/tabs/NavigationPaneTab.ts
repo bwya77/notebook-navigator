@@ -230,6 +230,17 @@ export function renderNavigationPaneTab(context: SettingsTabContext): void {
 
     calendarGroup
         .addSetting(setting => {
+            setting.setName(strings.settings.items.calendarHighlightToday.name).setDesc(strings.settings.items.calendarHighlightToday.desc);
+        })
+        .addToggle(toggle =>
+            toggle.setValue(plugin.settings.calendarHighlightToday).onChange(async value => {
+                plugin.settings.calendarHighlightToday = value;
+                await plugin.saveSettingsAndUpdate();
+            })
+        );
+
+    calendarGroup
+        .addSetting(setting => {
             setting.setName(strings.settings.items.calendarShowWeekNumber.name).setDesc(strings.settings.items.calendarShowWeekNumber.desc);
         })
         .addToggle(toggle =>

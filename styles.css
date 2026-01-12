@@ -2626,15 +2626,16 @@ body {
     color: var(--nn-theme-nav-calendar-day-outside-month-color);
 }
 
-.nn-navigation-calendar-day.is-today {
+.nn-navigation-calendar[data-highlight-today='true'] .nn-navigation-calendar-day.is-today {
     color: var(--nn-theme-nav-calendar-day-today-color);
 }
 
-.nn-navigation-calendar-day.is-today .nn-navigation-calendar-day-number {
+.nn-navigation-calendar[data-highlight-today='true'] .nn-navigation-calendar-day.is-today .nn-navigation-calendar-day-number {
     font-weight: 600;
 }
 
-.nn-navigation-calendar-day.is-today:not(.has-daily-note):not(.has-feature-image)::before {
+.nn-navigation-calendar[data-highlight-today='true']
+    .nn-navigation-calendar-day.is-today:not(.has-daily-note):not(.has-feature-image)::before {
     content: '';
     position: absolute;
     left: 50%;
@@ -2656,7 +2657,7 @@ body {
     font-weight: 600;
 }
 
-.nn-navigation-calendar-day.has-daily-note.is-today {
+.nn-navigation-calendar[data-highlight-today='true'] .nn-navigation-calendar-day.has-daily-note.is-today {
     color: var(--nn-theme-nav-calendar-day-today-color);
 }
 

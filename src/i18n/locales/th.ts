@@ -898,6 +898,10 @@ export const STRINGS_TH = {
                     weeksCount: '{count} สัปดาห์'
                 }
             },
+            calendarHighlightToday: {
+                name: 'ไฮไลต์วันที่วันนี้',
+                desc: 'แสดงวงกลมสีแดงและข้อความตัวหนาบนวันที่วันนี้'
+            },
             calendarShowWeekNumber: {
                 name: 'แสดงหมายเลขสัปดาห์',
                 desc: 'เพิ่มคอลัมน์พร้อมหมายเลขสัปดาห์'

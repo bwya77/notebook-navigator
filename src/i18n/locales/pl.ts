@@ -900,6 +900,10 @@ export const STRINGS_PL = {
                     weeksCount: '{count} tygodni'
                 }
             },
+            calendarHighlightToday: {
+                name: 'Wyróżnij dzisiejszą datę',
+                desc: 'Pokaż czerwone kółko i pogrubiony tekst na dzisiejszej dacie.'
+            },
             calendarShowWeekNumber: {
                 name: 'Pokaż numer tygodnia',
                 desc: 'Dodaj kolumnę z numerem tygodnia.'
