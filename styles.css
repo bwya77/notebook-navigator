@@ -5939,26 +5939,39 @@ body.nn-resizing {
     --nn-pane-bottom-toolbar-space: 0px;
 }
 
+/*
+ * Obsidian 1.11+ iOS: bottom toolbar and calendar overlays.
+ *
+ * The toolbar and calendar must stay inside the pane scroller.
+ * If an overlay is moved outside the scroller, the scroller's scrollbar can render behind the overlay.
+ *
+ * The toolbar has a visual bottom gap so the glass pills float above the view edge.
+ * Do not implement that gap by offsetting the sticky toolbar (e.g., `bottom: 12px`), because it changes the
+ * sticky stack behavior and can cause the calendar overlay to slide up into the toolbar when the list hits
+ * the end of its scroll range.
+ */
 .notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-toolbar {
-    bottom: 12px;
+    bottom: 0;
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
-    bottom: calc(12px + var(--nn-nav-calendar-height));
+    bottom: var(--nn-nav-calendar-height);
 }
 
 /* Obsidian 1.11+ iOS glass toolbar */
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar {
     pointer-events: none;
     justify-content: space-between;
+    align-items: flex-start;
     background-color: transparent;
     border-top: none;
     /* 2px for border effect + 2px to match Obsidian view selector dropdown */
     padding-left: calc(var(--nn-scroller-padding) + 4px); /* 4px horizontal spacer for glass pill */
     padding-right: calc(var(--nn-scroller-padding) + 4px); /* 4px horizontal spacer for glass pill */
     padding-bottom: 0; /* No extra bottom padding in iOS 1.11+ */
-    height: var(--nn-ios-toolbar-height); /* Toolbar box height */
-    min-height: var(--nn-ios-toolbar-height); /* Match toolbar box height */
+    /* Adds an invisible spacer under the glass pills to create the visual bottom gap without shifting sticky positioning. */
+    height: calc(var(--nn-ios-toolbar-height) + var(--nn-ios-toolbar-bottom-offset)); /* Includes bottom offset spacer */
+    min-height: calc(var(--nn-ios-toolbar-height) + var(--nn-ios-toolbar-bottom-offset)); /* Match toolbar box height */
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar-left,
@@ -5980,6 +5993,8 @@ body.nn-resizing {
     --nn-ios-toolbar-glass-shadow: 0 0 0 2px var(--nn-ios-toolbar-glass-outline), 0 16px 32px rgba(0, 0, 0, 0.09);
     --nn-ios-toolbar-glass-filter: blur(3px) saturate(160%);
     --nn-theme-mobile-toolbar-button-active-bg: transparent;
+    /* Visual bottom gap between the glass pills and the view edge (implemented via toolbar height + fade, not sticky offset). */
+    --nn-ios-toolbar-bottom-offset: 12px;
     --nn-ios-toolbar-height: 44px; /* 38px button + (1px padding + 2px border) * 2 */
     --nn-ios-pane-bottom-fade-height: 64px; /* Fade height behind the toolbar */
     --nn-ios-pane-bottom-fade-opacity: 0.8; /* Fade opacity behind the toolbar */
@@ -6049,17 +6064,15 @@ body.nn-resizing {
     z-index: 1;
 }
 
+/* Obsidian 1.11+ iOS: bottom fade layer */
 .notebook-navigator-obsidian-1-11-plus-ios .nn-pane-bottom-toolbar::before {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
-    bottom: clamp(
-        0px,
-        calc(-1 * (var(--nn-ios-pane-bottom-fade-height) - var(--nn-ios-toolbar-height)) + 12px),
-        calc(var(--nn-ios-toolbar-height) + 12px)
-    ); /* 12px matches the toolbar bottom offset */
-    height: var(--nn-ios-pane-bottom-fade-height);
+    bottom: 0;
+    /* Covers the toolbar height plus the visual bottom gap so the fade reaches the edge below. */
+    height: calc(var(--nn-ios-pane-bottom-fade-height) + var(--nn-ios-toolbar-bottom-offset));
     pointer-events: none;
     background: linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(255 255 255 / var(--nn-ios-pane-bottom-fade-opacity)));
     z-index: -1;
