@@ -30,6 +30,7 @@ import { setAsyncOnClick } from './menuAsyncHelpers';
 import { addShortcutRenameMenuItem } from './shortcutRenameMenuItem';
 import { resolveUXIconForMenu } from '../uxIcons';
 import { getActiveVaultProfile, getHiddenFolderPatternMatch, normalizeHiddenFolderPath } from '../../utils/vaultProfiles';
+import { casefold } from '../../utils/recordUtils';
 import { EXCALIDRAW_PLUGIN_ID, TLDRAW_PLUGIN_ID } from '../../constants/pluginIds';
 import { addStyleMenu } from './styleMenuBuilder';
 import { getTemplaterCreateNewNoteFromTemplate } from '../templaterIntegration';
@@ -433,10 +434,10 @@ export function buildFolderMenu(params: FolderMenuBuilderParams): void {
         const activeProfile = getActiveVaultProfile(services.plugin.settings);
         const excludedPatterns = activeProfile.hiddenFolders;
         const isExcluded = isFolderInExcludedFolder(folder, excludedPatterns);
-        const normalizedFolderPath = normalizeHiddenFolderPath(folder.path);
+        const normalizedFolderPath = casefold(normalizeHiddenFolderPath(folder.path));
         const matchingHiddenPattern = excludedPatterns.find(pattern => {
             const match = getHiddenFolderPatternMatch(pattern);
-            return Boolean(match && match.normalizedPrefix === normalizedFolderPath);
+            return Boolean(match && casefold(match.normalizedPrefix) === normalizedFolderPath);
         });
 
         if (matchingHiddenPattern) {

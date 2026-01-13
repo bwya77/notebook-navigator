@@ -30,6 +30,7 @@ import {
 import { getDBInstanceOrNull } from '../storage/fileOperations';
 import { createHiddenTagVisibility } from './tagPrefixMatcher';
 import { type CachedFileTagsDB, getCachedFileTags } from './tagUtils';
+import { casefold, createCaseInsensitiveKeyMatcher, type CaseInsensitiveKeyMatcher } from './recordUtils';
 
 interface FileFilterOptions {
     showHiddenItems?: boolean;
@@ -244,7 +245,7 @@ export function shouldExcludeFile(file: TFile, excludedProperties: string[], app
     if (!frontmatter) return false;
 
     // Hide if any of the listed properties exist in frontmatter (value is ignored)
-    return excludedProperties.some(prop => prop in frontmatter);
+    return createCaseInsensitiveKeyMatcher(excludedProperties).matches(frontmatter);
 }
 
 /**
@@ -254,31 +255,33 @@ export function shouldExcludeFile(file: TFile, excludedProperties: string[], app
  * @param pattern - The pattern to match against (e.g., "assets*", "*_temp", "exact")
  */
 function matchesFolderPattern(folderName: string, pattern: string): boolean {
-    // Empty pattern should not match anything
-    if (!pattern) {
+    const normalizedPattern = casefold(pattern);
+    if (!normalizedPattern) {
         return false;
     }
 
+    const normalizedFolderName = folderName.toLowerCase();
+
     // Exact match if no wildcards
-    if (!pattern.includes('*')) {
-        return folderName === pattern;
+    if (!normalizedPattern.includes('*')) {
+        return normalizedFolderName === normalizedPattern;
     }
 
     // Handle wildcard at the end (e.g., "assets*")
-    if (pattern.endsWith('*') && !pattern.startsWith('*')) {
-        const prefix = pattern.slice(0, -1);
-        return folderName.startsWith(prefix);
+    if (normalizedPattern.endsWith('*') && !normalizedPattern.startsWith('*')) {
+        const prefix = normalizedPattern.slice(0, -1);
+        return normalizedFolderName.startsWith(prefix);
     }
 
     // Handle wildcard at the beginning (e.g., "*_temp")
-    if (pattern.startsWith('*') && !pattern.endsWith('*')) {
-        const suffix = pattern.slice(1);
-        return folderName.endsWith(suffix);
+    if (normalizedPattern.startsWith('*') && !normalizedPattern.endsWith('*')) {
+        const suffix = normalizedPattern.slice(1);
+        return normalizedFolderName.endsWith(suffix);
     }
 
     // For now, we don't support wildcards in the middle or multiple wildcards
     // Just do exact match as fallback
-    return folderName === pattern;
+    return normalizedFolderName === normalizedPattern;
 }
 
 /**
@@ -456,7 +459,7 @@ export function hasSubfolders(folder: TFolder, excludePatterns: string[], showHi
  * - Optionally excludes files in excluded folders when indexing is configured to skip them
  */
 interface ExclusionFilterState {
-    excludedProperties: string[];
+    excludedPropertyMatcher: CaseInsensitiveKeyMatcher;
     excludedFolderPatterns: string[];
     includeHiddenItems: boolean;
     fileNameMatcher: HiddenFileNameMatcher | null;
@@ -466,6 +469,8 @@ interface ExclusionFilterState {
 
 function createExclusionFilterState(settings: NotebookNavigatorSettings, options?: FileFilterOptions): ExclusionFilterState {
     const includeHiddenItems = options?.showHiddenItems ?? false;
+    const excludedProperties = getActiveHiddenFiles(settings);
+    const excludedPropertyMatcher = createCaseInsensitiveKeyMatcher(excludedProperties);
     const excludedFileNamePatterns = getActiveHiddenFileNamePatterns(settings);
     const fileNameMatcher = createHiddenFileNameMatcherForVisibility(excludedFileNamePatterns, includeHiddenItems);
     const hiddenFileTags = getActiveHiddenFileTags(settings);
@@ -473,7 +478,7 @@ function createExclusionFilterState(settings: NotebookNavigatorSettings, options
     const db = !includeHiddenItems && hiddenFileTagVisibility?.shouldFilterHiddenTags ? getDBInstanceOrNull() : null;
 
     return {
-        excludedProperties: getActiveHiddenFiles(settings),
+        excludedPropertyMatcher,
         excludedFolderPatterns: getActiveHiddenFolders(settings),
         includeHiddenItems,
         fileNameMatcher,
@@ -483,16 +488,14 @@ function createExclusionFilterState(settings: NotebookNavigatorSettings, options
 }
 
 function passesExclusionFilters(file: TFile, state: ExclusionFilterState, app: App): boolean {
-    const { excludedProperties, excludedFolderPatterns, includeHiddenItems, fileNameMatcher, hiddenFileTagVisibility, db } = state;
+    const { excludedPropertyMatcher, excludedFolderPatterns, includeHiddenItems, fileNameMatcher, hiddenFileTagVisibility, db } = state;
 
     // Frontmatter based exclusion (markdown only)
-    if (
-        !includeHiddenItems &&
-        file.extension === 'md' &&
-        excludedProperties.length > 0 &&
-        shouldExcludeFile(file, excludedProperties, app)
-    ) {
-        return false;
+    if (!includeHiddenItems && file.extension === 'md' && excludedPropertyMatcher.hasKeys) {
+        const metadata = app.metadataCache.getFileCache(file);
+        if (excludedPropertyMatcher.matches(metadata?.frontmatter)) {
+            return false;
+        }
     }
 
     if (fileNameMatcher && fileNameMatcher.matches(file)) {

@@ -83,3 +83,69 @@ export function isBooleanRecordValue(value: unknown): value is boolean {
 export function isPlainObjectRecordValue(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
+
+export function casefold(value: string): string {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+        return '';
+    }
+    return trimmed.toLowerCase();
+}
+
+export interface CaseInsensitiveKeyMatcher {
+    hasKeys: boolean;
+    matches: (record: Record<string, unknown> | null | undefined) => boolean;
+}
+
+const EMPTY_CASE_INSENSITIVE_KEY_MATCHER: CaseInsensitiveKeyMatcher = {
+    hasKeys: false,
+    matches: () => false
+};
+
+const caseInsensitiveKeyMatcherCache = new Map<string, CaseInsensitiveKeyMatcher>();
+
+export function createCaseInsensitiveKeyMatcher(keys: string[]): CaseInsensitiveKeyMatcher {
+    if (keys.length === 0) {
+        return EMPTY_CASE_INSENSITIVE_KEY_MATCHER;
+    }
+
+    const normalized = keys.map(casefold).filter(Boolean);
+    if (normalized.length === 0) {
+        return EMPTY_CASE_INSENSITIVE_KEY_MATCHER;
+    }
+
+    normalized.sort();
+    const unique: string[] = [];
+    normalized.forEach(key => {
+        if (unique.length === 0 || unique[unique.length - 1] !== key) {
+            unique.push(key);
+        }
+    });
+
+    const cacheKey = unique.join('\u0000');
+    const cached = caseInsensitiveKeyMatcherCache.get(cacheKey);
+    if (cached) {
+        return cached;
+    }
+
+    const needleSet = new Set(unique);
+    const matcher: CaseInsensitiveKeyMatcher = {
+        hasKeys: true,
+        matches: (record: Record<string, unknown> | null | undefined): boolean => {
+            if (!record) {
+                return false;
+            }
+
+            for (const key of Object.keys(record)) {
+                if (needleSet.has(casefold(key))) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    };
+
+    caseInsensitiveKeyMatcherCache.set(cacheKey, matcher);
+    return matcher;
+}

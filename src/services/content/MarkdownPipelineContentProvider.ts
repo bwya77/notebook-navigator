@@ -26,6 +26,7 @@ import { getCachedCommaSeparatedList } from '../../utils/commaSeparatedListUtils
 import { areStringArraysEqual } from '../../utils/arrayUtils';
 import { areCustomPropertyItemsEqual, hasCustomPropertyFrontmatterFields } from '../../utils/customPropertyUtils';
 import { PreviewTextUtils } from '../../utils/previewTextUtils';
+import { createCaseInsensitiveKeyMatcher } from '../../utils/recordUtils';
 import { countWordsForCustomProperty } from '../../utils/wordCountUtils';
 import type { ContentProviderProcessResult } from './BaseContentProvider';
 import { findFeatureImageReference, type FeatureImageReference } from './featureImageReferenceResolver';
@@ -352,10 +353,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
         const isExcalidraw = PreviewTextUtils.isExcalidrawFile(job.file.name, frontmatter ?? undefined);
 
         const fileModified = fileData !== null && fileData.markdownPipelineMtime !== job.file.stat.mtime;
-        const featureImageExcluded =
-            settings.showFeatureImage &&
-            frontmatter !== null &&
-            settings.featureImageExcludeProperties.some(property => Object.prototype.hasOwnProperty.call(frontmatter, property));
+        const featureImageExcludeMatcher = createCaseInsensitiveKeyMatcher(settings.featureImageExcludeProperties);
+        const featureImageExcluded = settings.showFeatureImage && frontmatter !== null && featureImageExcludeMatcher.matches(frontmatter);
 
         const needsPreview =
             settings.showFilePreview && (!fileData || fileModified || fileData.previewStatus === 'unprocessed') && !isExcalidraw;
@@ -434,7 +433,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                         frontmatter,
                         bodyStartIndex: 0,
                         isExcalidraw,
-                        featureImageReference: frontmatterFeatureImageReference
+                        featureImageReference: frontmatterFeatureImageReference,
+                        featureImageExcluded
                     });
 
                     if (featureImageUpdate) {
@@ -519,7 +519,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                     frontmatter,
                     bodyStartIndex: 0,
                     isExcalidraw,
-                    featureImageReference: frontmatterFeatureImageReference
+                    featureImageReference: frontmatterFeatureImageReference,
+                    featureImageExcluded
                 });
 
                 if (featureImageUpdate) {
@@ -536,7 +537,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                     frontmatter,
                     bodyStartIndex: 0,
                     isExcalidraw,
-                    featureImageReference: null
+                    featureImageReference: null,
+                    featureImageExcluded
                 });
 
                 if (featureImageUpdate) {
@@ -702,7 +704,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             frontmatter: context.frontmatter,
             bodyStartIndex: context.bodyStartIndex,
             isExcalidraw: context.isExcalidraw,
-            featureImageReference: context.featureImageReference
+            featureImageReference: context.featureImageReference,
+            featureImageExcluded: context.featureImageExcluded
         });
 
         if (!featureImageUpdate) {
@@ -724,15 +727,9 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
         bodyStartIndex: number;
         isExcalidraw: boolean;
         featureImageReference: FeatureImageReference | null;
+        featureImageExcluded: boolean;
     }): Promise<{ featureImageKey: string; featureImage: Blob } | null> {
-        const isExcludedByProperty =
-            params.frontmatter !== null &&
-            params.settings.featureImageExcludeProperties.length > 0 &&
-            params.settings.featureImageExcludeProperties.some(property =>
-                Object.prototype.hasOwnProperty.call(params.frontmatter, property)
-            );
-
-        if (isExcludedByProperty) {
+        if (params.featureImageExcluded) {
             const featureImageKey = '';
             const isUpToDate = params.fileData?.featureImageKey === featureImageKey && params.fileData.featureImageStatus === 'none';
             if (isUpToDate) {

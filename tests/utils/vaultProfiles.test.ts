@@ -69,6 +69,24 @@ describe('updateHiddenFolderExactMatches', () => {
         expect(settings.vaultProfiles.find(profile => profile.id === 'profile-b')?.hiddenFolders).toEqual(['/Areas/Archive', '/Other']);
     });
 
+    it('renames path patterns even when casing differs', () => {
+        const settings = createSettings();
+        const [baseProfile] = settings.vaultProfiles;
+        settings.vaultProfiles = [
+            {
+                ...baseProfile,
+                id: 'default',
+                hiddenFolders: ['/projects/archive', '/Reports/*', 'Archive']
+            }
+        ];
+        settings.vaultProfile = 'default';
+
+        const didChange = updateHiddenFolderExactMatches(settings, '/Projects/Archive', '/Areas/Archive');
+
+        expect(didChange).toBe(true);
+        expect(settings.vaultProfiles[0]?.hiddenFolders).toEqual(['/Areas/Archive', '/Reports/*', 'Archive']);
+    });
+
     it('returns false when no perfect match exists', () => {
         const settings = createSettings();
         const [baseProfile] = settings.vaultProfiles;
@@ -182,6 +200,29 @@ describe('removeHiddenFolderExactMatches', () => {
                 ...baseProfile,
                 id: 'default',
                 hiddenFolders: ['/Projects/Archive', '/Reports/*', 'Archive']
+            },
+            {
+                ...baseProfile,
+                id: 'profile-b',
+                hiddenFolders: ['/Projects/Archive/', '/Other']
+            }
+        ];
+
+        const didRemove = removeHiddenFolderExactMatches(settings, 'Projects/Archive');
+
+        expect(didRemove).toBe(true);
+        expect(settings.vaultProfiles.find(profile => profile.id === 'default')?.hiddenFolders).toEqual(['/Reports/*', 'Archive']);
+        expect(settings.vaultProfiles.find(profile => profile.id === 'profile-b')?.hiddenFolders).toEqual(['/Other']);
+    });
+
+    it('removes path patterns even when casing differs', () => {
+        const settings = createSettings();
+        const [baseProfile] = settings.vaultProfiles;
+        settings.vaultProfiles = [
+            {
+                ...baseProfile,
+                id: 'default',
+                hiddenFolders: ['/projects/archive', '/Reports/*', 'Archive']
             },
             {
                 ...baseProfile,
@@ -449,6 +490,13 @@ describe('hidden folder matcher', () => {
         expect(matcher.matches('/Projects/Client/Archive')).toBe(true);
         expect(matcher.matches('/Projects/Client/Archive/Deep')).toBe(true);
         expect(matcher.matches('/Projects/Archive')).toBe(false);
+    });
+
+    it('matches paths case-insensitively', () => {
+        const matcher = getHiddenFolderMatcher(['/Projects/*/Archive']);
+
+        expect(matcher.matches('/projects/client/archive')).toBe(true);
+        expect(matcher.matches('/Projects/CLIENT/archive/Deep')).toBe(true);
     });
 
     it('matches trailing wildcard patterns against the base path', () => {

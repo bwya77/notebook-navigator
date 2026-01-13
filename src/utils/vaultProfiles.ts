@@ -23,6 +23,7 @@ import { strings } from '../i18n';
 import { FILE_VISIBILITY, type FileVisibility } from './fileTypeUtils';
 import { showNotice } from './noticeUtils';
 import { stripTrailingSlash } from './pathUtils';
+import { casefold } from './recordUtils';
 import { normalizeTagPath } from './tagUtils';
 import { createHiddenTagMatcher, matchesHiddenTagPattern, getHiddenTagPathPatterns, normalizeTagPathValue } from './tagPrefixMatcher';
 import {
@@ -64,33 +65,110 @@ const normalizePathPattern = (pattern: string): string => {
     return parts.length === 0 ? '/' : `/${parts.join('/')}`;
 };
 
+const normalizeHiddenFolderMatchPath = (value: string): string => {
+    const normalized = normalizeHiddenFolderPath(value);
+    if (!normalized) {
+        return '';
+    }
+    return casefold(normalized);
+};
+
+const normalizeHiddenFolderMatchPattern = (pattern: string): string => {
+    const normalized = normalizeHiddenFolderMatchPath(pattern);
+    if (!normalized) {
+        return '';
+    }
+
+    const parts = normalized.split('/').filter(Boolean);
+    return parts.length === 0 ? '/' : `/${parts.join('/')}`;
+};
+
 const parseHiddenFolderPattern = (pattern: string): ParsedPathPattern | null => {
     return parsePathPattern(pattern, { normalizePattern: normalizePathPattern, requireRoot: true });
 };
 
-// Cache compiled hidden-folder matchers keyed by the normalized pattern list.
-const hiddenFolderMatcherCache = new Map<string, PathPatternMatcher>();
-
-export const getHiddenFolderMatcher = (patterns: string[]): PathPatternMatcher => {
-    const cacheKey = getPathPatternCacheKey(patterns);
-    const cached = hiddenFolderMatcherCache.get(cacheKey);
-    if (cached) {
-        return cached;
-    }
-
-    const matcher = createPathPatternMatcher(patterns, {
+const createHiddenFolderUpdateMatcher = (patterns: string[]): PathPatternMatcher => {
+    const pathPatterns = patterns.filter(pattern => pattern.trim().startsWith('/'));
+    return createPathPatternMatcher(pathPatterns, {
         normalizePattern: normalizePathPattern,
         normalizePath: normalizeHiddenFolderPath,
         requireRoot: true
     });
+};
+
+const matchesHiddenFolderLiteralPrefix = (pattern: ParsedPathPattern, candidateSegments: string[]): boolean => {
+    if (pattern.literalPrefixLength === 0 || candidateSegments.length === 0) {
+        return false;
+    }
+
+    const compareCount = Math.min(pattern.literalPrefixLength, pattern.segments.length, candidateSegments.length);
+    if (compareCount === 0) {
+        return false;
+    }
+
+    for (let index = 0; index < compareCount; index += 1) {
+        const segment = pattern.segments[index];
+        const candidate = candidateSegments[index];
+        if (segment.type !== 'literal') {
+            return false;
+        }
+        if (segment.value.toLowerCase() !== candidate) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
+// Cache compiled hidden-folder matchers keyed by the normalized pattern list.
+const hiddenFolderMatcherCache = new Map<string, PathPatternMatcher>();
+let hiddenFolderMatcherCacheVersion = 0;
+const hiddenFolderMatcherByPatternList = new WeakMap<readonly string[], { version: number; matcher: PathPatternMatcher }>();
+
+export const getHiddenFolderMatcher = (patterns: string[]): PathPatternMatcher => {
+    const cachedByPatternList = hiddenFolderMatcherByPatternList.get(patterns);
+    if (cachedByPatternList && cachedByPatternList.version === hiddenFolderMatcherCacheVersion) {
+        return cachedByPatternList.matcher;
+    }
+
+    const pathPatterns: string[] = [];
+    const normalizedPatterns = new Set<string>();
+
+    patterns.forEach(pattern => {
+        const trimmed = pattern.trim();
+        if (!trimmed.startsWith('/')) {
+            return;
+        }
+
+        pathPatterns.push(trimmed);
+        const normalized = normalizeHiddenFolderMatchPattern(trimmed);
+        if (normalized) {
+            normalizedPatterns.add(normalized);
+        }
+    });
+
+    const cacheKey = getPathPatternCacheKey(Array.from(normalizedPatterns).sort());
+    const cached = hiddenFolderMatcherCache.get(cacheKey);
+    if (cached) {
+        hiddenFolderMatcherByPatternList.set(patterns, { version: hiddenFolderMatcherCacheVersion, matcher: cached });
+        return cached;
+    }
+
+    const matcher = createPathPatternMatcher(pathPatterns, {
+        normalizePattern: normalizeHiddenFolderMatchPattern,
+        normalizePath: normalizeHiddenFolderMatchPath,
+        requireRoot: true
+    });
 
     hiddenFolderMatcherCache.set(cacheKey, matcher);
+    hiddenFolderMatcherByPatternList.set(patterns, { version: hiddenFolderMatcherCacheVersion, matcher });
     return matcher;
 };
 
 // Clears all cached hidden-folder matchers.
 export const clearHiddenFolderMatcherCache = (): void => {
     hiddenFolderMatcherCache.clear();
+    hiddenFolderMatcherCacheVersion += 1;
 };
 
 // Normalizes a folder path to the canonical format used in hidden folder settings
@@ -683,7 +761,7 @@ export function updateHiddenFolderExactMatches(settings: NotebookNavigatorSettin
         return false;
     }
 
-    const previousSegments = getNormalizedPathSegments(normalizedPrevious, normalizeHiddenFolderPath);
+    const previousSegments = getNormalizedPathSegments(normalizedPrevious, normalizeHiddenFolderMatchPath);
     const nextSegments = getNormalizedPathSegments(normalizedNext, normalizeHiddenFolderPath);
 
     let didUpdate = false;
@@ -693,7 +771,7 @@ export function updateHiddenFolderExactMatches(settings: NotebookNavigatorSettin
             return;
         }
 
-        const matcher = getHiddenFolderMatcher(profile.hiddenFolders);
+        const matcher = createHiddenFolderUpdateMatcher(profile.hiddenFolders);
         if (matcher.patterns.length === 0) {
             return;
         }
@@ -703,7 +781,7 @@ export function updateHiddenFolderExactMatches(settings: NotebookNavigatorSettin
         let profileUpdated = false;
         const updated = profile.hiddenFolders.map(pattern => {
             const parsed = parsedByRaw.get(pattern);
-            if (!parsed || parsed.literalPrefixLength === 0 || !matchesLiteralPrefix(parsed, previousSegments)) {
+            if (!parsed || parsed.literalPrefixLength === 0 || !matchesHiddenFolderLiteralPrefix(parsed, previousSegments)) {
                 return pattern;
             }
 
@@ -740,13 +818,13 @@ export function removeHiddenFolderExactMatches(settings: NotebookNavigatorSettin
             return;
         }
 
-        const matcher = getHiddenFolderMatcher(profile.hiddenFolders);
+        const matcher = createHiddenFolderUpdateMatcher(profile.hiddenFolders);
         if (matcher.patterns.length === 0) {
             return;
         }
 
         const parsedByRaw = new Map(matcher.patterns.map(pattern => [pattern.raw, pattern]));
-        const targetSegments = getNormalizedPathSegments(normalizedTarget, normalizeHiddenFolderPath);
+        const targetSegments = getNormalizedPathSegments(normalizedTarget, normalizeHiddenFolderMatchPath);
 
         let profileUpdated = false;
         const filtered = profile.hiddenFolders.filter(pattern => {
@@ -755,7 +833,7 @@ export function removeHiddenFolderExactMatches(settings: NotebookNavigatorSettin
                 return true;
             }
 
-            if (!matchesLiteralPrefix(parsed, targetSegments)) {
+            if (!matchesHiddenFolderLiteralPrefix(parsed, targetSegments)) {
                 return true;
             }
 
