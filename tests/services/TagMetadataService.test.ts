@@ -63,6 +63,7 @@ function createSettings(): NotebookNavigatorSettings {
             hiddenFiles: [...profile.hiddenFiles],
             hiddenFileNamePatterns: [...profile.hiddenFileNamePatterns],
             hiddenTags: [...profile.hiddenTags],
+            hiddenFileTags: [...profile.hiddenFileTags],
             shortcuts: [...profile.shortcuts]
         }))
     };
@@ -114,10 +115,12 @@ describe('TagMetadataService.handleTagRename', () => {
         const settings = createSettings();
         const activeProfile = settings.vaultProfiles[0];
         activeProfile.hiddenTags = ['projects', 'misc'];
+        activeProfile.hiddenFileTags = ['projects', 'misc'];
         settings.vaultProfiles.push(
             createVaultProfile('secondary', {
                 id: 'secondary',
-                hiddenTags: ['projects/client', '*draft']
+                hiddenTags: ['projects/client', '*draft'],
+                hiddenFileTags: ['projects/client', '*draft']
             })
         );
 
@@ -127,7 +130,9 @@ describe('TagMetadataService.handleTagRename', () => {
         await service.handleTagRename('projects', 'areas');
 
         expect(activeProfile.hiddenTags).toEqual(['areas', 'misc']);
+        expect(activeProfile.hiddenFileTags).toEqual(['areas', 'misc']);
         expect(settings.vaultProfiles[1].hiddenTags).toEqual(['areas/client', '*draft']);
+        expect(settings.vaultProfiles[1].hiddenFileTags).toEqual(['areas/client', '*draft']);
         expect(provider.saveSettingsAndUpdate).toHaveBeenCalledTimes(1);
     });
 
@@ -196,10 +201,12 @@ describe('TagMetadataService.handleTagDelete', () => {
         settings.tagIcons = { 'project/archive': 'lucide-archive' };
         const activeProfile = settings.vaultProfiles[0];
         activeProfile.hiddenTags = ['project', 'archive'];
+        activeProfile.hiddenFileTags = ['project', 'archive'];
         settings.vaultProfiles.push(
             createVaultProfile('secondary', {
                 id: 'secondary',
-                hiddenTags: ['project/client']
+                hiddenTags: ['project/client'],
+                hiddenFileTags: ['project/client']
             })
         );
         const provider = new TestSettingsProvider(settings);
@@ -210,7 +217,9 @@ describe('TagMetadataService.handleTagDelete', () => {
         expect(settings.tagColors).toEqual({ other: '#00ff00' });
         expect(settings.tagIcons).toEqual({});
         expect(activeProfile.hiddenTags).toEqual(['archive']);
+        expect(activeProfile.hiddenFileTags).toEqual(['archive']);
         expect(settings.vaultProfiles[1].hiddenTags).toEqual([]);
+        expect(settings.vaultProfiles[1].hiddenFileTags).toEqual([]);
         expect(provider.saveSettingsAndUpdate).toHaveBeenCalledTimes(1);
     });
 

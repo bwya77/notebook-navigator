@@ -1117,8 +1117,13 @@ export const STRINGS_KO = {
             },
             featureImageProperties: {
                 name: '이미지 속성',
-                desc: '썸네일 이미지를 확인할 frontmatter 속성의 쉼표로 구분된 목록입니다.',
+                desc: '먼저 확인할 frontmatter 속성의 쉼표로 구분된 목록입니다. 없으면 마크다운 콘텐츠의 첫 번째 이미지를 사용합니다.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: '속성이 있는 노트 제외',
+                desc: '쉼표로 구분된 frontmatter 속성 목록입니다. 이러한 속성 중 하나라도 포함된 노트는 대표 이미지를 저장하지 않습니다.',
+                placeholder: '비공개, 기밀'
             },
 
             downloadExternalFeatureImages: {
@@ -1220,6 +1225,11 @@ export const STRINGS_KO = {
             hiddenTags: {
                 name: '태그 숨기기 (볼트 프로필)',
                 desc: '쉼표로 구분된 태그 패턴 목록입니다. 이름 패턴: tag* (시작), *tag (끝). 경로 패턴: archive (태그와 하위), archive/* (하위만), projects/*/drafts (중간 와일드카드).',
+                placeholder: 'archive*, *draft, projects/*/old'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
                 placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {

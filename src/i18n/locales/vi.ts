@@ -1117,8 +1117,13 @@ export const STRINGS_VI = {
             },
             featureImageProperties: {
                 name: 'Thuộc tính ảnh',
-                desc: 'Danh sách thuộc tính frontmatter phân cách bằng dấu phẩy để kiểm tra ảnh thu nhỏ.',
+                desc: 'Danh sách thuộc tính frontmatter phân cách bằng dấu phẩy để kiểm tra trước. Nếu không tìm thấy, sử dụng ảnh đầu tiên trong nội dung markdown.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Loại trừ ghi chú có thuộc tính',
+                desc: 'Danh sách thuộc tính frontmatter phân cách bằng dấu phẩy. Ghi chú chứa bất kỳ thuộc tính nào trong số này không lưu trữ ảnh nổi bật.',
+                placeholder: 'riêng tư, bí mật'
             },
 
             downloadExternalFeatureImages: {
@@ -1220,6 +1225,11 @@ export const STRINGS_VI = {
             hiddenTags: {
                 name: 'Ẩn thẻ (hồ sơ vault)',
                 desc: 'Danh sách mẫu thẻ phân cách bằng dấu phẩy. Mẫu tên: tag* (bắt đầu bằng), *tag (kết thúc bằng). Mẫu đường dẫn: archive (thẻ và con cháu), archive/* (chỉ con cháu), projects/*/drafts (ký tự đại diện ở giữa).',
+                placeholder: 'archive*, *draft, projects/*/old'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
                 placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {

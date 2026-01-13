@@ -21,14 +21,17 @@ import { DEFAULT_SETTINGS } from '../../src/settings/defaultSettings';
 import {
     getActiveFileVisibility,
     getActiveHiddenFileNamePatterns,
+    getActiveHiddenFileTags,
     getActiveHiddenFiles,
     getActiveHiddenFolders,
     getActiveHiddenTags,
     getActiveVaultProfile,
     getHiddenFolderMatcher,
     normalizeHiddenFolderPath,
+    removeHiddenFileTagPrefixMatches,
     removeHiddenTagPrefixMatches,
     removeHiddenFolderExactMatches,
+    updateHiddenFileTagPrefixMatches,
     updateHiddenTagPrefixMatches,
     updateHiddenFolderExactMatches
 } from '../../src/utils/vaultProfiles';
@@ -327,6 +330,23 @@ describe('hidden tag pattern updates', () => {
         expect(settings.vaultProfiles[0]?.hiddenTags).toEqual(['areas', 'areas/*', 'areas/client/design']);
     });
 
+    it('rewrites hidden file tag patterns on rename', () => {
+        const settings = createSettings();
+        const [baseProfile] = settings.vaultProfiles;
+        settings.vaultProfiles = [
+            {
+                ...baseProfile,
+                id: 'default',
+                hiddenFileTags: ['projects', 'projects/*', 'projects/client/design']
+            }
+        ];
+
+        const didUpdate = updateHiddenFileTagPrefixMatches(settings, 'projects', 'areas');
+
+        expect(didUpdate).toBe(true);
+        expect(settings.vaultProfiles[0]?.hiddenFileTags).toEqual(['areas', 'areas/*', 'areas/client/design']);
+    });
+
     it('renames mid-segment wildcard tag rules when the leading segment changes', () => {
         const settings = createSettings();
         const [baseProfile] = settings.vaultProfiles;
@@ -377,6 +397,23 @@ describe('hidden tag pattern updates', () => {
         expect(didRemove).toBe(true);
         expect(settings.vaultProfiles[0]?.hiddenTags).toEqual(['draft*']);
     });
+
+    it('removes hidden file tag patterns on delete', () => {
+        const settings = createSettings();
+        const [baseProfile] = settings.vaultProfiles;
+        settings.vaultProfiles = [
+            {
+                ...baseProfile,
+                id: 'default',
+                hiddenFileTags: ['projects/*', 'projects/client/design', 'draft*']
+            }
+        ];
+
+        const didRemove = removeHiddenFileTagPrefixMatches(settings, 'projects');
+
+        expect(didRemove).toBe(true);
+        expect(settings.vaultProfiles[0]?.hiddenFileTags).toEqual(['draft*']);
+    });
 });
 
 describe('normalizeHiddenFolderPath', () => {
@@ -400,6 +437,7 @@ describe('vault profile selectors', () => {
         expect(getActiveHiddenFiles(settings)).toBe(settings.vaultProfiles[0].hiddenFiles);
         expect(getActiveHiddenFileNamePatterns(settings)).toBe(settings.vaultProfiles[0].hiddenFileNamePatterns);
         expect(getActiveHiddenTags(settings)).toBe(settings.vaultProfiles[0].hiddenTags);
+        expect(getActiveHiddenFileTags(settings)).toBe(settings.vaultProfiles[0].hiddenFileTags);
         expect(getActiveFileVisibility(settings)).toBe(settings.vaultProfiles[0].fileVisibility);
     });
 });

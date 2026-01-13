@@ -26,7 +26,12 @@ import { calculateFileDiff } from '../../storage/diffCalculator';
 import { type FileData as DBFileData } from '../../storage/IndexedDBStorage';
 import { getDBInstance, recordFileChanges, removeFilesFromCache } from '../../storage/fileOperations';
 import { runAsyncAction } from '../../utils/async';
-import { getActiveHiddenFileNamePatterns, getActiveHiddenFiles, getActiveHiddenFolders } from '../../utils/vaultProfiles';
+import {
+    getActiveHiddenFileNamePatterns,
+    getActiveHiddenFileTags,
+    getActiveHiddenFiles,
+    getActiveHiddenFolders
+} from '../../utils/vaultProfiles';
 import { clearCacheRebuildNoticeState, getCacheRebuildNoticeState, setCacheRebuildNoticeState } from './cacheRebuildNoticeStorage';
 import { getCacheRebuildProgressTypes, getMetadataDependentTypes, haveStringArraysChanged } from './storageContentTypes';
 
@@ -49,6 +54,7 @@ export function useStorageSettingsSync(params: {
     hiddenFolders: string[];
     hiddenFiles: string[];
     hiddenFileNamePatterns: string[];
+    hiddenFileTags: string[];
     scheduleTagTreeRebuild: (options?: { flush?: boolean }) => void;
     getIndexableFiles: () => TFile[];
     pendingRenameDataRef: RefObject<Map<string, DBFileData>>;
@@ -69,6 +75,7 @@ export function useStorageSettingsSync(params: {
         hiddenFolders,
         hiddenFiles,
         hiddenFileNamePatterns,
+        hiddenFileTags,
         scheduleTagTreeRebuild,
         getIndexableFiles,
         pendingRenameDataRef,
@@ -252,6 +259,8 @@ export function useStorageSettingsSync(params: {
         const excludedFilesChanged = haveStringArraysChanged(previousHiddenFiles, hiddenFiles);
         const previousHiddenFileNamePatterns = getActiveHiddenFileNamePatterns(previousSettings);
         const excludedFileNamePatternsChanged = haveStringArraysChanged(previousHiddenFileNamePatterns, hiddenFileNamePatterns);
+        const previousHiddenFileTags = getActiveHiddenFileTags(previousSettings);
+        const excludedFileTagsChanged = haveStringArraysChanged(previousHiddenFileTags, hiddenFileTags);
 
         if (excludedFoldersChanged || excludedFilesChanged) {
             runAsyncAction(async () => {
@@ -276,7 +285,7 @@ export function useStorageSettingsSync(params: {
                     console.error('Error resyncing cache after exclusion changes:', error);
                 }
             });
-        } else if (excludedFileNamePatternsChanged) {
+        } else if (excludedFileNamePatternsChanged || excludedFileTagsChanged) {
             if (settings.showTags) {
                 scheduleTagTreeRebuild();
             }
@@ -287,6 +296,7 @@ export function useStorageSettingsSync(params: {
         contentRegistryRef,
         getIndexableFiles,
         hiddenFileNamePatterns,
+        hiddenFileTags,
         hiddenFiles,
         hiddenFolders,
         pendingRenameDataRef,

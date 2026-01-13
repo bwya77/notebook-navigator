@@ -45,6 +45,7 @@ interface VaultProfileInitOptions {
     hiddenFiles?: string[];
     hiddenFileNamePatterns?: string[];
     hiddenTags?: string[];
+    hiddenFileTags?: string[];
     fileVisibility?: FileVisibility;
     navigationBanner?: string | null;
     shortcuts?: ShortcutEntry[];
@@ -222,6 +223,7 @@ export function createVaultProfile(name: string, options: VaultProfileInitOption
         fileVisibility: resolveFileVisibility(options.fileVisibility),
         hiddenFolders: clonePatterns(options.hiddenFolders),
         hiddenTags: clonePatterns(options.hiddenTags),
+        hiddenFileTags: clonePatterns(options.hiddenFileTags),
         hiddenFiles: clonePatterns(options.hiddenFiles),
         hiddenFileNamePatterns: clonePatterns(options.hiddenFileNamePatterns),
         navigationBanner:
@@ -244,6 +246,7 @@ function createVaultProfileFromTemplate(name: string, template: VaultProfileTemp
         hiddenFiles: source?.hiddenFiles,
         hiddenFileNamePatterns: source?.hiddenFileNamePatterns,
         hiddenTags: source?.hiddenTags ?? template.fallbackHiddenTags,
+        hiddenFileTags: source?.hiddenFileTags,
         fileVisibility: source?.fileVisibility ?? template.fallbackFileVisibility,
         navigationBanner: source?.navigationBanner,
         shortcuts: source?.shortcuts
@@ -372,6 +375,8 @@ export function ensureVaultProfiles(settings: NotebookNavigatorSettings): void {
         profile.hiddenFolders = clonePatterns(profile.hiddenFolders);
         const hiddenTagSource = Array.isArray(profile.hiddenTags) ? profile.hiddenTags : [];
         profile.hiddenTags = clonePatterns(hiddenTagSource);
+        const hiddenFileTagSource = Array.isArray(profile.hiddenFileTags) ? profile.hiddenFileTags : [];
+        profile.hiddenFileTags = clonePatterns(hiddenFileTagSource);
         profile.hiddenFiles = clonePatterns(profile.hiddenFiles);
         profile.hiddenFileNamePatterns = clonePatterns(profile.hiddenFileNamePatterns);
         profile.navigationBanner =
@@ -426,6 +431,10 @@ export function getActiveHiddenTags(settings: NotebookNavigatorSettings): string
     return getActiveVaultProfile(settings).hiddenTags;
 }
 
+export function getActiveHiddenFileTags(settings: NotebookNavigatorSettings): string[] {
+    return getActiveVaultProfile(settings).hiddenFileTags;
+}
+
 export function getActiveFileVisibility(settings: NotebookNavigatorSettings): FileVisibility {
     return getActiveVaultProfile(settings).fileVisibility;
 }
@@ -444,6 +453,28 @@ export function hasHiddenTagMatch(settings: NotebookNavigatorSettings, normalize
             return false;
         }
         const matcher = createHiddenTagMatcher(profile.hiddenTags);
+        if (matchesHiddenTagPattern(normalizedPath, tagName, matcher)) {
+            return true;
+        }
+        // Consider patterns whose literal prefix includes the path (e.g., "projects/*/drafts" when renaming "projects")
+        return matcher.pathPatterns.some(pattern => matchesLiteralPrefix(pattern, pathSegments));
+    });
+}
+
+export function hasHiddenFileTagMatch(settings: NotebookNavigatorSettings, normalizedPath: string): boolean {
+    ensureVaultProfiles(settings);
+    if (!normalizedPath) {
+        return false;
+    }
+
+    const tagName = normalizedPath.split('/').pop() ?? normalizedPath;
+    const pathSegments = normalizedPath.split('/').filter(Boolean);
+
+    return settings.vaultProfiles.some(profile => {
+        if (!Array.isArray(profile.hiddenFileTags) || profile.hiddenFileTags.length === 0) {
+            return false;
+        }
+        const matcher = createHiddenTagMatcher(profile.hiddenFileTags);
         if (matchesHiddenTagPattern(normalizedPath, tagName, matcher)) {
             return true;
         }
@@ -498,6 +529,52 @@ export function updateHiddenTagPrefixMatches(settings: NotebookNavigatorSettings
     return didUpdate;
 }
 
+// Rewrites hidden file tag patterns when a tag path is renamed, returning true when any rule changes.
+export function updateHiddenFileTagPrefixMatches(settings: NotebookNavigatorSettings, previousPath: string, nextPath: string): boolean {
+    ensureVaultProfiles(settings);
+    const normalizedPrevious = normalizeTagPath(previousPath);
+    const normalizedNext = normalizeTagPath(nextPath);
+
+    if (!normalizedPrevious || !normalizedNext || normalizedPrevious === normalizedNext) {
+        return false;
+    }
+
+    const previousSegments = getNormalizedPathSegments(normalizedPrevious, normalizeTagPathValue);
+    const nextSegments = getNormalizedPathSegments(normalizedNext, normalizeTagPathValue);
+
+    let didUpdate = false;
+
+    settings.vaultProfiles.forEach(profile => {
+        if (!Array.isArray(profile.hiddenFileTags) || profile.hiddenFileTags.length === 0) {
+            return;
+        }
+
+        const parsedPatterns = getHiddenTagPathPatterns(profile.hiddenFileTags);
+        const parsedByRaw = new Map(parsedPatterns.map(pattern => [pattern.raw, pattern]));
+
+        let profileUpdated = false;
+        const updatedPatterns = profile.hiddenFileTags.map(pattern => {
+            const parsedPattern = parsedByRaw.get(pattern);
+            if (!parsedPattern || parsedPattern.literalPrefixLength === 0 || !matchesLiteralPrefix(parsedPattern, previousSegments)) {
+                return pattern;
+            }
+
+            const rebuilt = rebuildPattern(parsedPattern, nextSegments, { normalizePattern: normalizeTagPathValue });
+            if (rebuilt !== pattern) {
+                profileUpdated = true;
+            }
+            return rebuilt;
+        });
+
+        if (profileUpdated) {
+            profile.hiddenFileTags = Array.from(new Set(updatedPatterns));
+            didUpdate = true;
+        }
+    });
+
+    return didUpdate;
+}
+
 // Removes hidden tag rules whose literal prefix matches the deleted path, returning true when any rule is removed.
 export function removeHiddenTagPrefixMatches(settings: NotebookNavigatorSettings, targetPath: string): boolean {
     ensureVaultProfiles(settings);
@@ -540,6 +617,55 @@ export function removeHiddenTagPrefixMatches(settings: NotebookNavigatorSettings
 
         if (profileUpdated) {
             profile.hiddenTags = filtered;
+            didUpdate = true;
+        }
+    });
+
+    return didUpdate;
+}
+
+// Removes hidden file tag rules whose literal prefix matches the deleted path, returning true when any rule is removed.
+export function removeHiddenFileTagPrefixMatches(settings: NotebookNavigatorSettings, targetPath: string): boolean {
+    ensureVaultProfiles(settings);
+    const normalizedTarget = normalizeTagPath(targetPath);
+    if (!normalizedTarget) {
+        return false;
+    }
+
+    const targetSegments = getNormalizedPathSegments(normalizedTarget, normalizeTagPathValue);
+    let didUpdate = false;
+
+    settings.vaultProfiles.forEach(profile => {
+        if (!Array.isArray(profile.hiddenFileTags) || profile.hiddenFileTags.length === 0) {
+            return;
+        }
+
+        const parsedPatterns = getHiddenTagPathPatterns(profile.hiddenFileTags);
+        const parsedByRaw = new Map(parsedPatterns.map(pattern => [pattern.raw, pattern]));
+        let profileUpdated = false;
+        const filtered = profile.hiddenFileTags.filter(pattern => {
+            const parsedPattern = parsedByRaw.get(pattern);
+            if (!parsedPattern) {
+                return true;
+            }
+
+            if (!matchesLiteralPrefix(parsedPattern, targetSegments)) {
+                return true;
+            }
+
+            if (
+                parsedPattern.literalPrefixLength < targetSegments.length &&
+                parsedPattern.literalPrefixLength < parsedPattern.segments.length
+            ) {
+                return true;
+            }
+
+            profileUpdated = true;
+            return false;
+        });
+
+        if (profileUpdated) {
+            profile.hiddenFileTags = filtered;
             didUpdate = true;
         }
     });

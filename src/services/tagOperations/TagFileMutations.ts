@@ -20,7 +20,7 @@ import { App, TFile, parseFrontMatterTags } from 'obsidian';
 import { getDBInstance } from '../../storage/fileOperations';
 import type { NotebookNavigatorSettings } from '../../settings/types';
 import { normalizeTagPathValue } from '../../utils/tagPrefixMatcher';
-import { TAG_CHARACTER_CLASS, hasValidTagCharacters } from '../../utils/tagUtils';
+import { getCachedFileTags, TAG_CHARACTER_CLASS, hasValidTagCharacters } from '../../utils/tagUtils';
 import { mutateFrontmatterTagFields } from '../tagRename/frontmatterTagMutator';
 import { mergeRanges, NumericRange } from '../../utils/arrayUtils';
 import { findFencedCodeBlockRanges, findInlineCodeRanges, isIndexInRanges } from '../../utils/codeRangeUtils';
@@ -98,7 +98,7 @@ export class TagFileMutations {
         }
 
         const db = getDBInstance();
-        const allTags = db.getCachedTags(file.path);
+        const allTags = getCachedFileTags({ app: this.app, file, db });
         const normalizedTag = normalizeTagPathValue(tag);
         if (normalizedTag.length === 0) {
             return false;
@@ -310,7 +310,7 @@ export class TagFileMutations {
                 continue;
             }
 
-            const tags = db.getCachedTags(file.path);
+            const tags = getCachedFileTags({ app: this.app, file, db });
             tags.forEach(tag => {
                 const normalizedTag = normalizeTagPathValue(tag);
                 if (normalizedTag.length === 0) {

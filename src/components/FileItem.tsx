@@ -68,6 +68,7 @@ import { openFileInContext } from '../utils/openFileInContext';
 import { FILE_VISIBILITY, getExtensionSuffix, isImageFile, shouldDisplayFile } from '../utils/fileTypeUtils';
 import { resolveFileDragIconId, resolveFileIconId } from '../utils/fileIconUtils';
 import { getDateField, naturalCompare } from '../utils/sortUtils';
+import { getCachedFileTags } from '../utils/tagUtils';
 import {
     areCustomPropertyItemsEqual,
     cloneCustomPropertyItems,
@@ -323,9 +324,9 @@ export const FileItem = React.memo(function FileItem({
 
         const preview = appearanceSettings.showPreview && file.extension === 'md' ? db.getCachedPreviewText(file.path) : '';
 
-        const tagList = [...(db.getCachedTags(file.path) ?? [])];
         // Pull the feature image key from the cache; blobs load asynchronously.
         const record = db.getFile(file.path);
+        const tagList = [...getCachedFileTags({ app, file, db, fileData: record })];
         const featureImageKey = record?.featureImageKey ?? null;
         const featureImageStatus: FeatureImageStatus = record?.featureImageStatus ?? 'unprocessed';
         const customProperty = cloneCustomPropertyItems(record?.customProperty ?? null);

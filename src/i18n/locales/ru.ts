@@ -1119,8 +1119,13 @@ export const STRINGS_RU = {
             },
             featureImageProperties: {
                 name: 'Свойства изображения',
-                desc: 'Список свойств frontmatter через запятую для проверки миниатюр.',
+                desc: 'Список свойств frontmatter через запятую для проверки в первую очередь. При отсутствии используется первое изображение из содержимого markdown.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Исключить заметки со свойствами',
+                desc: 'Список свойств frontmatter через запятую. Заметки, содержащие любое из этих свойств, не сохраняют главные изображения.',
+                placeholder: 'личное, конфиденциальное'
             },
 
             downloadExternalFeatureImages: {
@@ -1223,6 +1228,11 @@ export const STRINGS_RU = {
                 name: 'Скрыть теги (профиль хранилища)',
                 desc: 'Список шаблонов тегов через запятую. Шаблоны имён: тег* (начинается с), *тег (заканчивается на). Шаблоны путей: архив (тег и потомки), архив/* (только потомки), проекты/*/черновики (подстановочный знак в середине).',
                 placeholder: 'архив*, *черновик, проекты/*/старые'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Включить заметки папок',

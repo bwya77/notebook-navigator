@@ -1117,8 +1117,13 @@ export const STRINGS_TH = {
             },
             featureImageProperties: {
                 name: 'คุณสมบัติรูปภาพ',
-                desc: 'รายการคุณสมบัติ frontmatter คั่นด้วยเครื่องหมายจุลภาคเพื่อตรวจสอบภาพย่อ คุณสมบัติแรกที่มีรูปภาพจะถูกใช้ หากว่างและเปิดใช้งานการตั้งค่า fallback รูปภาพฝังตัวแรกจะถูกใช้',
+                desc: 'รายการคุณสมบัติ frontmatter คั่นด้วยเครื่องหมายจุลภาคเพื่อตรวจสอบก่อน ถ้าไม่พบจะใช้รูปภาพแรกในเนื้อหา markdown',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'ยกเว้นโน้ตที่มีคุณสมบัติ',
+                desc: 'รายการคุณสมบัติ frontmatter คั่นด้วยเครื่องหมายจุลภาค โน้ตที่มีคุณสมบัติใดๆ เหล่านี้จะไม่เก็บภาพเด่น',
+                placeholder: 'ส่วนตัว, ลับ'
             },
 
             downloadExternalFeatureImages: {
@@ -1220,6 +1225,11 @@ export const STRINGS_TH = {
             hiddenTags: {
                 name: 'ซ่อนแท็ก (โปรไฟล์ห้องนิรภัย)',
                 desc: 'รายการรูปแบบแท็กคั่นด้วยเครื่องหมายจุลภาค รูปแบบชื่อ: tag* (ขึ้นต้นด้วย), *tag (ลงท้ายด้วย) รูปแบบเส้นทาง: archive (แท็กและลูกหลาน), archive/* (ลูกหลานเท่านั้น), projects/*/drafts (wildcard ตรงกลาง)',
+                placeholder: 'archive*, *draft, projects/*/old'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
                 placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {

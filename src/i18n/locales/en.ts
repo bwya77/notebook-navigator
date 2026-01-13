@@ -1116,8 +1116,13 @@ export const STRINGS_EN = {
             },
             featureImageProperties: {
                 name: 'Image properties',
-                desc: 'Comma-separated list of frontmatter properties to check for thumbnail images.',
+                desc: 'Comma-separated list of frontmatter properties to check first. Falls back to the first image in markdown content.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Exclude notes with properties',
+                desc: 'Comma-separated list of frontmatter properties. Notes containing any of these properties do not store feature images.',
+                placeholder: 'private, confidential'
             },
             downloadExternalFeatureImages: {
                 name: 'Download external images',
@@ -1218,6 +1223,11 @@ export const STRINGS_EN = {
             hiddenTags: {
                 name: 'Hide tags (vault profile)',
                 desc: 'Comma-separated list of tag patterns. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
                 placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {

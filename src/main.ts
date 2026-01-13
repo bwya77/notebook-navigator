@@ -1848,6 +1848,7 @@ export default class NotebookNavigatorPlugin extends Plugin implements ISettings
         if (Array.isArray(this.settings.vaultProfiles)) {
             this.settings.vaultProfiles.forEach(profile => {
                 profile.hiddenTags = normalizeArray(profile.hiddenTags);
+                profile.hiddenFileTags = normalizeArray(profile.hiddenFileTags);
             });
         }
     }
@@ -1899,7 +1900,9 @@ export default class NotebookNavigatorPlugin extends Plugin implements ISettings
     // Clears matcher caches only when the associated patterns change.
     private refreshMatcherCachesIfNeeded(): void {
         const folderKey = this.buildPatternCacheKey(profile => profile.hiddenFolders);
-        const tagKey = this.buildPatternCacheKey(profile => profile.hiddenTags);
+        const hiddenTagKey = this.buildPatternCacheKey(profile => profile.hiddenTags);
+        const hiddenFileTagKey = this.buildPatternCacheKey(profile => profile.hiddenFileTags);
+        const tagKey = `${hiddenTagKey}\u0003${hiddenFileTagKey}`;
         const fileNameKey = this.buildPatternCacheKey(profile => profile.hiddenFileNamePatterns);
 
         if (folderKey !== this.hiddenFolderCacheKey) {

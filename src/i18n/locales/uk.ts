@@ -1118,8 +1118,13 @@ export const STRINGS_UK = {
             },
             featureImageProperties: {
                 name: 'Властивості зображення',
-                desc: 'Список властивостей frontmatter для перевірки на мініатюри, розділених комами.',
+                desc: 'Список властивостей frontmatter, розділених комами, для перевірки в першу чергу. При відсутності використовується перше зображення з вмісту markdown.',
                 placeholder: 'мініатюра, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Виключити нотатки з властивостями',
+                desc: 'Список властивостей frontmatter, розділених комами. Нотатки, що містять будь-яку з цих властивостей, не зберігають головні зображення.',
+                placeholder: 'приватне, конфіденційне'
             },
 
             downloadExternalFeatureImages: {
@@ -1222,6 +1227,11 @@ export const STRINGS_UK = {
                 name: 'Приховати теги (профіль сховища)',
                 desc: 'Список шаблонів тегів, розділених комами. Шаблони назв: тег* (починається з), *тег (закінчується на). Шаблони шляхів: архів (тег і нащадки), архів/* (лише нащадки), проекти/*/чернетки (символ підстановки посередині).',
                 placeholder: 'архів*, *чернетка, проекти/*/старі'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Увімкнути нотатки папок',

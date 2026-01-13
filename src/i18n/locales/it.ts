@@ -1118,8 +1118,13 @@ export const STRINGS_IT = {
             },
             featureImageProperties: {
                 name: 'Proprietà immagine',
-                desc: "Lista di proprietà frontmatter separate da virgola da controllare per immagini miniatura. La prima proprietà con un'immagine sarà usata. Se vuoto e l'impostazione fallback è abilitata, la prima immagine incorporata sarà usata.",
+                desc: 'Lista di proprietà frontmatter separate da virgola da controllare per prime. Usa la prima immagine nel contenuto markdown come fallback.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Escludi note con proprietà',
+                desc: 'Lista di proprietà frontmatter separate da virgola. Le note contenenti una di queste proprietà non memorizzano immagini di copertina.',
+                placeholder: 'privato, confidenziale'
             },
 
             downloadExternalFeatureImages: {
@@ -1222,6 +1227,11 @@ export const STRINGS_IT = {
                 name: 'Nascondi tag (profilo vault)',
                 desc: 'Lista di pattern tag separati da virgola. Pattern nome: tag* (inizia con), *tag (finisce con). Pattern percorso: archivio (tag e discendenti), archivio/* (solo discendenti), progetti/*/bozze (wildcard intermedio).',
                 placeholder: 'archivio*, *bozza, progetti/*/vecchio'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Abilita note cartella',

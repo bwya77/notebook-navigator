@@ -1118,8 +1118,13 @@ export const STRINGS_PT = {
             },
             featureImageProperties: {
                 name: 'Propriedades de imagem',
-                desc: 'Lista de propriedades frontmatter separadas por vírgulas para verificar imagens em miniatura.',
+                desc: 'Lista separada por vírgulas de propriedades frontmatter a verificar primeiro. Usa a primeira imagem no conteúdo markdown como alternativa.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Excluir notas com propriedades',
+                desc: 'Lista separada por vírgulas de propriedades frontmatter. Notas contendo qualquer uma destas propriedades não armazenam imagens de destaque.',
+                placeholder: 'privado, confidencial'
             },
 
             downloadExternalFeatureImages: {
@@ -1222,6 +1227,11 @@ export const STRINGS_PT = {
                 name: 'Ocultar etiquetas (perfil do cofre)',
                 desc: 'Lista de padrões de etiquetas separados por vírgulas. Padrões de nome: tag* (começa com), *tag (termina com). Padrões de caminho: arquivo (etiqueta e descendentes), arquivo/* (apenas descendentes), projetos/*/rascunhos (curinga intermédio).',
                 placeholder: 'arquivo*, *rascunho, projetos/*/antigo'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Ativar notas de pasta',

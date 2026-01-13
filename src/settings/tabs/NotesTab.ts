@@ -583,6 +583,18 @@ export function renderNotesTab(context: SettingsTabContext): void {
     );
     featurePropertiesSetting.controlEl.addClass('nn-setting-wide-input');
 
+    const featureExcludePropertiesSetting = context.createDebouncedTextSetting(
+        featureImageSettingsEl,
+        strings.settings.items.featureImageExcludeProperties.name,
+        strings.settings.items.featureImageExcludeProperties.desc,
+        strings.settings.items.featureImageExcludeProperties.placeholder,
+        () => formatCommaSeparatedList(plugin.settings.featureImageExcludeProperties),
+        value => {
+            plugin.settings.featureImageExcludeProperties = parseCommaSeparatedList(value);
+        }
+    );
+    featureExcludePropertiesSetting.controlEl.addClass('nn-setting-wide-input');
+
     new Setting(featureImageSettingsEl)
         .setName(strings.settings.items.forceSquareFeatureImage.name)
         .setDesc(strings.settings.items.forceSquareFeatureImage.desc)

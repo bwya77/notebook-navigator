@@ -21,6 +21,7 @@ import { type ContentProviderType } from '../../interfaces/IContentProvider';
 import { NotebookNavigatorSettings } from '../../settings';
 import { FileData } from '../../storage/IndexedDBStorage';
 import { getDBInstance } from '../../storage/fileOperations';
+import { extractFileTagsFromRawTags } from '../../utils/tagUtils';
 import { BaseContentProvider, type ContentProviderProcessResult } from './BaseContentProvider';
 
 /**
@@ -97,7 +98,7 @@ export class TagContentProvider extends BaseContentProvider {
             }
 
             const rawTags = getAllTags(metadata);
-            const tags = this.extractTagsFromMetadata(rawTags);
+            const tags = extractFileTagsFromRawTags(rawTags);
 
             const shouldDeferClearing =
                 fileData !== null && fileData.tagsMtime === 0 && fileData.tags !== null && fileData.tags.length > 0 && tags.length === 0;
@@ -126,44 +127,6 @@ export class TagContentProvider extends BaseContentProvider {
             console.error(`Error extracting tags for ${job.path}:`, error);
             return { update: null, processed: false };
         }
-    }
-
-    /**
-     * Extract tags from cached metadata.
-     *
-     * Tags are returned with their original casing as found in the vault,
-     * without the # prefix. For example, "#ToDo" becomes "ToDo".
-     *
-     * Duplicate tags with different casing are deduplicated - only the first
-     * occurrence is kept. For example, if a file has #todo and #TODO, only
-     * "todo" (the first one) is returned.
-     *
-     * The tag tree building process will later normalize these to lowercase
-     * for the `path` property while preserving the original casing in `displayPath`.
-     *
-     * @param rawTags - Raw tag strings returned by Obsidian (with # prefix)
-     * @returns Array of unique tag strings without # prefix, in original casing
-     */
-    private extractTagsFromMetadata(rawTags: string[] | null): string[] {
-        if (!rawTags || rawTags.length === 0) return [];
-
-        // Deduplicate tags while preserving the first occurrence's casing
-        const seen = new Set<string>();
-        const uniqueTags: string[] = [];
-
-        for (const tag of rawTags) {
-            // Remove # prefix
-            const cleanTag = tag.startsWith('#') ? tag.slice(1) : tag;
-            const lowerTag = cleanTag.toLowerCase();
-
-            // Only add if we haven't seen this tag (case-insensitive)
-            if (!seen.has(lowerTag)) {
-                seen.add(lowerTag);
-                uniqueTags.push(cleanTag);
-            }
-        }
-
-        return uniqueTags;
     }
 
     /**

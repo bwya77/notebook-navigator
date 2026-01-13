@@ -22,10 +22,14 @@ import { isPdfFile, shouldDisplayFile } from './fileTypeUtils';
 import {
     getActiveFileVisibility,
     getActiveHiddenFileNamePatterns,
+    getActiveHiddenFileTags,
     getActiveHiddenFiles,
     getActiveHiddenFolders,
     getHiddenFolderMatcher
 } from './vaultProfiles';
+import { getDBInstanceOrNull } from '../storage/fileOperations';
+import { createHiddenTagVisibility } from './tagPrefixMatcher';
+import { type CachedFileTagsDB, getCachedFileTags } from './tagUtils';
 
 interface FileFilterOptions {
     showHiddenItems?: boolean;
@@ -456,23 +460,30 @@ interface ExclusionFilterState {
     excludedFolderPatterns: string[];
     includeHiddenItems: boolean;
     fileNameMatcher: HiddenFileNameMatcher | null;
+    hiddenFileTagVisibility: ReturnType<typeof createHiddenTagVisibility> | null;
+    db: CachedFileTagsDB | null;
 }
 
 function createExclusionFilterState(settings: NotebookNavigatorSettings, options?: FileFilterOptions): ExclusionFilterState {
     const includeHiddenItems = options?.showHiddenItems ?? false;
     const excludedFileNamePatterns = getActiveHiddenFileNamePatterns(settings);
     const fileNameMatcher = createHiddenFileNameMatcherForVisibility(excludedFileNamePatterns, includeHiddenItems);
+    const hiddenFileTags = getActiveHiddenFileTags(settings);
+    const hiddenFileTagVisibility = hiddenFileTags.length > 0 ? createHiddenTagVisibility(hiddenFileTags, includeHiddenItems) : null;
+    const db = !includeHiddenItems && hiddenFileTagVisibility?.shouldFilterHiddenTags ? getDBInstanceOrNull() : null;
 
     return {
         excludedProperties: getActiveHiddenFiles(settings),
         excludedFolderPatterns: getActiveHiddenFolders(settings),
         includeHiddenItems,
-        fileNameMatcher
+        fileNameMatcher,
+        hiddenFileTagVisibility,
+        db
     };
 }
 
 function passesExclusionFilters(file: TFile, state: ExclusionFilterState, app: App): boolean {
-    const { excludedProperties, excludedFolderPatterns, includeHiddenItems, fileNameMatcher } = state;
+    const { excludedProperties, excludedFolderPatterns, includeHiddenItems, fileNameMatcher, hiddenFileTagVisibility, db } = state;
 
     // Frontmatter based exclusion (markdown only)
     if (
@@ -486,6 +497,13 @@ function passesExclusionFilters(file: TFile, state: ExclusionFilterState, app: A
 
     if (fileNameMatcher && fileNameMatcher.matches(file)) {
         return false;
+    }
+
+    if (hiddenFileTagVisibility && hiddenFileTagVisibility.shouldFilterHiddenTags && file.extension === 'md') {
+        const tags = getCachedFileTags({ app, file, db });
+        if (tags.some(tag => !hiddenFileTagVisibility.isTagVisible(tag))) {
+            return false;
+        }
     }
 
     // Folder based exclusion (only if configured to skip in index)

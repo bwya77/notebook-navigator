@@ -1121,8 +1121,13 @@ export const STRINGS_FR = {
             },
             featureImageProperties: {
                 name: "Propriétés d'image",
-                desc: 'Liste de propriétés de métadonnées séparées par des virgules pour les images miniatures. La première propriété avec une image sera utilisée. Si vide et que le paramètre de repli est activé, la première image intégrée sera utilisée.',
+                desc: 'Liste de propriétés frontmatter séparées par des virgules à vérifier en premier. Se rabat sur la première image dans le contenu markdown.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Exclure les notes avec propriétés',
+                desc: "Liste de propriétés frontmatter séparées par des virgules. Les notes contenant l'une de ces propriétés ne stockent pas d'images principales.",
+                placeholder: 'privé, confidentiel'
             },
 
             downloadExternalFeatureImages: {
@@ -1225,6 +1230,11 @@ export const STRINGS_FR = {
                 name: 'Masquer les étiquettes (profil du coffre)',
                 desc: "Liste séparée par des virgules de motifs d'étiquettes. Motifs de nom : tag* (commence par), *tag (termine par). Motifs de chemin : archive (étiquette et descendants), archive/* (descendants uniquement), projets/*/brouillons (joker intermédiaire).",
                 placeholder: 'archive*, *brouillon, projets/*/ancien'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Activer les notes de dossier',

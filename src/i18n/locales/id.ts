@@ -1118,8 +1118,13 @@ export const STRINGS_ID = {
             },
             featureImageProperties: {
                 name: 'Properti gambar',
-                desc: 'Daftar properti frontmatter yang dipisahkan koma untuk memeriksa gambar thumbnail.',
+                desc: 'Daftar properti frontmatter yang dipisahkan koma untuk diperiksa terlebih dahulu. Jika tidak ditemukan, menggunakan gambar pertama dalam konten markdown.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Kecualikan catatan dengan properti',
+                desc: 'Daftar properti frontmatter yang dipisahkan koma. Catatan yang mengandung properti ini tidak menyimpan gambar fitur.',
+                placeholder: 'pribadi, rahasia'
             },
 
             downloadExternalFeatureImages: {
@@ -1222,6 +1227,11 @@ export const STRINGS_ID = {
                 name: 'Sembunyikan tag (profil vault)',
                 desc: 'Daftar pola tag yang dipisahkan koma. Pola nama: tag* (dimulai dengan), *tag (diakhiri dengan). Pola jalur: arsip (tag dan turunan), arsip/* (hanya turunan), proyek/*/draf (wildcard tengah).',
                 placeholder: 'arsip*, *draf, proyek/*/lama'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Aktifkan catatan folder',

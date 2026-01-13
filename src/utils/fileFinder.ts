@@ -32,7 +32,7 @@ import {
 import { shouldDisplayFile, FILE_VISIBILITY } from './fileTypeUtils';
 import { getEffectiveSortOption, sortFiles } from './sortUtils';
 import { TagTreeService } from '../services/TagTreeService';
-import { getDBInstance } from '../storage/fileOperations';
+import { getDBInstanceOrNull } from '../storage/fileOperations';
 import { extractMetadata } from '../utils/metadataExtractor';
 import { METADATA_SENTINEL } from '../storage/IndexedDBStorage';
 import { getFileDisplayName as getDisplayName } from './fileNameUtils';
@@ -41,10 +41,12 @@ import { createHiddenTagVisibility, normalizeTagPathValue } from './tagPrefixMat
 import {
     getActiveFileVisibility,
     getActiveHiddenFileNamePatterns,
+    getActiveHiddenFileTags,
     getActiveHiddenFiles,
     getActiveHiddenFolders,
     getActiveHiddenTags
 } from './vaultProfiles';
+import { getCachedFileTags } from './tagUtils';
 
 interface CollectPinnedPathsOptions {
     restrictToFolderPath?: string;
@@ -139,8 +141,11 @@ export function getFilesForFolder(
     const excludedFolderPatterns = getActiveHiddenFolders(settings);
     const excludedFileProperties = getActiveHiddenFiles(settings);
     const excludedFileNamePatterns = getActiveHiddenFileNamePatterns(settings);
+    const excludedFileTagPatterns = getActiveHiddenFileTags(settings);
     const fileVisibility = getActiveFileVisibility(settings);
     const fileNameMatcher = createHiddenFileNameMatcherForVisibility(excludedFileNamePatterns, visibility.showHiddenItems);
+    const hiddenFileTagVisibility = createHiddenTagVisibility(excludedFileTagPatterns, visibility.showHiddenItems);
+    const shouldFilterHiddenFileTags = hiddenFileTagVisibility.hasHiddenRules && !visibility.showHiddenItems;
 
     // Check if hidden folders should be shown based on UX preference
     const showHiddenFolders = visibility.showHiddenItems;
@@ -179,6 +184,20 @@ export function getFilesForFolder(
     }
     if (fileNameMatcher) {
         allFiles = allFiles.filter(file => !fileNameMatcher.matches(file));
+    }
+
+    if (shouldFilterHiddenFileTags) {
+        const db = getDBInstanceOrNull();
+        allFiles = allFiles.filter(file => {
+            if (file.extension !== 'md') {
+                return true;
+            }
+            const tags = getCachedFileTags({ app, file, db });
+            if (tags.length === 0) {
+                return true;
+            }
+            return tags.every(tag => hiddenFileTagVisibility.isTagVisible(tag));
+        });
     }
 
     // Filter out folder notes if enabled and set to hide
@@ -261,9 +280,12 @@ export function getFilesForTag(
     // Get all files based on visibility setting, with proper filtering
     let allFiles: TFile[] = [];
     const hiddenTags = getActiveHiddenTags(settings);
+    const hiddenFileTags = getActiveHiddenFileTags(settings);
     const fileVisibility = getActiveFileVisibility(settings);
     const hiddenTagVisibility = createHiddenTagVisibility(hiddenTags, visibility.showHiddenItems);
     const shouldFilterHiddenTags = hiddenTagVisibility.shouldFilterHiddenTags;
+    const hiddenFileTagVisibility = createHiddenTagVisibility(hiddenFileTags, visibility.showHiddenItems);
+    const shouldFilterHiddenFileTags = hiddenFileTagVisibility.hasHiddenRules && !visibility.showHiddenItems;
 
     if (fileVisibility === FILE_VISIBILITY.DOCUMENTS) {
         // Only document files (markdown, canvas, base)
@@ -284,7 +306,7 @@ export function getFilesForTag(
 
     let filteredFiles: TFile[] = [];
 
-    const db = getDBInstance();
+    const db = getDBInstanceOrNull();
 
     // Special case for untagged files
     if (tag === UNTAGGED_TAG_ID) {
@@ -294,15 +316,19 @@ export function getFilesForTag(
                 return false;
             }
             // Check if the markdown file has tags using our cache
-            const fileTags = db.getCachedTags(file.path);
+            const fileTags = getCachedFileTags({ app, file, db });
             return fileTags.length === 0;
         });
     } else if (tag === TAGGED_TAG_ID) {
         // Include markdown files that have at least one tag, respecting hidden tag visibility
         const markdownFiles = baseFiles.filter(file => file.extension === 'md');
         filteredFiles = markdownFiles.filter(file => {
-            const fileTags = db.getCachedTags(file.path);
+            const fileTags = getCachedFileTags({ app, file, db });
             if (fileTags.length === 0) {
+                return false;
+            }
+
+            if (shouldFilterHiddenFileTags && fileTags.some(tagValue => !hiddenFileTagVisibility.isTagVisible(tagValue))) {
                 return false;
             }
 
@@ -337,8 +363,12 @@ export function getFilesForTag(
 
             // Filter files that have any of the collected tags (case-insensitive)
             filteredFiles = markdownFiles.filter(file => {
-                const fileTags = db.getCachedTags(file.path);
+                const fileTags = getCachedFileTags({ app, file, db });
                 if (fileTags.length === 0) {
+                    return false;
+                }
+
+                if (shouldFilterHiddenFileTags && fileTags.some(tagValue => !hiddenFileTagVisibility.isTagVisible(tagValue))) {
                     return false;
                 }
 

@@ -105,7 +105,7 @@ interface StorageProviderProps {
 
 export function StorageProvider({ app, api, children }: StorageProviderProps) {
     const settings = useSettingsState();
-    const { hiddenFolders, hiddenFiles, hiddenFileNamePatterns, hiddenTags, fileVisibility, profile } = useActiveProfile();
+    const { hiddenFolders, hiddenFiles, hiddenFileNamePatterns, hiddenTags, hiddenFileTags, fileVisibility, profile } = useActiveProfile();
     const uxPreferences = useUXPreferences();
     const showHiddenItems = uxPreferences.showHiddenItems;
     const { tagTreeService } = useServices();
@@ -429,6 +429,7 @@ export function StorageProvider({ app, api, children }: StorageProviderProps) {
         hiddenFolders,
         hiddenFiles,
         hiddenFileNamePatterns,
+        hiddenFileTags,
         scheduleTagTreeRebuild,
         getIndexableFiles,
         pendingRenameDataRef,

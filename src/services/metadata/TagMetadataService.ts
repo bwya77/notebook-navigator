@@ -25,7 +25,14 @@ import { BaseMetadataService } from './BaseMetadataService';
 import type { CleanupValidators } from '../MetadataService';
 import { TagTreeNode } from '../../types/storage';
 import { normalizeTagPath } from '../../utils/tagUtils';
-import { hasHiddenTagMatch, removeHiddenTagPrefixMatches, updateHiddenTagPrefixMatches } from '../../utils/vaultProfiles';
+import {
+    hasHiddenFileTagMatch,
+    hasHiddenTagMatch,
+    removeHiddenFileTagPrefixMatches,
+    removeHiddenTagPrefixMatches,
+    updateHiddenFileTagPrefixMatches,
+    updateHiddenTagPrefixMatches
+} from '../../utils/vaultProfiles';
 
 type SettingsMutation = (settings: NotebookNavigatorSettings) => boolean;
 
@@ -341,6 +348,7 @@ export class TagMetadataService extends BaseMetadataService {
         const settingsSnapshot = this.settingsProvider.settings;
         const hasMetadata = this.hasTagMetadataForPath(settingsSnapshot, normalizedOld);
         const hasHiddenTags = hasHiddenTagMatch(settingsSnapshot, normalizedOld);
+        const hasHiddenFileTags = hasHiddenFileTagMatch(settingsSnapshot, normalizedOld);
 
         const requiresUpdate = hasMetadata
             ? this.willUpdateNestedPaths(settingsSnapshot.tagColors, normalizedOld, normalizedNew, preserveExisting) ||
@@ -350,7 +358,7 @@ export class TagMetadataService extends BaseMetadataService {
               this.willUpdateNestedPaths(settingsSnapshot.tagAppearances, normalizedOld, normalizedNew, preserveExisting)
             : false;
 
-        if (!requiresUpdate && !hasHiddenTags && !extraMutation) {
+        if (!requiresUpdate && !hasHiddenTags && !hasHiddenFileTags && !extraMutation) {
             return;
         }
 
@@ -365,6 +373,7 @@ export class TagMetadataService extends BaseMetadataService {
             }
 
             changed = updateHiddenTagPrefixMatches(settings, normalizedOld, normalizedNew) || changed;
+            changed = updateHiddenFileTagPrefixMatches(settings, normalizedOld, normalizedNew) || changed;
 
             if (extraMutation) {
                 changed = extraMutation(settings) || changed;
@@ -388,7 +397,10 @@ export class TagMetadataService extends BaseMetadataService {
         }
 
         const settingsSnapshot = this.settingsProvider.settings;
-        const hasMetadata = this.hasTagMetadataForPath(settingsSnapshot, normalized) || hasHiddenTagMatch(settingsSnapshot, normalized);
+        const hasMetadata =
+            this.hasTagMetadataForPath(settingsSnapshot, normalized) ||
+            hasHiddenTagMatch(settingsSnapshot, normalized) ||
+            hasHiddenFileTagMatch(settingsSnapshot, normalized);
 
         if (!hasMetadata && !extraMutation) {
             return;
@@ -407,6 +419,7 @@ export class TagMetadataService extends BaseMetadataService {
             }
 
             changed = removeHiddenTagPrefixMatches(settings, normalized) || changed;
+            changed = removeHiddenFileTagPrefixMatches(settings, normalized) || changed;
 
             if (extraMutation) {
                 changed = extraMutation(settings) || changed;

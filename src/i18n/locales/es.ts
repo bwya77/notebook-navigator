@@ -1119,8 +1119,13 @@ export const STRINGS_ES = {
             },
             featureImageProperties: {
                 name: 'Propiedades de imagen',
-                desc: 'Lista separada por comas de propiedades del frontmatter para imágenes en miniatura.',
+                desc: 'Lista separada por comas de propiedades del frontmatter a comprobar primero. Si no se encuentra, usa la primera imagen del contenido markdown.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Excluir notas con propiedades',
+                desc: 'Lista separada por comas de propiedades del frontmatter. Las notas que contengan cualquiera de estas propiedades no almacenan imágenes destacadas.',
+                placeholder: 'privado, confidencial'
             },
 
             downloadExternalFeatureImages: {
@@ -1223,6 +1228,11 @@ export const STRINGS_ES = {
                 name: 'Ocultar etiquetas (perfil de bóveda)',
                 desc: 'Lista separada por comas de patrones de etiquetas. Patrones de nombre: tag* (empieza con), *tag (termina con). Patrones de ruta: archivo (etiqueta y descendientes), archivo/* (solo descendientes), proyectos/*/borradores (comodín intermedio).',
                 placeholder: 'archivo*, *borrador, proyectos/*/antiguo'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Habilitar notas de carpeta',

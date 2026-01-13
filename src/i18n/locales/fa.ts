@@ -1117,8 +1117,13 @@ export const STRINGS_FA = {
             },
             featureImageProperties: {
                 name: 'ویژگی‌های تصویر',
-                desc: 'لیست ویژگی‌های فرانت‌متر جدا شده با کاما برای بررسی تصاویر بندانگشتی.',
+                desc: 'لیست ویژگی‌های فرانت‌متر جدا شده با کاما برای بررسی در ابتدا. در صورت عدم یافتن، از اولین تصویر در محتوای markdown استفاده می‌شود.',
                 placeholder: 'بندانگشتی، تصویر'
+            },
+            featureImageExcludeProperties: {
+                name: 'استثنای یادداشت‌ها با ویژگی‌ها',
+                desc: 'لیست ویژگی‌های فرانت‌متر جدا شده با کاما. یادداشت‌هایی که هر یک از این ویژگی‌ها را دارند، تصاویر ویژه را ذخیره نمی‌کنند.',
+                placeholder: 'خصوصی, محرمانه'
             },
 
             downloadExternalFeatureImages: {
@@ -1220,6 +1225,11 @@ export const STRINGS_FA = {
             hiddenTags: {
                 name: 'مخفی کردن برچسب‌ها (پروفایل خزانه)',
                 desc: 'لیست الگوهای برچسب جدا شده با کاما. الگوهای نام: tag* (شروع با)، *tag (پایان با). الگوهای مسیر: archive (برچسب و فرزندان)، archive/* (فقط فرزندان)، projects/*/drafts (wildcard میانی).',
+                placeholder: 'archive*, *draft, projects/*/old'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
                 placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {

@@ -164,6 +164,7 @@ export function renderGeneralTab(context: SettingsTabContext): void {
     let fileVisibilityDropdown: DropdownComponent | null = null;
     let excludedFoldersInput: HTMLInputElement | null = null;
     let hiddenTagsInput: HTMLInputElement | null = null;
+    let hiddenFileTagsInput: HTMLInputElement | null = null;
     let excludedFilesInput: HTMLInputElement | null = null;
     let hiddenFileNamePatternsInput: HTMLInputElement | null = null;
     let vaultTitleSetting: Setting | null = null;
@@ -203,6 +204,9 @@ export function renderGeneralTab(context: SettingsTabContext): void {
         }
         if (hiddenTagsInput) {
             hiddenTagsInput.value = activeProfile ? formatCommaSeparatedList(activeProfile.hiddenTags) : '';
+        }
+        if (hiddenFileTagsInput) {
+            hiddenFileTagsInput.value = activeProfile ? formatCommaSeparatedList(activeProfile.hiddenFileTags) : '';
         }
         if (excludedFilesInput) {
             excludedFilesInput.value = activeProfile ? formatCommaSeparatedList(activeProfile.hiddenFiles) : '';
@@ -430,6 +434,35 @@ export function renderGeneralTab(context: SettingsTabContext): void {
     });
     hiddenTagsSetting.controlEl.addClass('nn-setting-wide-input');
     hiddenTagsInput = hiddenTagsSetting.controlEl.querySelector('input');
+
+    const hiddenFileTagsSetting = filteringGroup.addSetting(setting => {
+        configureDebouncedTextSetting(
+            setting,
+            strings.settings.items.hiddenFileTags.name,
+            strings.settings.items.hiddenFileTags.desc,
+            strings.settings.items.hiddenFileTags.placeholder,
+            () => formatCommaSeparatedList(getActiveProfile()?.hiddenFileTags ?? []),
+            value => {
+                const activeProfile = getActiveProfile();
+                if (!activeProfile) {
+                    return;
+                }
+
+                const normalizedHiddenFileTags = parseCommaSeparatedList(value)
+                    .map(entry => normalizeTagPath(entry))
+                    .filter((entry): entry is string => entry !== null);
+
+                activeProfile.hiddenFileTags = Array.from(new Set(normalizedHiddenFileTags));
+                resetHiddenToggleIfNoSources({
+                    settings: plugin.settings,
+                    showHiddenItems: plugin.getUXPreferences().showHiddenItems,
+                    setShowHiddenItems: value => plugin.setShowHiddenItems(value)
+                });
+            }
+        );
+    });
+    hiddenFileTagsSetting.controlEl.addClass('nn-setting-wide-input');
+    hiddenFileTagsInput = hiddenFileTagsSetting.controlEl.querySelector('input');
 
     const excludedFilesSetting = filteringGroup.addSetting(setting => {
         configureDebouncedTextSetting(

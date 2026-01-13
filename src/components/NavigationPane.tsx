@@ -153,6 +153,8 @@ import { NAVIGATION_PANE_SURFACE_COLOR_MAPPINGS } from '../constants/surfaceColo
 import { TAG_DRAG_MIME } from '../types/obsidian-extended';
 import { SHORTCUT_POINTER_CONSTRAINT, verticalAxisOnly } from '../utils/dndConfig';
 import { createHiddenFileNameMatcherForVisibility } from '../utils/fileFilters';
+import { createHiddenTagVisibility } from '../utils/tagPrefixMatcher';
+import { getDBInstanceOrNull } from '../storage/fileOperations';
 
 export interface NavigationPaneHandle {
     getIndexOfPath: (itemType: ItemType, path: string) => number;
@@ -257,12 +259,24 @@ export const NavigationPane = React.memo(
                 setCalendarWeekCount(settings.calendarWeeksToShow);
             }
         }, [settings.calendarWeeksToShow]);
-        const { hiddenFolders, hiddenFileNamePatterns, fileVisibility } = activeProfile;
+        const { hiddenFolders, hiddenFileNamePatterns, hiddenFileTags, fileVisibility } = activeProfile;
         // Resolves frontmatter exclusions, returns empty array when hidden items are shown
         const effectiveFrontmatterExclusions = getEffectiveFrontmatterExclusions(settings, showHiddenItems);
         const folderCountFileNameMatcher = useMemo(() => {
             return createHiddenFileNameMatcherForVisibility(hiddenFileNamePatterns, showHiddenItems);
         }, [hiddenFileNamePatterns, showHiddenItems]);
+        const hiddenFileTagVisibility = useMemo(() => {
+            if (showHiddenItems) {
+                return null;
+            }
+            return createHiddenTagVisibility(hiddenFileTags, false);
+        }, [hiddenFileTags, showHiddenItems]);
+        const noteCountDB = useMemo(() => {
+            if (showHiddenItems || !hiddenFileTagVisibility || !hiddenFileTagVisibility.hasHiddenRules) {
+                return null;
+            }
+            return getDBInstanceOrNull();
+        }, [hiddenFileTagVisibility, showHiddenItems]);
         const updateSettings = useSettingsUpdate();
         const uiState = useUIState();
         const uiDispatch = useUIDispatch();
@@ -2008,10 +2022,12 @@ export const NavigationPane = React.memo(
 
                 return calculateFolderNoteCounts(folder, {
                     app,
+                    db: noteCountDB,
                     fileVisibility,
                     excludedFiles: effectiveFrontmatterExclusions,
                     excludedFolders: hiddenFolders,
                     fileNameMatcher: folderCountFileNameMatcher,
+                    hiddenFileTagVisibility,
                     includeDescendants: includeDescendantNotes,
                     showHiddenFolders: showHiddenItems,
                     hideFolderNoteInList: settings.hideFolderNoteInList,
@@ -2025,7 +2041,9 @@ export const NavigationPane = React.memo(
                 fileVisibility,
                 effectiveFrontmatterExclusions,
                 hiddenFolders,
+                noteCountDB,
                 includeDescendantNotes,
+                hiddenFileTagVisibility,
                 showHiddenItems,
                 settings.hideFolderNoteInList,
                 settings.enableFolderNotes,

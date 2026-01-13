@@ -1119,10 +1119,14 @@ export const STRINGS_DE = {
             },
             featureImageProperties: {
                 name: 'Bildeigenschaften',
-                desc: 'Kommagetrennte Liste von Frontmatter-Eigenschaften für Miniaturbilder.',
+                desc: 'Kommagetrennte Liste von Frontmatter-Eigenschaften, die zuerst geprüft werden. Fällt auf das erste Bild im Markdown-Inhalt zurück.',
                 placeholder: 'thumbnail, featureResized, feature'
             },
-
+            featureImageExcludeProperties: {
+                name: 'Notizen mit Eigenschaften ausschließen',
+                desc: 'Kommagetrennte Liste von Frontmatter-Eigenschaften. Notizen mit einer dieser Eigenschaften speichern keine Feature-Bilder.',
+                placeholder: 'privat, vertraulich'
+            },
             downloadExternalFeatureImages: {
                 name: 'Externe Bilder herunterladen',
                 desc: 'Remote-Bilder und YouTube-Vorschaubilder für Feature-Bilder herunterladen.'
@@ -1223,6 +1227,11 @@ export const STRINGS_DE = {
                 name: 'Tags verstecken (Tresorprofil)',
                 desc: 'Kommagetrennte Liste von Tag-Mustern. Namensmuster: tag* (beginnt mit), *tag (endet mit). Pfadmuster: archiv (Tag und Untergeordnete), archiv/* (nur Untergeordnete), projekte/*/entwürfe (Platzhalter in der Mitte).',
                 placeholder: 'archiv*, *entwurf, projekte/*/alt'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Ordnernotizen aktivieren',

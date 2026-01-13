@@ -67,11 +67,12 @@ import { flattenFolderTree, flattenTagTree, compareTagOrderWithFallback } from '
 import { createHiddenTagVisibility, matchesHiddenTagPattern } from '../utils/tagPrefixMatcher';
 import { setNavigationIndex } from '../utils/navigationIndex';
 import { resolveCanonicalTagPath } from '../utils/tagUtils';
+import { getCachedFileTags } from '../utils/tagUtils';
 import { isFolderShortcut, isNoteShortcut, isSearchShortcut, isTagShortcut } from '../types/shortcuts';
 import { useRootFolderOrder } from './useRootFolderOrder';
 import { useRootTagOrder } from './useRootTagOrder';
 import type { FolderNoteDetectionSettings } from '../utils/folderNotes';
-import { getDBInstance } from '../storage/fileOperations';
+import { getDBInstance, getDBInstanceOrNull } from '../storage/fileOperations';
 import { naturalCompare } from '../utils/sortUtils';
 import type { NoteCountInfo } from '../types/noteCounts';
 import { calculateFolderNoteCounts } from '../utils/noteCountUtils';
@@ -438,7 +439,8 @@ export function useNavigationPaneData({
     const showHiddenItems = uxPreferences.showHiddenItems;
     // Resolves frontmatter exclusions, returns empty array when hidden items are shown
     const effectiveFrontmatterExclusions = getEffectiveFrontmatterExclusions(settings, showHiddenItems);
-    const { hiddenFolders, hiddenFiles, hiddenFileNamePatterns, hiddenTags, fileVisibility, navigationBanner } = activeProfile;
+    const { hiddenFolders, hiddenFiles, hiddenFileNamePatterns, hiddenTags, hiddenFileTags, fileVisibility, navigationBanner } =
+        activeProfile;
     const navigationBannerPath = navigationBanner;
     const folderCountFileNameMatcher = useMemo(() => {
         return createHiddenFileNameMatcherForVisibility(hiddenFileNamePatterns, showHiddenItems);
@@ -759,6 +761,9 @@ export function useNavigationPaneData({
 
         const fileVisibilityCache = new Map<string, boolean>();
         const tagVisibilityCache = new Map<string, boolean>();
+        const hiddenFileTagVisibility = createHiddenTagVisibility(hiddenFileTags, false);
+        const shouldFilterHiddenFileTags = hiddenFileTagVisibility.hasHiddenRules;
+        const db = shouldFilterHiddenFileTags ? getDBInstance() : null;
 
         // Start with the shortcuts header/virtual folder
         const items: CombinedNavigationItem[] = [
@@ -802,6 +807,14 @@ export function useNavigationPaneData({
             }
 
             if (hiddenFileNamePatterns.length > 0 && shouldExcludeFileName(abstractFile, hiddenFileNamePatterns)) {
+                fileVisibilityCache.set(path, false);
+                return false;
+            }
+
+            if (
+                shouldFilterHiddenFileTags &&
+                getCachedFileTags({ app, file: abstractFile, db }).some(tagValue => !hiddenFileTagVisibility.isTagVisible(tagValue))
+            ) {
                 fileVisibilityCache.set(path, false);
                 return false;
             }
@@ -921,6 +934,9 @@ export function useNavigationPaneData({
                 }
                 const isExcluded =
                     (note.extension === 'md' && hiddenFiles.length > 0 && shouldExcludeFile(note, hiddenFiles, app)) ||
+                    (note.extension === 'md' &&
+                        shouldFilterHiddenFileTags &&
+                        getCachedFileTags({ app, file: note, db }).some(tagValue => !hiddenFileTagVisibility.isTagVisible(tagValue))) ||
                     (hiddenFileNamePatterns.length > 0 && shouldExcludeFileName(note, hiddenFileNamePatterns)) ||
                     (hiddenFolders.length > 0 && note.parent !== null && isFolderInExcludedFolder(note.parent, hiddenFolders));
                 items.push({
@@ -987,6 +1003,7 @@ export function useNavigationPaneData({
         app,
         hydratedShortcuts,
         hiddenFileNamePatterns,
+        hiddenFileTags,
         hiddenFiles,
         hiddenFolders,
         hiddenMatcherHasRules,
@@ -1647,6 +1664,8 @@ export function useNavigationPaneData({
 
         const excludedProperties = effectiveFrontmatterExclusions;
         const excludedFolderPatterns = hiddenFolders;
+        const hiddenFileTagVisibility = showHiddenItems ? null : createHiddenTagVisibility(hiddenFileTags, false);
+        const db = hiddenFileTagVisibility && hiddenFileTagVisibility.hasHiddenRules ? getDBInstanceOrNull() : null;
         const folderNoteSettings: FolderNoteDetectionSettings = {
             enableFolderNotes: settings.enableFolderNotes,
             folderNoteName: settings.folderNoteName
@@ -1655,10 +1674,12 @@ export function useNavigationPaneData({
         const showHiddenFolders = showHiddenItems;
         const countOptions = {
             app,
+            db,
             fileVisibility,
             excludedFiles: excludedProperties,
             excludedFolders: excludedFolderPatterns,
             fileNameMatcher: folderCountFileNameMatcher,
+            hiddenFileTagVisibility,
             includeDescendants,
             showHiddenFolders,
             hideFolderNoteInList: settings.hideFolderNoteInList,
@@ -1683,6 +1704,7 @@ export function useNavigationPaneData({
         effectiveFrontmatterExclusions,
         hiddenFolders,
         hiddenFileNamePatterns,
+        hiddenFileTags,
         showHiddenItems,
         folderCountFileNameMatcher,
         fileVisibility,

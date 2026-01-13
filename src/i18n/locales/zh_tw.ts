@@ -1115,8 +1115,13 @@ export const STRINGS_ZH_TW = {
             },
             featureImageProperties: {
                 name: '圖片屬性',
-                desc: '用於縮圖的前置中繼資料屬性的逗號分隔列表。',
+                desc: '首先檢查的前置中繼資料屬性的逗號分隔列表。如果未找到，則使用 markdown 內容中的第一張圖片。',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: '排除含有屬性的筆記',
+                desc: '逗號分隔的前置中繼資料屬性列表。包含這些屬性的筆記不會儲存特色圖片。',
+                placeholder: '私密, 機密'
             },
 
             downloadExternalFeatureImages: {
@@ -1218,6 +1223,11 @@ export const STRINGS_ZH_TW = {
             hiddenTags: {
                 name: '隱藏標籤（保險庫設定檔）',
                 desc: '逗號分隔的標籤模式列表。名稱模式：tag*（以...開頭）、*tag（以...結尾）。路徑模式：archive（標籤及其後代）、archive/*（僅後代）、projects/*/drafts（中間萬用字元）。',
+                placeholder: 'archive*, *draft, projects/*/old'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
                 placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {

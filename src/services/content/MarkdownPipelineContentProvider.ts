@@ -23,6 +23,7 @@ import { NotebookNavigatorSettings } from '../../settings';
 import { type CustomPropertyItem, FileData } from '../../storage/IndexedDBStorage';
 import { getDBInstance } from '../../storage/fileOperations';
 import { getCachedCommaSeparatedList } from '../../utils/commaSeparatedListUtils';
+import { areStringArraysEqual } from '../../utils/arrayUtils';
 import { areCustomPropertyItemsEqual, hasCustomPropertyFrontmatterFields } from '../../utils/customPropertyUtils';
 import { PreviewTextUtils } from '../../utils/previewTextUtils';
 import { countWordsForCustomProperty } from '../../utils/wordCountUtils';
@@ -44,6 +45,7 @@ type MarkdownPipelineContext = {
     customPropertyColorFields: readonly string[];
     hasContent: boolean;
     featureImageReference: FeatureImageReference | null;
+    featureImageExcluded: boolean;
 };
 
 type MarkdownPipelineUpdate = {
@@ -193,7 +195,7 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                     return false;
                 }
 
-                if (!context.isExcalidraw && !context.featureImageReference && !context.hasContent) {
+                if (!context.isExcalidraw && !context.featureImageReference && !context.hasContent && !context.featureImageExcluded) {
                     return false;
                 }
 
@@ -221,6 +223,7 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             'previewProperties',
             'showFeatureImage',
             'featureImageProperties',
+            'featureImageExcludeProperties',
             'downloadExternalFeatureImages',
             'customPropertyFields',
             'customPropertyColorFields'
@@ -258,17 +261,23 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             oldSettings.skipHeadingsInPreview !== newSettings.skipHeadingsInPreview ||
             oldSettings.skipCodeBlocksInPreview !== newSettings.skipCodeBlocksInPreview ||
             oldSettings.stripHtmlInPreview !== newSettings.stripHtmlInPreview ||
-            JSON.stringify(oldSettings.previewProperties) !== JSON.stringify(newSettings.previewProperties);
+            !areStringArraysEqual(oldSettings.previewProperties, newSettings.previewProperties);
 
         const shouldClearCustomProperty =
             oldSettings.customPropertyFields !== newSettings.customPropertyFields ||
             oldSettings.customPropertyColorFields !== newSettings.customPropertyColorFields;
 
+        const featureImagePropertiesChanged = !areStringArraysEqual(oldSettings.featureImageProperties, newSettings.featureImageProperties);
+        const featureImageExcludePropertiesChanged = !areStringArraysEqual(
+            oldSettings.featureImageExcludeProperties,
+            newSettings.featureImageExcludeProperties
+        );
+
         const shouldClearFeatureImage =
+            featureImageExcludePropertiesChanged ||
             (oldSettings.showFeatureImage && !newSettings.showFeatureImage) ||
             (newSettings.showFeatureImage &&
-                (JSON.stringify(oldSettings.featureImageProperties) !== JSON.stringify(newSettings.featureImageProperties) ||
-                    oldSettings.downloadExternalFeatureImages !== newSettings.downloadExternalFeatureImages));
+                (featureImagePropertiesChanged || oldSettings.downloadExternalFeatureImages !== newSettings.downloadExternalFeatureImages));
 
         return { shouldClearPreview, shouldClearCustomProperty, shouldClearFeatureImage };
     }
@@ -343,6 +352,10 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
         const isExcalidraw = PreviewTextUtils.isExcalidrawFile(job.file.name, frontmatter ?? undefined);
 
         const fileModified = fileData !== null && fileData.markdownPipelineMtime !== job.file.stat.mtime;
+        const featureImageExcluded =
+            settings.showFeatureImage &&
+            frontmatter !== null &&
+            settings.featureImageExcludeProperties.some(property => Object.prototype.hasOwnProperty.call(frontmatter, property));
 
         const needsPreview =
             settings.showFilePreview && (!fileData || fileModified || fileData.previewStatus === 'unprocessed') && !isExcalidraw;
@@ -354,7 +367,7 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             !isExcalidraw;
 
         const frontmatterFeatureImageReference =
-            needsFeatureImage && frontmatter
+            needsFeatureImage && frontmatter && !featureImageExcluded
                 ? findFeatureImageReference({
                       app: this.app,
                       file: job.file,
@@ -365,7 +378,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                   })
                 : null;
 
-        const needsContent = needsPreview || needsWordCountContent || (needsFeatureImage && !frontmatterFeatureImageReference);
+        const needsContent =
+            needsPreview || needsWordCountContent || (needsFeatureImage && !featureImageExcluded && !frontmatterFeatureImageReference);
 
         const update: {
             path: string;
@@ -411,7 +425,7 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                     }
                 }
 
-                if (needsFeatureImage && frontmatterFeatureImageReference) {
+                if (needsFeatureImage && (frontmatterFeatureImageReference || featureImageExcluded)) {
                     const featureImageUpdate = await this.processMarkdownFeatureImage({
                         file: job.file,
                         fileData,
@@ -513,6 +527,23 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
                     update.featureImage = featureImageUpdate.featureImage;
                     hasSafeUpdate = true;
                 }
+            } else if (needsFeatureImage && featureImageExcluded) {
+                const featureImageUpdate = await this.processMarkdownFeatureImage({
+                    file: job.file,
+                    fileData,
+                    settings,
+                    content: '',
+                    frontmatter,
+                    bodyStartIndex: 0,
+                    isExcalidraw,
+                    featureImageReference: null
+                });
+
+                if (featureImageUpdate) {
+                    update.featureImageKey = featureImageUpdate.featureImageKey;
+                    update.featureImage = featureImageUpdate.featureImage;
+                    hasSafeUpdate = true;
+                }
             } else if (needsFeatureImage && !frontmatterFeatureImageReference && shouldFallback) {
                 const shouldMarkMissingFeatureImage =
                     !fileData || fileData.featureImageKey === null || fileData.featureImageStatus === 'unprocessed';
@@ -544,7 +575,8 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
             customPropertyNameFields,
             customPropertyColorFields,
             hasContent,
-            featureImageReference: frontmatterFeatureImageReference
+            featureImageReference: frontmatterFeatureImageReference,
+            featureImageExcluded
         };
 
         for (const processor of this.processors) {
@@ -693,6 +725,26 @@ export class MarkdownPipelineContentProvider extends FeatureImageContentProvider
         isExcalidraw: boolean;
         featureImageReference: FeatureImageReference | null;
     }): Promise<{ featureImageKey: string; featureImage: Blob } | null> {
+        const isExcludedByProperty =
+            params.frontmatter !== null &&
+            params.settings.featureImageExcludeProperties.length > 0 &&
+            params.settings.featureImageExcludeProperties.some(property =>
+                Object.prototype.hasOwnProperty.call(params.frontmatter, property)
+            );
+
+        if (isExcludedByProperty) {
+            const featureImageKey = '';
+            const isUpToDate = params.fileData?.featureImageKey === featureImageKey && params.fileData.featureImageStatus === 'none';
+            if (isUpToDate) {
+                return null;
+            }
+
+            return {
+                featureImageKey,
+                featureImage: this.createEmptyBlob()
+            };
+        }
+
         if (params.isExcalidraw) {
             const featureImageKey = this.getExcalidrawFeatureImageKey(params.file);
             if (params.fileData && params.fileData.featureImageKey === featureImageKey) {

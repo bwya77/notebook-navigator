@@ -38,6 +38,7 @@ export interface ActiveProfileState {
     hiddenFiles: string[];
     hiddenFileNamePatterns: string[];
     hiddenTags: string[];
+    hiddenFileTags: string[];
     fileVisibility: FileVisibility;
     navigationBanner: string | null;
 }
@@ -190,6 +191,7 @@ export function SettingsProvider({ children, plugin }: SettingsProviderProps) {
                 hiddenFiles: Array.isArray(profile.hiddenFiles) ? [...profile.hiddenFiles] : [],
                 hiddenFileNamePatterns: Array.isArray(profile.hiddenFileNamePatterns) ? [...profile.hiddenFileNamePatterns] : [],
                 hiddenTags: Array.isArray(profile.hiddenTags) ? [...profile.hiddenTags] : [],
+                hiddenFileTags: Array.isArray(profile.hiddenFileTags) ? [...profile.hiddenFileTags] : [],
                 shortcuts: cloneShortcuts(profile.shortcuts)
             }));
         }
@@ -231,6 +233,7 @@ export function SettingsProvider({ children, plugin }: SettingsProviderProps) {
             profile.hiddenFileNamePatterns
         );
         const hiddenTagsEqual = areStringArraysEqual(previous?.profile.hiddenTags ?? [], profile.hiddenTags);
+        const hiddenFileTagsEqual = areStringArraysEqual(previous?.profile.hiddenFileTags ?? [], profile.hiddenFileTags);
         const fileVisibilityEqual = previous?.profile.fileVisibility === profile.fileVisibility;
         const navigationBanner = profile.navigationBanner ?? null;
         const navigationBannerEqual = previous?.navigationBanner === navigationBanner;
@@ -243,6 +246,7 @@ export function SettingsProvider({ children, plugin }: SettingsProviderProps) {
             hiddenFilesEqual &&
             hiddenFileNamePatternsEqual &&
             hiddenTagsEqual &&
+            hiddenFileTagsEqual &&
             fileVisibilityEqual &&
             navigationBannerEqual &&
             nameEqual &&
@@ -258,6 +262,7 @@ export function SettingsProvider({ children, plugin }: SettingsProviderProps) {
             hiddenFiles: profile.hiddenFiles,
             hiddenFileNamePatterns: profile.hiddenFileNamePatterns,
             hiddenTags: profile.hiddenTags,
+            hiddenFileTags: profile.hiddenFileTags,
             fileVisibility: profile.fileVisibility,
             navigationBanner
         };

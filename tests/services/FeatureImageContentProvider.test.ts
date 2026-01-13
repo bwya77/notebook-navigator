@@ -616,6 +616,62 @@ describe('FeatureImageContentProvider scanning', () => {
         expect(result?.featureImage?.size).toBe(0);
     });
 
+    it('skips feature image storage when note contains an excluded property', async () => {
+        const context = createApp();
+        const { app } = context;
+        const provider = new TestFeatureImageContentProvider(app);
+        const settings = createSettings({ featureImageExcludeProperties: ['private'] });
+        const noteFile = createFile('notes/note.md');
+
+        const content = `---\nprivate: true\nthumbnail: https://example.com/cover.jpg\n---\n`;
+        setMarkdownContent(context, noteFile, content);
+
+        const result = await provider.runProcessFile(noteFile, settings);
+
+        expect(result).not.toBeNull();
+        expect(result?.featureImageKey).toBe('');
+        expect(result?.featureImage).toBeInstanceOf(Blob);
+        expect(result?.featureImage?.size).toBe(0);
+    });
+
+    it('does not read note content when excluded property only affects feature images', async () => {
+        const context = createApp();
+        const { app } = context;
+        const provider = new TestFeatureImageContentProvider(app);
+        const settings = createSettings({ featureImageExcludeProperties: ['private'] });
+        const noteFile = createFile('notes/note.md');
+
+        const content = `---\nprivate: true\n---\n`;
+        setMarkdownContent(context, noteFile, content, { overrideRead: false });
+
+        const cachedRead = vi.fn<() => Promise<string>>(async () => content);
+        app.vault.cachedRead = cachedRead;
+
+        const fileData: FileData = {
+            mtime: noteFile.stat.mtime,
+            markdownPipelineMtime: noteFile.stat.mtime,
+            tagsMtime: noteFile.stat.mtime,
+            metadataMtime: noteFile.stat.mtime,
+            fileThumbnailsMtime: noteFile.stat.mtime,
+            tags: null,
+            wordCount: 0,
+            customProperty: null,
+            previewStatus: 'none',
+            featureImage: null,
+            featureImageStatus: 'unprocessed',
+            featureImageKey: null,
+            metadata: null
+        };
+
+        const result = await provider.runProcessFileWithData(noteFile, fileData, settings);
+
+        expect(cachedRead).not.toHaveBeenCalled();
+        expect(result).not.toBeNull();
+        expect(result?.featureImageKey).toBe('');
+        expect(result?.featureImage).toBeInstanceOf(Blob);
+        expect(result?.featureImage?.size).toBe(0);
+    });
+
     it('stores empty blob when external download fails', async () => {
         const context = createApp();
         const { app } = context;

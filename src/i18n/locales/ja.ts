@@ -1120,8 +1120,13 @@ export const STRINGS_JA = {
             },
             featureImageProperties: {
                 name: '画像プロパティ',
-                desc: 'サムネイル画像用のフロントマタープロパティのカンマ区切りリスト。',
+                desc: '最初にチェックするフロントマタープロパティのカンマ区切りリスト。見つからない場合はmarkdownコンテンツの最初の画像を使用します。',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'プロパティを持つノートを除外',
+                desc: 'フロントマタープロパティのカンマ区切りリスト。これらのプロパティを含むノートはフィーチャー画像を保存しません。',
+                placeholder: 'プライベート, 機密'
             },
 
             downloadExternalFeatureImages: {
@@ -1223,6 +1228,11 @@ export const STRINGS_JA = {
             hiddenTags: {
                 name: 'タグを非表示 (ボルトプロファイル)',
                 desc: 'カンマ区切りのタグパターンリスト。名前パターン: tag*（で始まる）、*tag（で終わる）。パスパターン: archive（タグと子孫）、archive/*（子孫のみ）、projects/*/drafts（中間ワイルドカード）。',
+                placeholder: 'archive*, *draft, projects/*/old'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
                 placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {

@@ -1117,8 +1117,13 @@ export const STRINGS_AR = {
             },
             featureImageProperties: {
                 name: 'خصائص الصورة',
-                desc: 'قائمة مفصولة بفاصلة من خصائص البيانات الأمامية للتحقق من الصور المصغرة.',
+                desc: 'قائمة مفصولة بفاصلة من خصائص البيانات الأمامية للتحقق منها أولاً. يستخدم أول صورة في محتوى markdown كبديل.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'استبعاد الملاحظات ذات الخصائص',
+                desc: 'قائمة مفصولة بفاصلة من خصائص البيانات الأمامية. الملاحظات التي تحتوي على أي من هذه الخصائص لا تخزن صور العرض.',
+                placeholder: 'خاص, سري'
             },
 
             downloadExternalFeatureImages: {
@@ -1220,6 +1225,11 @@ export const STRINGS_AR = {
             hiddenTags: {
                 name: 'إخفاء الوسوم (ملف الخزنة)',
                 desc: 'قائمة مفصولة بفاصلة من أنماط الوسوم. أنماط الأسماء: tag* (تبدأ بـ)، *tag (تنتهي بـ). أنماط المسارات: archive (الوسم وفروعه)، archive/* (الفروع فقط)، projects/*/drafts (حرف بدل وسطي).',
+                placeholder: 'archive*, *draft, projects/*/old'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
                 placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {

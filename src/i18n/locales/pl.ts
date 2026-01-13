@@ -1120,8 +1120,13 @@ export const STRINGS_PL = {
             },
             featureImageProperties: {
                 name: 'Właściwości obrazu',
-                desc: 'Lista właściwości frontmatter oddzielonych przecinkami do sprawdzenia dla miniaturek obrazów.',
+                desc: 'Lista właściwości frontmatter oddzielonych przecinkami do sprawdzenia w pierwszej kolejności. W przypadku braku używa pierwszego obrazu z treści markdown.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Wyklucz notatki z właściwościami',
+                desc: 'Lista właściwości frontmatter oddzielonych przecinkami. Notatki zawierające dowolną z tych właściwości nie przechowują obrazów głównych.',
+                placeholder: 'prywatny, poufny'
             },
 
             downloadExternalFeatureImages: {
@@ -1224,6 +1229,11 @@ export const STRINGS_PL = {
                 name: 'Ukryj tagi (profil sejfu)',
                 desc: 'Lista wzorców tagów oddzielonych przecinkami. Wzorce nazw: tag* (zaczyna się od), *tag (kończy się na). Wzorce ścieżek: archiwum (tag i potomkowie), archiwum/* (tylko potomkowie), projekty/*/szkice (wildcard w środku).',
                 placeholder: 'archiwum*, *szkic, projekty/*/stare'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Włącz notatki folderów',

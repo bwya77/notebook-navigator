@@ -16,10 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Platform, TFile } from 'obsidian';
+import { Platform, TFile, getAllTags, type App } from 'obsidian';
 import { MultiSelectModifier, NotebookNavigatorSettings } from '../settings';
 import { TAGGED_TAG_ID, UNTAGGED_TAG_ID } from '../types';
-import { IndexedDBStorage } from '../storage/IndexedDBStorage';
+import { IndexedDBStorage, type FileData } from '../storage/IndexedDBStorage';
+import { getDBInstanceOrNull } from '../storage/fileOperations';
 import { normalizeTagPathValue } from './tagPrefixMatcher';
 import { findTagNode } from './tagTree';
 import type { TagTreeNode } from '../types/storage';
@@ -93,6 +94,82 @@ export function resolveCanonicalTagPath(tagPath: string | null | undefined, tagT
 
     const node = findTagNode(tagTree, normalized);
     return node?.path ?? normalized;
+}
+
+/**
+ * Extract tags from metadata cache values.
+ *
+ * Tags are returned without the # prefix, in original casing. Duplicate tags with
+ * different casing are deduplicated, keeping the first occurrence.
+ */
+export function extractFileTagsFromRawTags(rawTags: readonly string[] | null): string[] {
+    if (!rawTags || rawTags.length === 0) {
+        return [];
+    }
+
+    const seen = new Set<string>();
+    const uniqueTags: string[] = [];
+
+    for (const tag of rawTags) {
+        const cleanTag = tag.startsWith('#') ? tag.slice(1) : tag;
+        if (!cleanTag) {
+            continue;
+        }
+        const lowerTag = cleanTag.toLowerCase();
+        if (seen.has(lowerTag)) {
+            continue;
+        }
+        seen.add(lowerTag);
+        uniqueTags.push(cleanTag);
+    }
+
+    return uniqueTags;
+}
+
+export interface CachedFileTagsDB {
+    getFile?: (path: string) => FileData | null;
+    getCachedTags?: (path: string) => readonly string[];
+}
+
+const EMPTY_FILE_TAGS: readonly string[] = [];
+
+export function getCachedFileTags(params: {
+    app: App;
+    file: TFile;
+    db?: CachedFileTagsDB | null;
+    fileData?: FileData | null;
+}): readonly string[] {
+    if (params.file.extension !== 'md') {
+        return EMPTY_FILE_TAGS;
+    }
+
+    const fileData = params.fileData ?? null;
+    if (fileData && fileData.tags !== null) {
+        return fileData.tags;
+    }
+
+    const db = params.db ?? getDBInstanceOrNull();
+    if (db) {
+        if (typeof db.getFile === 'function') {
+            const record = db.getFile(params.file.path);
+            if (record) {
+                return record.tags ?? EMPTY_FILE_TAGS;
+            }
+            return EMPTY_FILE_TAGS;
+        }
+
+        if (typeof db.getCachedTags === 'function') {
+            const cachedTags = db.getCachedTags(params.file.path);
+            return cachedTags.length > 0 ? cachedTags : EMPTY_FILE_TAGS;
+        }
+    }
+
+    const metadata = params.app.metadataCache.getFileCache(params.file);
+    const rawTags = metadata ? getAllTags(metadata) : null;
+    if (!rawTags || rawTags.length === 0) {
+        return EMPTY_FILE_TAGS;
+    }
+    return extractFileTagsFromRawTags(rawTags);
 }
 
 interface TagModifierState {

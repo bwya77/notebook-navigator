@@ -1120,8 +1120,13 @@ export const STRINGS_NL = {
             },
             featureImageProperties: {
                 name: 'Afbeeldingseigenschappen',
-                desc: 'Kommagescheiden lijst van frontmatter-eigenschappen om te controleren op miniatuurafbeeldingen.',
+                desc: 'Kommagescheiden lijst van frontmatter-eigenschappen om eerst te controleren. Valt terug op de eerste afbeelding in de markdown-inhoud.',
                 placeholder: 'thumbnail, featureResized, feature'
+            },
+            featureImageExcludeProperties: {
+                name: 'Notities met eigenschappen uitsluiten',
+                desc: 'Kommagescheiden lijst van frontmatter-eigenschappen. Notities met een van deze eigenschappen slaan geen uitgelichte afbeeldingen op.',
+                placeholder: 'privé, vertrouwelijk'
             },
 
             downloadExternalFeatureImages: {
@@ -1224,6 +1229,11 @@ export const STRINGS_NL = {
                 name: 'Tags verbergen (kluisprofiel)',
                 desc: 'Kommagescheiden lijst van tagpatronen. Naampatronen: tag* (begint met), *tag (eindigt met). Padpatronen: archief (tag en afstammelingen), archief/* (alleen afstammelingen), projecten/*/concepten (wildcard in het midden).',
                 placeholder: 'archief*, *concept, projecten/*/oud'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Mapnotities inschakelen',

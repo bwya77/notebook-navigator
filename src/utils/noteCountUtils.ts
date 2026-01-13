@@ -23,16 +23,20 @@ import { shouldDisplayFile, type FileVisibility } from './fileTypeUtils';
 import type { HiddenFileNameMatcher } from './fileFilters';
 import { shouldExcludeFile, shouldExcludeFolder } from './fileFilters';
 import { isFolderNote, type FolderNoteDetectionSettings } from './folderNotes';
+import type { HiddenTagVisibility } from './tagPrefixMatcher';
+import { type CachedFileTagsDB, getCachedFileTags } from './tagUtils';
 
 /**
  * Options for calculating note counts in folders
  */
 export interface FolderNoteCountOptions {
     app: App;
+    db?: CachedFileTagsDB | null;
     fileVisibility: FileVisibility;
     excludedFiles: string[];
     excludedFolders: string[];
     fileNameMatcher: HiddenFileNameMatcher | null;
+    hiddenFileTagVisibility: HiddenTagVisibility | null;
     includeDescendants: boolean;
     showHiddenFolders: boolean;
     hideFolderNoteInList: boolean;
@@ -66,11 +70,21 @@ export function calculateFolderNoteCounts(folder: TFolder, options: FolderNoteCo
                 continue;
             }
 
+            const hiddenFileTagVisibility = options.hiddenFileTagVisibility;
+            let hiddenByTags = false;
+            if (hiddenFileTagVisibility && hiddenFileTagVisibility.hasHiddenRules && child.extension === 'md') {
+                const tags = getCachedFileTags({ app: options.app, file: child, db: options.db });
+                if (tags.some(tag => !hiddenFileTagVisibility.isTagVisible(tag))) {
+                    hiddenByTags = true;
+                }
+            }
+
             // Count files that pass visibility and exclusion checks
             if (
                 shouldDisplayFile(child, options.fileVisibility, options.app) &&
                 !(options.fileNameMatcher && options.fileNameMatcher.matches(child)) &&
-                !shouldExcludeFile(child, options.excludedFiles, options.app)
+                !shouldExcludeFile(child, options.excludedFiles, options.app) &&
+                !hiddenByTags
             ) {
                 current += 1;
             }

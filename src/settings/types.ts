@@ -97,6 +97,7 @@ export interface VaultProfile {
     fileVisibility: FileVisibility;
     hiddenFolders: string[];
     hiddenTags: string[];
+    hiddenFileTags: string[];
     hiddenFiles: string[];
     hiddenFileNamePatterns: string[];
     navigationBanner: string | null;
@@ -233,6 +234,7 @@ export interface NotebookNavigatorSettings {
     previewProperties: string[];
     showFeatureImage: boolean;
     featureImageProperties: string[];
+    featureImageExcludeProperties: string[];
     forceSquareFeatureImage: boolean;
     downloadExternalFeatureImages: boolean;
     showFileTags: boolean;

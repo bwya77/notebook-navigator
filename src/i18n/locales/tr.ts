@@ -1117,8 +1117,13 @@ export const STRINGS_TR = {
             },
             featureImageProperties: {
                 name: 'Görsel özellikleri',
-                desc: 'Küçük resim görüntüleri için kontrol edilecek virgülle ayrılmış frontmatter özellikleri listesi.',
+                desc: 'Önce kontrol edilecek virgülle ayrılmış frontmatter özellikleri listesi. Bulunamazsa markdown içeriğindeki ilk görsel kullanılır.',
                 placeholder: 'küçükresim, öneÇıkanYeniden, öneÇıkan'
+            },
+            featureImageExcludeProperties: {
+                name: 'Özellikli notları hariç tut',
+                desc: 'Virgülle ayrılmış frontmatter özellikleri listesi. Bu özelliklerden herhangi birini içeren notlar öne çıkan görsel saklamaz.',
+                placeholder: 'özel, gizli'
             },
 
             downloadExternalFeatureImages: {
@@ -1221,6 +1226,11 @@ export const STRINGS_TR = {
                 name: 'Etiketleri gizle (kasa profili)',
                 desc: 'Virgülle ayrılmış etiket kalıpları listesi. Ad kalıpları: etiket* (ile başlayan), *etiket (ile biten). Yol kalıpları: arşiv (etiket ve alt öğeler), arşiv/* (yalnızca alt öğeler), projeler/*/taslaklar (ortada joker).',
                 placeholder: 'arşiv*, *taslak, projeler/*/eski'
+            },
+            hiddenFileTags: {
+                name: 'Hide files with tags (vault profile)',
+                desc: 'Comma-separated list of tag patterns. Notes containing matching tags are hidden. Name patterns: tag* (starting with), *tag (ending with). Path patterns: archive (tag and descendants), archive/* (descendants only), projects/*/drafts (mid-segment wildcard).',
+                placeholder: 'archive*, *draft, projects/*/old'
             },
             enableFolderNotes: {
                 name: 'Klasör notlarını etkinleştir',
