@@ -237,43 +237,33 @@ export async function renderExcalidrawThumbnail(app: App, excalidrawFile: TFile,
         const loader = excalidrawApi.getEmbeddedFilesLoader(isDark);
         const exportSettings = excalidrawApi.getExportSettings(true, true);
         const padding = typeof opts?.padding === 'number' && Number.isFinite(opts.padding) ? opts.padding : 0;
-        const maxScale = typeof opts?.scale === 'number' && Number.isFinite(opts.scale) && opts.scale > 0 ? opts.scale : 1;
+        const maxScale =
+            typeof opts?.scale === 'number' && Number.isFinite(opts.scale) && opts.scale > 0 ? opts.scale : DEFAULT_EXCALIDRAW_EXPORT_SCALE;
 
         const bounds = computeSceneBounds(scene.elements);
         const scale = (() => {
             if (!bounds) {
-                return clampNumber(Math.min(maxScale, DEFAULT_EXCALIDRAW_EXPORT_SCALE), MIN_EXCALIDRAW_EXPORT_SCALE, maxScale);
+                const fallbackScale = Math.min(maxScale, DEFAULT_EXCALIDRAW_EXPORT_SCALE);
+                return Number.isFinite(fallbackScale) && fallbackScale > 0 ? fallbackScale : null;
             }
 
             const widthScale = MAX_EXCALIDRAW_EXPORT_DIMENSION_PX / bounds.width;
             const heightScale = MAX_EXCALIDRAW_EXPORT_DIMENSION_PX / bounds.height;
             const computed = Math.min(maxScale, widthScale, heightScale);
-            return clampNumber(computed, MIN_EXCALIDRAW_EXPORT_SCALE, maxScale);
+            if (!Number.isFinite(computed) || computed <= 0) {
+                return null;
+            }
+            if (computed < MIN_EXCALIDRAW_EXPORT_SCALE) {
+                return null;
+            }
+            return clampNumber(computed, 0, maxScale);
         })();
 
-        let lastError: Error | null = null;
-        let attemptScale = scale;
-        for (let attempt = 0; attempt < 5; attempt += 1) {
-            try {
-                const blob = await excalidrawApi.createPNG(undefined, attemptScale, exportSettings, loader, undefined, padding);
-                if (blob) {
-                    return blob;
-                }
-            } catch (error: unknown) {
-                lastError = error instanceof Error ? error : new Error('Failed to export Excalidraw thumbnail');
-            }
-
-            const nextScale = attemptScale * 0.5;
-            if (nextScale < MIN_EXCALIDRAW_EXPORT_SCALE) {
-                break;
-            }
-            attemptScale = nextScale;
+        if (scale === null) {
+            return null;
         }
 
-        if (lastError) {
-            throw lastError;
-        }
-        return null;
+        return await excalidrawApi.createPNG(undefined, scale, exportSettings, loader, undefined, padding);
     } catch (error: unknown) {
         logOnce(`excalidraw-thumbnail:${excalidrawFile.path}`, `[Excalidraw thumbnail] Failed to render: ${excalidrawFile.path}`, error);
         return null;

@@ -267,7 +267,7 @@ export class FeatureImageContentProvider extends BaseContentProvider {
 
     // Renders an Excalidraw file to a resized thumbnail blob
     protected async createExcalidrawThumbnail(file: TFile): Promise<Blob | null> {
-        const pngBlob = await renderExcalidrawThumbnail(this.app, file, { scale: 1, padding: 0 });
+        const pngBlob = await renderExcalidrawThumbnail(this.app, file, { padding: 0 });
         if (!pngBlob) {
             return null;
         }
