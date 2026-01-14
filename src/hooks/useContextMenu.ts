@@ -18,7 +18,7 @@
 
 // src/hooks/useContextMenu.ts
 import { useEffect, useCallback, useState } from 'react';
-import { Menu } from 'obsidian';
+import { Menu, TFolder } from 'obsidian';
 import { useExpansionState, useExpansionDispatch } from '../context/ExpansionContext';
 import { useSelectionState, useSelectionDispatch } from '../context/SelectionContext';
 import { useServices, useFileSystemOps, useMetadataService, useTagOperations, useCommandQueue } from '../context/ServicesContext';
@@ -38,7 +38,7 @@ import {
     buildEmptyListMenu,
     EMPTY_LIST_MENU_TYPE
 } from '../utils/contextMenu';
-import { TFolder } from 'obsidian';
+import { getFolderNote } from '../utils/folderNotes';
 
 // Tracks the currently open navigator context menu so it can be closed before opening another
 let activeNavigatorMenu: Menu | null = null;
@@ -96,19 +96,34 @@ export function useContextMenu(elementRef: React.RefObject<HTMLElement | null>, 
         (e: MouseEvent) => {
             if (!config || !elementRef.current) return;
 
+            const targetNode = e.target;
+            if (!(targetNode instanceof Node)) return;
+
             // Check if the click is on this element or its children
-            if (!elementRef.current.contains(e.target as Node)) return;
+            if (!elementRef.current.contains(targetNode)) return;
 
             // Get the target element if it's an HTML element
-            const targetElement = e.target instanceof HTMLElement ? e.target : null;
+            const targetElement = targetNode instanceof HTMLElement ? targetNode : targetNode.parentElement;
+
+            // Folder note override:
+            // Right-clicking on a folder name should behave like right-clicking the folder note file.
+            let menuConfig: MenuConfig = config;
+            if (menuConfig.type === ItemType.FOLDER && targetElement?.closest('.nn-navitem-name')) {
+                const folderNote = getFolderNote(menuConfig.item, settings);
+                if (folderNote) {
+                    menuConfig = { type: ItemType.FILE, item: folderNote };
+                }
+            }
+
+            const isFileMenu = menuConfig.type === ItemType.FILE;
 
             // Menu builder function that will be selected based on item type
             type Builder = (menu: Menu) => void;
             let buildMenu: Builder | null = null;
 
-            if (config.type === EMPTY_LIST_MENU_TYPE) {
+            if (menuConfig.type === EMPTY_LIST_MENU_TYPE) {
                 // Handle context menu for empty areas in the list pane
-                const folder = config.item;
+                const folder = menuConfig.item;
                 if (!(folder instanceof TFolder)) {
                     return;
                 }
@@ -133,22 +148,22 @@ export function useContextMenu(elementRef: React.RefObject<HTMLElement | null>, 
                         dispatchers
                     });
                 };
-            } else if (config.type === ItemType.FOLDER) {
+            } else if (menuConfig.type === ItemType.FOLDER) {
                 buildMenu = menuInstance => {
                     buildFolderMenu({
-                        folder: config.item,
+                        folder: menuConfig.item,
                         menu: menuInstance,
                         services,
                         settings,
                         state,
                         dispatchers,
-                        options: config.options
+                        options: menuConfig.options
                     });
                 };
-            } else if (config.type === ItemType.TAG) {
+            } else if (menuConfig.type === ItemType.TAG) {
                 buildMenu = menuInstance => {
                     buildTagMenu({
-                        tagPath: config.item,
+                        tagPath: menuConfig.item,
                         menu: menuInstance,
                         services,
                         settings,
@@ -156,10 +171,10 @@ export function useContextMenu(elementRef: React.RefObject<HTMLElement | null>, 
                         dispatchers
                     });
                 };
-            } else if (config.type === ItemType.FILE) {
+            } else if (menuConfig.type === ItemType.FILE) {
                 buildMenu = menuInstance => {
                     buildFileMenu({
-                        file: config.item,
+                        file: menuConfig.item,
                         menu: menuInstance,
                         services,
                         settings,
@@ -185,7 +200,7 @@ export function useContextMenu(elementRef: React.RefObject<HTMLElement | null>, 
             elementRef.current.classList.add('nn-context-menu-active');
 
             // Handle separator hiding for file items in list pane
-            if (config.type === ItemType.FILE) {
+            if (isFileMenu) {
                 // Find the virtual item wrapper that contains this file item
                 const virtualItem = elementRef.current.closest('.nn-virtual-file-item');
                 if (virtualItem instanceof HTMLElement) {
@@ -244,7 +259,7 @@ export function useContextMenu(elementRef: React.RefObject<HTMLElement | null>, 
                     elementRef.current.classList.remove('nn-context-menu-active');
 
                     // Remove separator hiding for file items
-                    if (config.type === ItemType.FILE) {
+                    if (isFileMenu) {
                         const virtualItem = elementRef.current.closest('.nn-virtual-file-item');
                         if (virtualItem instanceof HTMLElement) {
                             // Remove separator hiding from this item
