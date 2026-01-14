@@ -23,6 +23,7 @@ import { strings } from './i18n';
 import { TIMEOUTS } from './types/obsidian-extended';
 import {
     calculateCacheStatistics,
+    calculateMetadataParsingFailurePaths,
     calculateMetadataParsingStatistics,
     type CacheStatistics,
     type MetadataParsingStatistics
@@ -81,6 +82,7 @@ export class NotebookNavigatorSettingTab extends PluginSettingTab {
     private isUpdatingCacheStatistics = false;
     // Prevent overlapping metadata parsing statistics calculations when scheduled frequently.
     private isUpdatingMetadataInfo = false;
+    private pendingMetadataInfoRefreshRequested = false;
     // Tracks whether a refresh is needed when the Advanced tab becomes active.
     private pendingStatisticsRefreshRequested = false;
     private metadataInfoChangeUnsubscribe: (() => void) | null = null;
@@ -376,20 +378,29 @@ export class NotebookNavigatorSettingTab extends PluginSettingTab {
         if (this.lastActiveTabId !== 'notes') {
             return;
         }
-        if (!this.metadataInfoEl) {
+        const metadataInfoEl = this.metadataInfoEl;
+        if (!metadataInfoEl) {
             return;
         }
         if (this.isUpdatingMetadataInfo) {
+            this.pendingMetadataInfoRefreshRequested = true;
             return;
         }
         if (!this.plugin.settings.useFrontmatterMetadata) {
-            this.metadataInfoEl.empty();
+            metadataInfoEl.empty();
             return;
         }
 
         this.isUpdatingMetadataInfo = true;
         try {
             const stats = await calculateMetadataParsingStatistics(this.plugin.settings, this.plugin.getUXPreferences().showHiddenItems);
+            if (this.lastActiveTabId !== 'notes' || this.metadataInfoEl !== metadataInfoEl) {
+                return;
+            }
+            if (!this.plugin.settings.useFrontmatterMetadata) {
+                metadataInfoEl.empty();
+                return;
+            }
             if (!stats) {
                 return;
             }
@@ -397,10 +408,10 @@ export class NotebookNavigatorSettingTab extends PluginSettingTab {
             const { infoText, failedText, hasFailures, failurePercentage } = this.generateMetadataInfoText(stats);
 
             // Clear previous content
-            this.metadataInfoEl.empty();
+            metadataInfoEl.empty();
 
             // Create a flex container for the entire metadata info
-            const metadataContainer = this.metadataInfoEl.createEl('div', {
+            const metadataContainer = metadataInfoEl.createEl('div', {
                 cls: 'nn-metadata-info-row'
             });
 
@@ -429,10 +440,16 @@ export class NotebookNavigatorSettingTab extends PluginSettingTab {
                     text: strings.settings.items.metadataInfo.exportFailed,
                     cls: 'nn-metadata-export-button'
                 });
-                exportButton.onclick = () => this.exportFailedMetadataReport(stats);
+                exportButton.onclick = () => {
+                    runAsyncAction(() => this.exportFailedMetadataReport());
+                };
             }
         } finally {
             this.isUpdatingMetadataInfo = false;
+            if (this.pendingMetadataInfoRefreshRequested) {
+                this.pendingMetadataInfoRefreshRequested = false;
+                runAsyncAction(() => this.updateMetadataInfo());
+            }
         }
     }
 
@@ -733,8 +750,19 @@ export class NotebookNavigatorSettingTab extends PluginSettingTab {
     /**
      * Export failed metadata parsing report to markdown file
      */
-    private async exportFailedMetadataReport(stats: MetadataParsingStatistics): Promise<void> {
-        if (!stats.failedCreatedFiles || !stats.failedModifiedFiles) return;
+    private async exportFailedMetadataReport(): Promise<void> {
+        if (!this.plugin.settings.useFrontmatterMetadata) {
+            return;
+        }
+
+        const failurePaths = await calculateMetadataParsingFailurePaths(
+            this.plugin.settings,
+            this.plugin.getUXPreferences().showHiddenItems
+        );
+        if (!failurePaths) {
+            showNotice(strings.settings.metadataReport.exportFailed, { variant: 'warning' });
+            return;
+        }
 
         // Generate timestamp for filename
         const now = new Date();
@@ -745,33 +773,32 @@ export class NotebookNavigatorSettingTab extends PluginSettingTab {
         const filename = `metadata-parsing-failures-${timestamp}.md`;
 
         // Sort file paths alphabetically
-        const failedCreatedFiles = [...stats.failedCreatedFiles].sort();
-        const failedModifiedFiles = [...stats.failedModifiedFiles].sort();
+        const failedCreatedFiles = [...failurePaths.failedCreatedFiles].sort();
+        const failedModifiedFiles = [...failurePaths.failedModifiedFiles].sort();
 
-        // Generate markdown content
-        let content = `# Metadata Parsing Failures\n\n`;
-        content += `Generated on: ${readableDate}\n\n`;
+        const lines: string[] = [];
+        lines.push('# Metadata Parsing Failures', '', `Generated on: ${readableDate}`, '');
+        lines.push('## Failed Created Date Parsing', `Total files: ${failedCreatedFiles.length}`, '');
 
-        content += `## Failed Created Date Parsing\n`;
-        content += `Total files: ${failedCreatedFiles.length}\n\n`;
         if (failedCreatedFiles.length > 0) {
             failedCreatedFiles.forEach(path => {
-                content += `- [[${path}]]\n`;
+                lines.push(`- [[${path}]]`);
             });
         } else {
-            content += `*No failures*\n`;
+            lines.push('*No failures*');
         }
-        content += `\n`;
 
-        content += `## Failed Modified Date Parsing\n`;
-        content += `Total files: ${failedModifiedFiles.length}\n\n`;
+        lines.push('', '## Failed Modified Date Parsing', `Total files: ${failedModifiedFiles.length}`, '');
+
         if (failedModifiedFiles.length > 0) {
             failedModifiedFiles.forEach(path => {
-                content += `- [[${path}]]\n`;
+                lines.push(`- [[${path}]]`);
             });
         } else {
-            content += `*No failures*\n`;
+            lines.push('*No failures*');
         }
+
+        const content = `${lines.join('\n')}\n`;
 
         try {
             // Create the file in vault root

@@ -104,7 +104,8 @@ const RELEASE_NOTES: ReleaseNote[] = [
         ],
         fixed: [
             'The rebuild cache process dialog now properly reappears after restarting Obsidian.',
-            'Fixed several issues in many of the language translations, such as missing placeholders and incorrect translations due to wrong context.'
+            'Fixed several issues in many of the language translations, such as missing placeholders and incorrect translations due to wrong context.',
+            'Fixed an issue where the Notes > Frontmatter error was not appearing until switching tabs.'
         ]
     },
     {
