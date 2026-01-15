@@ -925,6 +925,16 @@ export const STRINGS_KO = {
                 buttonText: '구분선 초기화',
                 notice: '구분선 위치가 초기화되었습니다. Obsidian을 재시작하거나 Notebook Navigator를 다시 열어 적용하세요.'
             },
+            resetAllSettings: {
+                name: '모든 설정 초기화',
+                desc: 'Notebook Navigator의 모든 설정을 기본값으로 초기화합니다.',
+                buttonText: '모든 설정 초기화',
+                confirmTitle: '모든 설정을 초기화하시겠습니까?',
+                confirmMessage: 'Notebook Navigator의 모든 설정이 기본값으로 초기화됩니다. 되돌릴 수 없습니다.',
+                confirmButtonText: '모든 설정 초기화',
+                notice: '모든 설정이 초기화되었습니다. Obsidian을 재시작하거나 Notebook Navigator를 다시 열어 적용하세요.',
+                error: '설정 초기화에 실패했습니다.'
+            },
             multiSelectModifier: {
                 name: '다중 선택 수정자 (데스크톱 전용)',
                 desc: '다중 선택을 전환하는 수정자 키를 선택하세요. Option/Alt를 선택하면 Cmd/Ctrl 클릭이 새 탭에서 노트를 엽니다.',

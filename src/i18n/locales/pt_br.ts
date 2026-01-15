@@ -922,6 +922,17 @@ export const STRINGS_PT_BR = {
                 buttonText: 'Redefinir separador',
                 notice: 'Posição do separador redefinida. Reinicie o Obsidian ou reabra o Notebook Navigator para aplicar.'
             },
+            resetAllSettings: {
+                name: 'Redefinir todas as configurações',
+                desc: 'Redefinir todas as configurações do Notebook Navigator para os valores padrão.',
+                buttonText: 'Redefinir todas as configurações',
+                confirmTitle: 'Redefinir todas as configurações?',
+                confirmMessage:
+                    'Isso redefinirá todas as configurações do Notebook Navigator para os valores padrão. Não pode ser desfeito.',
+                confirmButtonText: 'Redefinir todas as configurações',
+                notice: 'Configurações redefinidas. Reinicie o Obsidian ou reabra o Notebook Navigator para aplicar.',
+                error: 'Falha ao redefinir as configurações.'
+            },
             multiSelectModifier: {
                 name: 'Modificador de seleção múltipla (apenas desktop)',
                 desc: 'Escolha qual tecla modificadora alterna a seleção múltipla. Quando Opção/Alt está selecionado, Cmd/Ctrl clique abre notas em uma nova aba.',

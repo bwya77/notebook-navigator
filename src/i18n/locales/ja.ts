@@ -926,6 +926,16 @@ export const STRINGS_JA = {
                 buttonText: 'セパレーターをリセット',
                 notice: 'セパレーターの位置がリセットされました。Obsidianを再起動するか、Notebook Navigatorを開き直して適用してください。'
             },
+            resetAllSettings: {
+                name: 'すべての設定をリセット',
+                desc: 'Notebook Navigatorのすべての設定をデフォルト値にリセットします。',
+                buttonText: 'すべての設定をリセット',
+                confirmTitle: 'すべての設定をリセットしますか？',
+                confirmMessage: 'Notebook Navigatorのすべての設定がデフォルト値にリセットされます。元に戻せません。',
+                confirmButtonText: 'すべての設定をリセット',
+                notice: 'すべての設定がリセットされました。Obsidianを再起動するか、Notebook Navigatorを開き直して適用してください。',
+                error: '設定のリセットに失敗しました。'
+            },
             multiSelectModifier: {
                 name: '複数選択モディファイア (デスクトップのみ)',
                 desc: '複数選択を切り替えるモディファイアキーを選択します。Option/Altが選択されている場合、Cmd/Ctrlクリックでノートを新しいタブで開きます。',

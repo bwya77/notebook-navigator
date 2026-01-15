@@ -925,6 +925,17 @@ export const STRINGS_PT = {
                 buttonText: 'Repor separador',
                 notice: 'Posição do separador reposta. Reinicie o Obsidian ou reabra o Notebook Navigator para aplicar.'
             },
+            resetAllSettings: {
+                name: 'Repor todas as definições',
+                desc: 'Repor todas as definições do Notebook Navigator para os valores predefinidos.',
+                buttonText: 'Repor todas as definições',
+                confirmTitle: 'Repor todas as definições?',
+                confirmMessage:
+                    'Isto irá repor todas as definições do Notebook Navigator para os valores predefinidos. Não pode ser desfeito.',
+                confirmButtonText: 'Repor todas as definições',
+                notice: 'Todas as definições repostas. Reinicie o Obsidian ou reabra o Notebook Navigator para aplicar.',
+                error: 'Falha ao repor as definições.'
+            },
             multiSelectModifier: {
                 name: 'Modificador de seleção múltipla (apenas computador)',
                 desc: 'Escolha qual tecla modificadora alterna a seleção múltipla. Quando Option/Alt é selecionado, Cmd/Ctrl abre notas num novo separador.',

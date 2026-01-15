@@ -925,6 +925,16 @@ export const STRINGS_ID = {
                 buttonText: 'Atur ulang pemisah',
                 notice: 'Posisi pemisah diatur ulang. Mulai ulang Obsidian atau buka kembali Notebook Navigator untuk menerapkan.'
             },
+            resetAllSettings: {
+                name: 'Atur ulang semua pengaturan',
+                desc: 'Atur ulang semua pengaturan Notebook Navigator ke nilai default.',
+                buttonText: 'Atur ulang semua pengaturan',
+                confirmTitle: 'Atur ulang semua pengaturan?',
+                confirmMessage: 'Ini akan mengatur ulang semua pengaturan Notebook Navigator ke nilai default. Ini tidak dapat dibatalkan.',
+                confirmButtonText: 'Atur ulang semua pengaturan',
+                notice: 'Semua pengaturan diatur ulang. Mulai ulang Obsidian atau buka kembali Notebook Navigator untuk menerapkan.',
+                error: 'Gagal mengatur ulang pengaturan.'
+            },
             multiSelectModifier: {
                 name: 'Modifier multi-pilih (desktop saja)',
                 desc: 'Pilih tombol modifier mana yang mengalihkan multi-pilih. Ketika Option/Alt dipilih, klik Cmd/Ctrl membuka catatan di tab baru.',

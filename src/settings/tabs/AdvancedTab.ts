@@ -18,6 +18,7 @@
 
 import { ButtonComponent, Platform } from 'obsidian';
 import { strings } from '../../i18n';
+import { ConfirmModal } from '../../modals/ConfirmModal';
 import type { MetadataCleanupSummary } from '../../services/MetadataService';
 import type { SettingsTabContext } from './SettingsTabContext';
 import { getNavigationPaneSizing } from '../../utils/paneSizing';
@@ -78,6 +79,36 @@ export function renderAdvancedTab(context: SettingsTabContext): void {
                 );
         });
     }
+
+    advancedGroup.addSetting(setting => {
+        setting
+            .setName(strings.settings.items.resetAllSettings.name)
+            .setDesc(strings.settings.items.resetAllSettings.desc)
+            .addButton(button => {
+                button.setButtonText(strings.settings.items.resetAllSettings.buttonText);
+                button.buttonEl.addClass('mod-warning');
+                button.onClick(() => {
+                    new ConfirmModal(
+                        context.app,
+                        strings.settings.items.resetAllSettings.confirmTitle,
+                        strings.settings.items.resetAllSettings.confirmMessage,
+                        async () => {
+                            button.setDisabled(true);
+                            try {
+                                await plugin.resetAllSettings();
+                                showNotice(strings.settings.items.resetAllSettings.notice);
+                            } catch (error) {
+                                console.error('Failed to reset all settings', error);
+                                showNotice(strings.settings.items.resetAllSettings.error, { variant: 'warning' });
+                            } finally {
+                                button.setDisabled(false);
+                            }
+                        },
+                        strings.settings.items.resetAllSettings.confirmButtonText
+                    ).open();
+                });
+            });
+    });
 
     let metadataCleanupButton: ButtonComponent | null = null;
     let metadataCleanupInfoText: HTMLDivElement | null = null;

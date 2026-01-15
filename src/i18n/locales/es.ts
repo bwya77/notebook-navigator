@@ -926,6 +926,17 @@ export const STRINGS_ES = {
                 buttonText: 'Restablecer separador',
                 notice: 'Posición del separador restablecida. Reinicia Obsidian o vuelve a abrir Notebook Navigator para aplicar.'
             },
+            resetAllSettings: {
+                name: 'Restablecer todos los ajustes',
+                desc: 'Restablece todos los ajustes de Notebook Navigator a los valores predeterminados.',
+                buttonText: 'Restablecer todos los ajustes',
+                confirmTitle: '¿Restablecer todos los ajustes?',
+                confirmMessage:
+                    'Esto restablecerá todos los ajustes de Notebook Navigator a sus valores predeterminados. No se puede deshacer.',
+                confirmButtonText: 'Restablecer todos los ajustes',
+                notice: 'Ajustes restablecidos. Reinicia Obsidian o vuelve a abrir Notebook Navigator para aplicar.',
+                error: 'Error al restablecer los ajustes.'
+            },
             multiSelectModifier: {
                 name: 'Modificador de selección múltiple (solo escritorio)',
                 desc: 'Elige qué tecla modificadora activa la selección múltiple. Cuando se selecciona Option/Alt, Cmd/Ctrl clic abre notas en una nueva pestaña.',

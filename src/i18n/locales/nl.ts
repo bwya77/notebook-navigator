@@ -927,6 +927,17 @@ export const STRINGS_NL = {
                 buttonText: 'Scheiding resetten',
                 notice: 'Scheidingspositie gereset. Herstart Obsidian of heropen Notebook Navigator om toe te passen.'
             },
+            resetAllSettings: {
+                name: 'Alle instellingen resetten',
+                desc: 'Alle Notebook Navigator-instellingen resetten naar standaardwaarden.',
+                buttonText: 'Alle instellingen resetten',
+                confirmTitle: 'Alle instellingen resetten?',
+                confirmMessage:
+                    'Dit zal alle Notebook Navigator-instellingen resetten naar standaardwaarden. Dit kan niet ongedaan worden gemaakt.',
+                confirmButtonText: 'Alle instellingen resetten',
+                notice: 'Alle instellingen gereset. Herstart Obsidian of heropen Notebook Navigator om toe te passen.',
+                error: 'Instellingen resetten mislukt.'
+            },
             multiSelectModifier: {
                 name: 'Meervoudige selectie modifier (alleen desktop)',
                 desc: 'Kies welke modificatortoets meervoudige selectie in-/uitschakelt. Wanneer Option/Alt is geselecteerd, opent Cmd/Ctrl klik notities in een nieuw tabblad.',

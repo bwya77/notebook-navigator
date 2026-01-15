@@ -1617,6 +1617,41 @@ export default class NotebookNavigatorPlugin extends Plugin implements ISettings
     }
 
     /**
+     * Resets all persisted settings and device-local preferences back to defaults.
+     * Clears plugin localStorage state (except IndexedDB version markers) and clears persisted settings so defaults apply.
+     */
+    public async resetAllSettings(): Promise<void> {
+        if (this.isUnloading) {
+            throw new Error('Plugin is unloading');
+        }
+
+        // Clear device-local storage first so subsequent loads seed fresh defaults.
+        this.clearAllLocalStorage();
+
+        // Clear persisted settings; loadSettings will repopulate from DEFAULT_SETTINGS.
+        await this.saveData({});
+        await this.loadSettings();
+
+        // Reset per-device preferences not handled by loadSettings.
+        this.dualPanePreference = true;
+        localStorage.set(this.keys.dualPaneKey, '1');
+        this.dualPaneOrientationPreference = 'horizontal';
+        localStorage.set(this.keys.dualPaneOrientationKey, this.dualPaneOrientationPreference);
+
+        this.uxPreferences = { ...DEFAULT_UX_PREFERENCES };
+        localStorage.set(this.keys.uxPreferencesKey, this.uxPreferences);
+        localStorage.set(STORAGE_KEYS.localStorageVersionKey, LOCALSTORAGE_VERSION);
+
+        if (this.settings.showRootFolder) {
+            localStorage.set(STORAGE_KEYS.expandedFoldersKey, ['/']);
+        }
+
+        this.initializeRecentDataManager();
+        this.onSettingsUpdate();
+        this.notifyUXPreferencesUpdate();
+    }
+
+    /**
      * Notifies all registered listeners that settings have changed
      */
     public notifySettingsUpdate(): void {

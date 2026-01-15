@@ -925,6 +925,16 @@ export const STRINGS_VI = {
                 buttonText: 'Đặt lại thanh phân cách',
                 notice: 'Đã đặt lại vị trí thanh phân cách. Khởi động lại Obsidian hoặc mở lại Notebook Navigator để áp dụng.'
             },
+            resetAllSettings: {
+                name: 'Đặt lại tất cả cài đặt',
+                desc: 'Đặt lại tất cả cài đặt Notebook Navigator về giá trị mặc định.',
+                buttonText: 'Đặt lại tất cả cài đặt',
+                confirmTitle: 'Đặt lại tất cả cài đặt?',
+                confirmMessage: 'Thao tác này sẽ đặt lại tất cả cài đặt Notebook Navigator về giá trị mặc định. Không thể hoàn tác.',
+                confirmButtonText: 'Đặt lại tất cả cài đặt',
+                notice: 'Đã đặt lại tất cả cài đặt. Khởi động lại Obsidian hoặc mở lại Notebook Navigator để áp dụng.',
+                error: 'Đặt lại cài đặt thất bại'
+            },
             multiSelectModifier: {
                 name: 'Phím bổ trợ chọn nhiều (chỉ máy tính)',
                 desc: 'Chọn phím bổ trợ để bật/tắt chọn nhiều. Khi chọn Option/Alt, nhấn Cmd/Ctrl mở ghi chú trong tab mới.',

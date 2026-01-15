@@ -925,6 +925,16 @@ export const STRINGS_TR = {
                 buttonText: 'Ayırıcıyı sıfırla',
                 notice: "Ayırıcı konumu sıfırlandı. Uygulamak için Obsidian'ı yeniden başlatın veya Notebook Navigator'ı yeniden açın."
             },
+            resetAllSettings: {
+                name: 'Tüm ayarları sıfırla',
+                desc: "Notebook Navigator'ın tüm ayarlarını varsayılan değerlere sıfırla.",
+                buttonText: 'Tüm ayarları sıfırla',
+                confirmTitle: 'Tüm ayarlar sıfırlansın mı?',
+                confirmMessage: "Bu, Notebook Navigator'ın tüm ayarlarını varsayılan değerlere sıfırlar. Geri alınamaz.",
+                confirmButtonText: 'Tüm ayarları sıfırla',
+                notice: "Tüm ayarlar sıfırlandı. Uygulamak için Obsidian'ı yeniden başlatın veya Notebook Navigator'ı yeniden açın.",
+                error: 'Ayarları sıfırlama başarısız.'
+            },
             multiSelectModifier: {
                 name: 'Çoklu seçim değiştirici (yalnızca masaüstü)',
                 desc: 'Hangi değiştirici tuşun çoklu seçimi değiştireceğini seçin. Option/Alt seçildiğinde, Cmd/Ctrl tıklaması notları yeni sekmede açar.',

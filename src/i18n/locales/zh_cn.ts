@@ -923,6 +923,16 @@ export const STRINGS_ZH_CN = {
                 buttonText: '重置分隔符',
                 notice: '分隔符位置已重置。重启 Obsidian 或重新打开 Notebook Navigator 以应用。'
             },
+            resetAllSettings: {
+                name: '重置所有设置',
+                desc: '将 Notebook Navigator 的所有设置重置为默认值。',
+                buttonText: '重置所有设置',
+                confirmTitle: '重置所有设置？',
+                confirmMessage: '这将把 Notebook Navigator 的所有设置重置为默认值。此操作无法撤销。',
+                confirmButtonText: '重置所有设置',
+                notice: '所有设置已重置。重启 Obsidian 或重新打开 Notebook Navigator 以应用。',
+                error: '重置设置失败。'
+            },
             multiSelectModifier: {
                 name: '多选修饰键（仅桌面端）',
                 desc: '选择哪个修饰键切换多选模式。选择 Option/Alt 时，Cmd/Ctrl 点击会在新标签页中打开笔记。',

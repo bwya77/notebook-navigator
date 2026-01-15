@@ -925,6 +925,16 @@ export const STRINGS_TH = {
                 buttonText: 'รีเซ็ตตัวคั่น',
                 notice: 'รีเซ็ตตำแหน่งตัวคั่นแล้ว รีสตาร์ท Obsidian หรือเปิด Notebook Navigator ใหม่เพื่อใช้งาน'
             },
+            resetAllSettings: {
+                name: 'รีเซ็ตการตั้งค่าทั้งหมด',
+                desc: 'รีเซ็ตการตั้งค่า Notebook Navigator ทั้งหมดเป็นค่าเริ่มต้น',
+                buttonText: 'รีเซ็ตการตั้งค่าทั้งหมด',
+                confirmTitle: 'รีเซ็ตการตั้งค่าทั้งหมด?',
+                confirmMessage: 'การดำเนินการนี้จะรีเซ็ตการตั้งค่า Notebook Navigator ทั้งหมดเป็นค่าเริ่มต้น ไม่สามารถยกเลิกได้',
+                confirmButtonText: 'รีเซ็ตการตั้งค่าทั้งหมด',
+                notice: 'รีเซ็ตการตั้งค่าทั้งหมดแล้ว รีสตาร์ท Obsidian หรือเปิด Notebook Navigator ใหม่เพื่อใช้งาน',
+                error: 'รีเซ็ตการตั้งค่าล้มเหลว'
+            },
             multiSelectModifier: {
                 name: 'ตัวปรับแต่งเลือกหลายรายการ (เดสก์ท็อปเท่านั้น)',
                 desc: 'เลือกปุ่มตัวปรับแต่งที่จะสลับการเลือกหลายรายการ เมื่อเลือก Option/Alt การคลิก Cmd/Ctrl จะเปิดโน้ตในแท็บใหม่',

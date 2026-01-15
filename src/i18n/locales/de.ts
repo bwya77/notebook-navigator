@@ -927,6 +927,17 @@ export const STRINGS_DE = {
                 buttonText: 'Trennelement zurücksetzen',
                 notice: 'Trennelementposition zurückgesetzt. Starten Sie Obsidian neu oder öffnen Sie Notebook Navigator erneut, um die Änderungen anzuwenden.'
             },
+            resetAllSettings: {
+                name: 'Alle Einstellungen zurücksetzen',
+                desc: 'Setzt alle Notebook Navigator-Einstellungen auf die Standardwerte zurück.',
+                buttonText: 'Alle Einstellungen zurücksetzen',
+                confirmTitle: 'Alle Einstellungen zurücksetzen?',
+                confirmMessage:
+                    'Dies setzt alle Notebook Navigator-Einstellungen auf ihre Standardwerte zurück. Dies kann nicht rückgängig gemacht werden.',
+                confirmButtonText: 'Alle Einstellungen zurücksetzen',
+                notice: 'Alle Einstellungen zurückgesetzt. Starten Sie Obsidian neu oder öffnen Sie Notebook Navigator erneut, um die Änderungen anzuwenden.',
+                error: 'Zurücksetzen der Einstellungen fehlgeschlagen.'
+            },
             multiSelectModifier: {
                 name: 'Mehrfachauswahl-Modifikator (nur Desktop)',
                 desc: 'Wählen Sie, welche Modifikatortaste die Mehrfachauswahl umschaltet. Wenn Option/Alt ausgewählt ist, öffnet Cmd/Strg-Klick Notizen in einem neuen Tab.',

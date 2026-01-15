@@ -925,6 +925,16 @@ export const STRINGS_EN = {
                 buttonText: 'Reset separator',
                 notice: 'Separator position reset. Restart Obsidian or reopen Notebook Navigator to apply.'
             },
+            resetAllSettings: {
+                name: 'Reset all settings',
+                desc: 'Reset all Notebook Navigator settings to default values.',
+                buttonText: 'Reset all settings',
+                confirmTitle: 'Reset all settings?',
+                confirmMessage: 'This will reset all Notebook Navigator settings to their default values. This cannot be undone.',
+                confirmButtonText: 'Reset all settings',
+                notice: 'All settings reset. Restart Obsidian or reopen Notebook Navigator to apply.',
+                error: 'Failed to reset settings.'
+            },
             multiSelectModifier: {
                 name: 'Multi-select modifier (desktop only)',
                 desc: 'Choose which modifier key toggles multi-selection. When Option/Alt is selected, Cmd/Ctrl click opens notes in a new tab.',

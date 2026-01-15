@@ -927,6 +927,17 @@ export const STRINGS_FR = {
                 buttonText: 'Réinitialiser le séparateur',
                 notice: 'Position du séparateur réinitialisée. Redémarrez Obsidian ou rouvrez Notebook Navigator pour appliquer.'
             },
+            resetAllSettings: {
+                name: 'Réinitialiser tous les paramètres',
+                desc: 'Réinitialise tous les paramètres de Notebook Navigator aux valeurs par défaut.',
+                buttonText: 'Réinitialiser tous les paramètres',
+                confirmTitle: 'Réinitialiser tous les paramètres ?',
+                confirmMessage:
+                    'Cela réinitialisera tous les paramètres de Notebook Navigator aux valeurs par défaut. Cette action est irréversible.',
+                confirmButtonText: 'Réinitialiser tous les paramètres',
+                notice: 'Tous les paramètres réinitialisés. Redémarrez Obsidian ou rouvrez Notebook Navigator pour appliquer.',
+                error: 'Échec de la réinitialisation des paramètres.'
+            },
             multiSelectModifier: {
                 name: 'Modificateur de sélection multiple (ordinateur uniquement)',
                 desc: 'Choisissez quelle touche modificatrice active la sélection multiple. Quand Option/Alt est sélectionné, Cmd/Ctrl clic ouvre les notes dans un nouvel onglet.',
