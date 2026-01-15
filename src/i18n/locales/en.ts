@@ -1265,6 +1265,10 @@ export const STRINGS_EN = {
                 desc: 'YAML frontmatter added to new folder notes. --- markers are added automatically.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Open folder notes in new tab',
+                desc: 'Always open folder notes in a new tab when clicking on a folder.'
+            },
             hideFolderNoteInList: {
                 name: 'Hide folder notes in list',
                 desc: "Hide the folder note from appearing in the folder's note list."

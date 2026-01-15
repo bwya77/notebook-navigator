@@ -1270,6 +1270,10 @@ export const STRINGS_PL = {
                 desc: 'YAML frontmatter dodawany do nowych notatek folderów. Znaczniki --- są dodawane automatycznie.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Otwórz notatki folderów w nowej karcie',
+                desc: 'Zawsze otwieraj notatki folderów w nowej karcie po kliknięciu na folder.'
+            },
             hideFolderNoteInList: {
                 name: 'Ukryj notatki folderów na liście',
                 desc: 'Ukryj notatkę folderu przed pojawieniem się na liście notatek folderu.'

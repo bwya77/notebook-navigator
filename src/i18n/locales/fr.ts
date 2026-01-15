@@ -1272,6 +1272,10 @@ export const STRINGS_FR = {
                 desc: 'En-tête YAML ajouté aux nouvelles notes de dossier. Les marqueurs --- sont ajoutés automatiquement.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Ouvrir les notes de dossier dans un nouvel onglet',
+                desc: 'Toujours ouvrir les notes de dossier dans un nouvel onglet lors du clic sur un dossier.'
+            },
             hideFolderNoteInList: {
                 name: 'Masquer les notes de dossier dans la liste',
                 desc: "Masquer la note de dossier pour qu'elle n'apparaisse pas dans la liste des notes du dossier."

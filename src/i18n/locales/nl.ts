@@ -1271,6 +1271,10 @@ export const STRINGS_NL = {
                 desc: 'YAML frontmatter toegevoegd aan nieuwe mapnotities. --- markers worden automatisch toegevoegd.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Mapnotities in nieuw tabblad openen',
+                desc: 'Mapnotities altijd in een nieuw tabblad openen bij het klikken op een map.'
+            },
             hideFolderNoteInList: {
                 name: 'Mapnotities in lijst verbergen',
                 desc: 'De mapnotitie verbergen in de notitielijst van de map.'

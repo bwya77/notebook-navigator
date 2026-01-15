@@ -1213,7 +1213,8 @@ export const NavigationPane = React.memo(
                 selectionDispatch({ type: 'SET_SELECTED_FOLDER', folder, autoSelectedFile: null });
 
                 const isCmdCtrlClick = Boolean(event && (event.metaKey || event.ctrlKey));
-                const shouldOpenInNewTab = !isMobile && settings.multiSelectModifier === 'optionAlt' && isCmdCtrlClick;
+                const shouldOpenInNewTab =
+                    settings.openFolderNotesInNewTab || (!isMobile && settings.multiSelectModifier === 'optionAlt' && isCmdCtrlClick);
 
                 runAsyncAction(() => openNavigationFolderNote({ folder, folderNote, openInNewTab: shouldOpenInNewTab }));
             },

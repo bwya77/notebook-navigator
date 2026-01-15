@@ -1269,6 +1269,10 @@ export const STRINGS_DE = {
                 desc: 'YAML-Frontmatter, das neuen Ordnernotizen hinzugefügt wird. --- Markierungen werden automatisch hinzugefügt.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Ordnernotizen in neuem Tab öffnen',
+                desc: 'Ordnernotizen beim Klicken auf einen Ordner immer in einem neuen Tab öffnen.'
+            },
             hideFolderNoteInList: {
                 name: 'Ordnernotizen in Liste ausblenden',
                 desc: 'Die Ordnernotiz in der Notizliste des Ordners ausblenden.'

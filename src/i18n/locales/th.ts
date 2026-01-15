@@ -1267,6 +1267,10 @@ export const STRINGS_TH = {
                 desc: 'YAML frontmatter ที่เพิ่มในโน้ตโฟลเดอร์ใหม่ เครื่องหมาย --- จะถูกเพิ่มโดยอัตโนมัติ',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'เปิดโน้ตโฟลเดอร์ในแท็บใหม่',
+                desc: 'เปิดโน้ตโฟลเดอร์ในแท็บใหม่เสมอเมื่อคลิกที่โฟลเดอร์'
+            },
             hideFolderNoteInList: {
                 name: 'ซ่อนโน้ตโฟลเดอร์ในรายการ',
                 desc: 'ซ่อนโน้ตโฟลเดอร์ไม่ให้ปรากฏในรายการโน้ตของโฟลเดอร์'

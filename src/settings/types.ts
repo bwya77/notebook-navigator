@@ -183,6 +183,7 @@ export interface NotebookNavigatorSettings {
     folderNoteType: FolderNoteCreationPreference;
     folderNoteName: string;
     folderNoteProperties: string;
+    openFolderNotesInNewTab: boolean;
     hideFolderNoteInList: boolean;
     pinCreatedFolderNote: boolean;
     showTags: boolean;

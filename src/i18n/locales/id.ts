@@ -1268,6 +1268,10 @@ export const STRINGS_ID = {
                 desc: 'Frontmatter YAML ditambahkan ke catatan folder baru. Penanda --- ditambahkan secara otomatis.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Buka catatan folder di tab baru',
+                desc: 'Selalu buka catatan folder di tab baru saat mengklik folder.'
+            },
             hideFolderNoteInList: {
                 name: 'Sembunyikan catatan folder di daftar',
                 desc: 'Sembunyikan catatan folder dari muncul di daftar catatan folder.'

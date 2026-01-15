@@ -1269,6 +1269,10 @@ export const STRINGS_RU = {
                 desc: 'YAML frontmatter, добавляемый к новым заметкам папок. Маркеры --- добавляются автоматически.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Открывать заметки папок в новой вкладке',
+                desc: 'Всегда открывать заметки папок в новой вкладке при нажатии на папку.'
+            },
             hideFolderNoteInList: {
                 name: 'Скрывать заметку папки в списке',
                 desc: 'Скрывать заметку папки в списке заметок папки.'

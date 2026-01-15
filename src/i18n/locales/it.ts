@@ -1269,6 +1269,10 @@ export const STRINGS_IT = {
                 desc: 'YAML frontmatter aggiunto alle nuove note cartella. I marcatori --- sono aggiunti automaticamente.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Apri note cartella in nuova scheda',
+                desc: 'Apri sempre le note cartella in una nuova scheda quando clicchi su una cartella.'
+            },
             hideFolderNoteInList: {
                 name: 'Nascondi note cartella nella lista',
                 desc: "Nascondi la nota cartella dall'apparire nell'elenco note della cartella."

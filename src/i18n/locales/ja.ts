@@ -1270,6 +1270,10 @@ export const STRINGS_JA = {
                 desc: '新しいフォルダノートに追加されるYAMLフロントマター。--- マーカーは自動的に追加されます。',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'フォルダノートを新しいタブで開く',
+                desc: 'フォルダをクリックしたとき、フォルダノートを常に新しいタブで開きます。'
+            },
             hideFolderNoteInList: {
                 name: 'リストでフォルダノートを非表示',
                 desc: 'フォルダのノートリストにフォルダノートが表示されないようにします。'

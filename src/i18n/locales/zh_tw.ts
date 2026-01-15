@@ -1265,6 +1265,10 @@ export const STRINGS_ZH_TW = {
                 desc: '新增到新資料夾筆記的 YAML 前置內容。--- 標記會自動新增。',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: '在新分頁中開啟資料夾筆記',
+                desc: '點擊資料夾時始終在新分頁中開啟資料夾筆記。'
+            },
             hideFolderNoteInList: {
                 name: '在列表中隱藏資料夾筆記',
                 desc: '隱藏資料夾筆記，使其不出現在資料夾的筆記列表中。'

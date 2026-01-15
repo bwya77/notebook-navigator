@@ -87,6 +87,7 @@ const RELEASE_NOTES: ReleaseNote[] = [
             'New setting: ==Notes > Feature image > Exclude notes with properties==. You can now exclude notes with certain frontmatter properties from showing feature images.',
             'New setting: ==General > Filtering > Hide files with tags (vault profile)==. You can now hide files with certain tags in the list pane. This makes it super easy to hide certain files by just dragging them to a tag.',
             'New setting: ==Advanced > Reset all settings==. Use this to reset all plugin settings to default values.',
+            'New setting: ==Folders & tags > Open folder notes in new tab==. Enable to always open folder notes in a new tab instead of the current tab.',
             'Two new menu commands: Navigate to folder and Navigate to tag. Access them from the root folder or root tag folder context menu.'
         ],
         improved: [

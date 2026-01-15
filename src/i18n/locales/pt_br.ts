@@ -1266,6 +1266,10 @@ export const STRINGS_PT_BR = {
                 desc: 'Frontmatter YAML adicionado a novas notas de pasta. Os marcadores --- são adicionados automaticamente.',
                 placeholder: 'tema: escuro\nnotapasta: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Abrir notas de pasta em nova aba',
+                desc: 'Sempre abrir notas de pasta em uma nova aba ao clicar em uma pasta.'
+            },
             hideFolderNoteInList: {
                 name: 'Ocultar notas de pasta na lista',
                 desc: 'Ocultar a nota de pasta de aparecer na lista de notas da pasta.'

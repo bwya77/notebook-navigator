@@ -1266,6 +1266,10 @@ export const STRINGS_ZH_CN = {
                 desc: '添加到新文件夹笔记的YAML前置内容。--- 标记会自动添加。',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: '在新标签页中打开文件夹笔记',
+                desc: '点击文件夹时始终在新标签页中打开文件夹笔记。'
+            },
             hideFolderNoteInList: {
                 name: '在列表中隐藏文件夹笔记',
                 desc: '隐藏文件夹笔记，使其不出现在文件夹的笔记列表中。'

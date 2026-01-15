@@ -1267,6 +1267,10 @@ export const STRINGS_TR = {
                 desc: 'Yeni klasör notlarına eklenen YAML frontmatter. --- işaretleri otomatik olarak eklenir.',
                 placeholder: 'tema: koyu\nklasörnotu: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Klasör notlarını yeni sekmede aç',
+                desc: 'Bir klasöre tıklandığında klasör notlarını her zaman yeni sekmede aç.'
+            },
             hideFolderNoteInList: {
                 name: 'Listede klasör notunu gizle',
                 desc: 'Klasör notunun klasörün not listesinde görünmesini engelle.'

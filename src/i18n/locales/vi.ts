@@ -1267,6 +1267,10 @@ export const STRINGS_VI = {
                 desc: 'YAML frontmatter thêm vào ghi chú thư mục mới. Dấu --- được thêm tự động.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Mở ghi chú thư mục trong tab mới',
+                desc: 'Luôn mở ghi chú thư mục trong tab mới khi nhấp vào thư mục.'
+            },
             hideFolderNoteInList: {
                 name: 'Ẩn ghi chú thư mục trong danh sách',
                 desc: 'Ẩn ghi chú thư mục không xuất hiện trong danh sách ghi chú của thư mục.'

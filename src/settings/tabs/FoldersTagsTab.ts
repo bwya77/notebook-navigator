@@ -191,6 +191,16 @@ export function renderFoldersTagsTab(context: SettingsTabContext): void {
     folderNotePropertiesSetting.controlEl.addClass('nn-setting-wide-input');
 
     new Setting(folderNotesSettingsEl)
+        .setName(strings.settings.items.openFolderNotesInNewTab.name)
+        .setDesc(strings.settings.items.openFolderNotesInNewTab.desc)
+        .addToggle(toggle =>
+            toggle.setValue(plugin.settings.openFolderNotesInNewTab).onChange(async value => {
+                plugin.settings.openFolderNotesInNewTab = value;
+                await plugin.saveSettingsAndUpdate();
+            })
+        );
+
+    new Setting(folderNotesSettingsEl)
         .setName(strings.settings.items.hideFolderNoteInList.name)
         .setDesc(strings.settings.items.hideFolderNoteInList.desc)
         .addToggle(toggle =>

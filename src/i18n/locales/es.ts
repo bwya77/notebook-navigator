@@ -1270,6 +1270,10 @@ export const STRINGS_ES = {
                 desc: 'Frontmatter YAML agregado a las nuevas notas de carpeta. Los marcadores --- se agregan automáticamente.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: 'Abrir notas de carpeta en nueva pestaña',
+                desc: 'Abrir siempre las notas de carpeta en una nueva pestaña al hacer clic en una carpeta.'
+            },
             hideFolderNoteInList: {
                 name: 'Ocultar notas de carpeta en la lista',
                 desc: 'Ocultar la nota de carpeta para que no aparezca en la lista de notas de la carpeta.'

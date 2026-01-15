@@ -1267,6 +1267,10 @@ export const STRINGS_KO = {
                 desc: '새 폴더 노트에 추가되는 YAML 전문. --- 마커는 자동으로 추가됩니다.',
                 placeholder: 'theme: dark\nfoldernote: true'
             },
+            openFolderNotesInNewTab: {
+                name: '폴더 노트를 새 탭에서 열기',
+                desc: '폴더를 클릭할 때 항상 폴더 노트를 새 탭에서 엽니다.'
+            },
             hideFolderNoteInList: {
                 name: '목록에서 폴더 노트 숨기기',
                 desc: '폴더 노트가 폴더의 노트 목록에 나타나지 않도록 숨깁니다.'
