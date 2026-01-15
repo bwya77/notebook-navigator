@@ -12,7 +12,7 @@
     height: 100%;
     padding: 40px 20px;
     text-align: center;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: 14px;
 }
 

@@ -14,7 +14,7 @@
 /* Statistics text styling */
 .nn-stats-text {
     font-size: var(--font-ui-smaller);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     text-align: center;
     line-height: 1.5;
 }

@@ -70,7 +70,7 @@
 
 /* Disabled icon svg stroke color */
 .nn-icon-button:disabled svg {
-    stroke: var(--nn-theme-header-button-disabled-icon-color);
+    stroke: currentColor;
 }
 
 /* Disabled hover state - no hover effect when disabled */
@@ -81,14 +81,14 @@
 
 /* Disabled icon color - maintains muted appearance */
 .nn-desktop .nn-icon-button:disabled:hover svg {
-    stroke: var(--nn-theme-header-button-disabled-icon-color);
+    stroke: currentColor;
 }
 
 /* Icon styling - consistent size and appearance for all button icons */
 .nn-icon-button svg {
     width: 16px;
     height: 16px;
-    stroke: var(--nn-theme-header-button-icon-color);
+    stroke: currentColor;
     stroke-width: 2;
     fill: none;
 }

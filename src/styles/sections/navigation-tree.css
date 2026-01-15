@@ -411,6 +411,7 @@
 }
 
 .nn-drag-handle-disabled {
+    color: var(--nn-theme-header-button-disabled-icon-color);
     opacity: 0.4;
     cursor: default;
 }
@@ -459,7 +460,7 @@
 
 .nn-root-reorder-hint {
     font-size: var(--nn-root-reorder-hint-font-size);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     line-height: 1.25;
 }
 
@@ -494,7 +495,7 @@
 
 .nn-root-reorder-item--missing .nn-shortcut-label {
     text-decoration: line-through;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
 }
 
 .nn-root-reorder-actions {
@@ -561,11 +562,17 @@
 }
 
 .nn-root-reorder-section-button:disabled {
+    color: var(--nn-theme-header-button-disabled-icon-color);
     opacity: 0.4;
     cursor: not-allowed;
 }
 
 .nn-shortcut-disabled {
+    --nn-theme-navitem-chevron-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-icon-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-name-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-file-name-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-count-color: var(--nn-theme-foreground);
     opacity: 0.5;
     pointer-events: none;
 }

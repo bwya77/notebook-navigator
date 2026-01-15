@@ -102,7 +102,7 @@
 .nn-toolbar-visibility-group-label {
     font-size: var(--font-ui-small);
     font-weight: var(--font-semibold);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
 }
 
 .nn-toolbar-visibility-grid {
@@ -156,7 +156,7 @@
     justify-content: center;
     width: 18px;
     height: 18px;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
 }
 
 .nn-toolbar-visibility-icon svg {
@@ -256,7 +256,7 @@
 .nn-slider-value {
     margin-left: 12px;
     font-size: var(--font-ui-smaller);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     min-width: 48px;
     text-align: right;
     font-variant-numeric: tabular-nums;

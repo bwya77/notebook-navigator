@@ -47,7 +47,7 @@
     position: absolute;
     top: 8px;
     cursor: pointer;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     display: inline-flex;
     align-items: center;
     justify-content: center;

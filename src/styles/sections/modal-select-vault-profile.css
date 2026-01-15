@@ -26,7 +26,7 @@
     padding: var(--size-2-3) var(--size-4-2);
     border-radius: var(--radius-m);
     background-color: transparent;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     cursor: pointer;
     transition: background-color 120ms ease;
 }
@@ -57,14 +57,14 @@
 
 .nn-select-profile-item-badge {
     font-size: var(--font-ui-small);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-weight: var(--font-semibold);
 }
 
 .nn-select-profile-empty {
     margin: 0;
     padding: var(--size-4-4) 0;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: var(--font-ui-small);
     text-align: center;
 }

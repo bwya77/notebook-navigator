@@ -91,7 +91,7 @@
     margin: 0;
     font-size: 0.95em;
     font-weight: 600;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
 }
 
 .is-mobile .modal.nn-ux-icon-map-modal .nn-ux-icon-map-group-heading {

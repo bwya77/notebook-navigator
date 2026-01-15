@@ -9,7 +9,7 @@
     height: 32px;
     padding: 0;
     background-color: transparent;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     border: 1px solid var(--background-modifier-border);
     border-radius: var(--radius-s);
     display: flex;
@@ -21,13 +21,18 @@
 
 .nn-action-btn:hover:not(:disabled):not(.mod-warning) {
     background: var(--background-modifier-hover);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     border-color: var(--background-modifier-border-hover);
 }
 
 .nn-action-btn:disabled {
+    color: var(--nn-theme-foreground);
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+.nn-action-btn.mod-warning:disabled {
+    color: var(--text-error);
 }
 
 .nn-action-btn.mod-warning {

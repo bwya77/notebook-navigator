@@ -142,6 +142,11 @@ body {
        Notebook Navigator Theme Variables
        ======================================================================== */
 
+    /* -- Theme Foreground -- */
+    --nn-theme-foreground: var(--text-normal);
+    --nn-theme-foreground-muted: color-mix(in srgb, var(--nn-theme-foreground) 70%, transparent);
+    --nn-theme-foreground-faded: color-mix(in srgb, var(--nn-theme-foreground) 50%, transparent);
+
     /* -- Pane Overlay Stacks -- */
     /* Overlay stacks (header/search/title) rendered above scrolling content */
     --nn-theme-pane-overlay-opacity: 87;
@@ -149,7 +154,7 @@ body {
 
     /* -- Navigation Pane -- */
     --nn-theme-nav-bg: var(--background-secondary);
-    --nn-theme-nav-separator-color: var(--text-muted);
+    --nn-theme-nav-separator-color: var(--nn-theme-foreground);
     --nn-theme-nav-separator-background: linear-gradient(
         90deg,
         transparent 0%,
@@ -162,10 +167,10 @@ body {
     --nn-theme-pinned-shortcut-shadow-color: rgba(0, 0, 0, 0.03);
 
     /* -- Navigation Calendar -- */
-    --nn-theme-nav-calendar-header-color: var(--text-normal);
-    --nn-theme-nav-calendar-week-label-color: var(--text-muted);
-    --nn-theme-nav-calendar-day-in-month-color: var(--text-normal);
-    --nn-theme-nav-calendar-day-outside-month-color: var(--text-muted);
+    --nn-theme-nav-calendar-header-color: var(--nn-theme-foreground);
+    --nn-theme-nav-calendar-week-label-color: var(--nn-theme-foreground-muted);
+    --nn-theme-nav-calendar-day-in-month-color: var(--nn-theme-foreground);
+    --nn-theme-nav-calendar-day-outside-month-color: var(--nn-theme-foreground-muted);
     --nn-theme-nav-calendar-hover-bg: var(--background-modifier-hover);
     --nn-theme-nav-calendar-day-has-note-color: white;
     --nn-theme-nav-calendar-day-has-note-bg: var(--text-selection);
@@ -174,11 +179,11 @@ body {
     --nn-theme-nav-calendar-day-today-bg: var(--color-red);
 
     /* -- Folder & Tag Items -- */
-    --nn-theme-navitem-chevron-color: var(--text-muted);
-    --nn-theme-navitem-icon-color: var(--text-muted);
-    --nn-theme-navitem-name-color: var(--text-normal);
+    --nn-theme-navitem-chevron-color: var(--nn-theme-foreground-muted);
+    --nn-theme-navitem-icon-color: var(--nn-theme-foreground-muted);
+    --nn-theme-navitem-name-color: var(--nn-theme-foreground);
     --nn-theme-navitem-file-name-color: var(--nn-theme-navitem-name-color);
-    --nn-theme-navitem-count-color: var(--text-muted);
+    --nn-theme-navitem-count-color: var(--nn-theme-foreground-muted);
     --nn-theme-navitem-count-bg: transparent;
     --nn-theme-navitem-count-border-radius: 8px;
     --nn-theme-navitem-border-radius: 4px;
@@ -214,26 +219,27 @@ body {
 
     /* -- List Pane (Files) -- */
     --nn-theme-list-bg: var(--background-primary);
-    --nn-theme-list-header-icon-color: var(--text-muted);
-    --nn-theme-list-header-breadcrumb-color: var(--text-muted);
+    --nn-theme-list-header-icon-color: var(--nn-theme-foreground-muted);
+    --nn-theme-list-header-breadcrumb-color: var(--nn-theme-foreground-muted);
     --nn-theme-list-header-breadcrumb-font-weight: 600;
     --nn-theme-list-search-active-bg: var(--text-highlight-bg);
     --nn-theme-list-search-border-color: var(--background-modifier-border);
-    --nn-theme-list-heading-color: var(--text-muted);
+    --nn-theme-list-heading-color: var(--nn-theme-foreground-muted);
     --nn-theme-list-heading-font-weight: 600;
-    --nn-theme-list-group-header-color: var(--text-muted);
+    --nn-theme-list-group-header-color: var(--nn-theme-foreground-muted);
     --nn-theme-list-separator-color: var(--background-modifier-border);
 
     /* -- File Items -- */
-    --nn-theme-file-name-color: var(--text-normal);
-    --nn-theme-file-preview-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
+    --nn-theme-file-name-color: var(--nn-theme-foreground);
+    --nn-theme-file-preview-color: var(--nn-theme-foreground-muted);
     --nn-theme-file-feature-border-radius: 4px;
-    --nn-theme-file-date-color: color-mix(in srgb, var(--text-normal) 50%, transparent);
-    --nn-theme-file-parent-color: color-mix(in srgb, var(--text-normal) 50%, transparent);
-    --nn-theme-file-tag-color: color-mix(in srgb, var(--text-normal) 50%, transparent);
+    --nn-theme-file-date-color: var(--nn-theme-foreground-faded);
+    --nn-theme-file-parent-color: var(--nn-theme-foreground-faded);
+    --nn-theme-file-tag-color: var(--nn-theme-foreground-faded);
+    --nn-file-pill-border-color: color-mix(in srgb, var(--nn-theme-foreground) 30%, transparent);
     --nn-theme-file-tag-custom-color-text-color: var(--nn-theme-navitem-name-color);
     --nn-theme-file-tag-bg: transparent;
-    --nn-theme-file-custom-property-color: color-mix(in srgb, var(--text-normal) 50%, transparent);
+    --nn-theme-file-custom-property-color: var(--nn-theme-foreground-faded);
     --nn-theme-file-custom-property-bg: transparent;
     --nn-theme-file-tag-border-radius: 10px;
     --nn-theme-file-custom-property-border-radius: 10px;
@@ -241,11 +247,11 @@ body {
     --nn-theme-file-selected-bg: var(--text-selection);
     --nn-theme-file-selected-name-color: var(--nn-theme-file-name-color);
     --nn-theme-file-selected-preview-color: var(--nn-theme-file-preview-color);
-    --nn-theme-file-selected-date-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
-    --nn-theme-file-selected-parent-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
-    --nn-theme-file-selected-tag-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
+    --nn-theme-file-selected-date-color: var(--nn-theme-foreground-muted);
+    --nn-theme-file-selected-parent-color: var(--nn-theme-foreground-muted);
+    --nn-theme-file-selected-tag-color: var(--nn-theme-foreground-muted);
     --nn-theme-file-selected-tag-bg: var(--nn-theme-file-tag-bg);
-    --nn-theme-file-selected-custom-property-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
+    --nn-theme-file-selected-custom-property-color: var(--nn-theme-foreground-muted);
     --nn-theme-file-selected-custom-property-bg: var(--nn-theme-file-custom-property-bg);
     --nn-theme-file-selected-inactive-bg: var(--background-modifier-hover);
     --nn-theme-file-selected-inactive-name-color: var(--nn-theme-file-selected-name-color);
@@ -270,21 +276,21 @@ body {
     --nn-theme-quick-actions-bg: color-mix(in srgb, var(--background-primary) 95%, transparent);
     --nn-theme-quick-actions-border: var(--background-modifier-border);
     --nn-theme-quick-actions-border-radius: 4px;
-    --nn-theme-quick-actions-icon-color: var(--text-muted);
-    --nn-theme-quick-actions-icon-hover-color: var(--text-normal);
+    --nn-theme-quick-actions-icon-color: var(--nn-theme-foreground-muted);
+    --nn-theme-quick-actions-icon-hover-color: var(--nn-theme-foreground);
     --nn-theme-quick-actions-separator-color: var(--background-modifier-border);
 
     /* -- Header Buttons -- */
-    --nn-theme-header-button-icon-color: var(--text-muted);
+    --nn-theme-header-button-icon-color: var(--nn-theme-foreground-muted);
     --nn-theme-header-button-hover-bg: var(--background-modifier-hover);
     --nn-theme-header-button-active-bg: var(--background-modifier-hover);
-    --nn-theme-header-button-active-icon-color: var(--text-normal);
-    --nn-theme-header-button-disabled-icon-color: var(--text-muted);
+    --nn-theme-header-button-active-icon-color: var(--nn-theme-foreground);
+    --nn-theme-header-button-disabled-icon-color: var(--nn-theme-foreground-muted);
 
     /* -- Mobile Styles -- */
     --nn-theme-mobile-bg: var(--mobile-sidebar-background);
     --nn-theme-mobile-list-header-link-color: var(--link-color);
-    --nn-theme-mobile-list-header-breadcrumb-color: var(--text-normal);
+    --nn-theme-mobile-list-header-breadcrumb-color: var(--nn-theme-foreground);
     --nn-theme-mobile-list-header-breadcrumb-font-weight: 600;
     --nn-theme-mobile-toolbar-bg: var(--background-secondary);
     --nn-theme-mobile-toolbar-button-icon-color: var(--link-color);

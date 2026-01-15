@@ -1,11 +1,12 @@
 # Notebook Navigator Theming Guide
 
-Updated: January 11, 2026
+Updated: January 15, 2026
 
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [CSS Variables Reference](#css-variables-reference)
+  - [Theme foreground](#theme-foreground)
   - [Pane overlay stacks](#pane-overlay-stacks)
   - [Navigation pane](#navigation-pane)
   - [Pane divider](#pane-divider-desktop-only)
@@ -23,11 +24,19 @@ Updated: January 11, 2026
 This guide helps you add Notebook Navigator support to your Obsidian theme. Simply define these CSS variables in your
 theme to customize how Notebook Navigator looks.
 
-**Note for users:** If you just want to change colors, install the Style Settings plugin - no coding needed!
+**Note for users:** Install the Style Settings plugin. It changes colors without editing CSS.
 
 ## CSS Variables Reference
 
 The theming variables use the `--nn-theme-` prefix and should be defined at the `body` level.
+
+### Theme foreground
+
+| Variable                      | Default                                                             | Description              |
+| ----------------------------- | ------------------------------------------------------------------- | ------------------------ |
+| `--nn-theme-foreground`       | `var(--text-normal)`                                                | Base foreground color    |
+| `--nn-theme-foreground-muted` | `color-mix(in srgb, var(--nn-theme-foreground) 70%, transparent)`   | Muted foreground color   |
+| `--nn-theme-foreground-faded` | `color-mix(in srgb, var(--nn-theme-foreground) 50%, transparent)`   | Faded foreground color   |
 
 ### Pane overlay stacks
 
@@ -41,7 +50,7 @@ The theming variables use the `--nn-theme-` prefix and should be defined at the 
 | Variable                              | Default                                                                                                                                      | Description                                                                         |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | `--nn-theme-nav-bg`                   | `var(--background-secondary)`                                                                                                                | Navigation pane background (desktop only, see mobile styles)                        |
-| `--nn-theme-nav-separator-color`      | `var(--text-muted)`                                                                                                                          | Separator line color inside navigation spacers                                      |
+| `--nn-theme-nav-separator-color`      | `var(--nn-theme-foreground)`                                                                                                                 | Separator line color inside navigation spacers                                      |
 | `--nn-theme-nav-separator-background` | `linear-gradient(90deg, transparent 0%, var(--nn-theme-nav-separator-color) 15%, var(--nn-theme-nav-separator-color) 85%, transparent 100%)` | Fill for navigation separators; override to supply your own gradient or solid color |
 | `--nn-theme-nav-separator-height`     | `1px`                                                                                                                                        | Thickness for navigation separators                                                 |
 | `--nn-theme-nav-separator-opacity`    | `0.3`                                                                                                                                        | Opacity for navigation separators                                                   |
@@ -50,10 +59,10 @@ The theming variables use the `--nn-theme-` prefix and should be defined at the 
 
 | Variable                                        | Default                         | Description                                             |
 | ----------------------------------------------- | ------------------------------- | ------------------------------------------------------- |
-| `--nn-theme-nav-calendar-header-color`          | `var(--text-normal)`            | Text color for month/year and header buttons            |
-| `--nn-theme-nav-calendar-week-label-color`      | `var(--text-muted)`             | Text color for weekday labels and week numbers          |
-| `--nn-theme-nav-calendar-day-in-month-color`    | `var(--text-normal)`            | Text color for days within the current month            |
-| `--nn-theme-nav-calendar-day-outside-month-color` | `var(--text-muted)`           | Text color for days outside the current month           |
+| `--nn-theme-nav-calendar-header-color`          | `var(--nn-theme-foreground)`          | Text color for month/year and header buttons            |
+| `--nn-theme-nav-calendar-week-label-color`      | `var(--nn-theme-foreground-muted)`    | Text color for weekday labels and week numbers          |
+| `--nn-theme-nav-calendar-day-in-month-color`    | `var(--nn-theme-foreground)`          | Text color for days within the current month            |
+| `--nn-theme-nav-calendar-day-outside-month-color` | `var(--nn-theme-foreground-muted)`  | Text color for days outside the current month           |
 | `--nn-theme-nav-calendar-hover-bg`              | `var(--background-modifier-hover)` | Hover background for calendar buttons and days          |
 | `--nn-theme-nav-calendar-day-has-note-color`    | `white`                         | Text color for dates with a daily note                  |
 | `--nn-theme-nav-calendar-day-has-note-bg`       | `var(--text-selection)`         | Background color for dates with a daily note            |
@@ -71,11 +80,11 @@ The theming variables use the `--nn-theme-` prefix and should be defined at the 
 
 | Variable                                             | Default                                          | Description                                                         |
 | ---------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------- |
-| `--nn-theme-navitem-chevron-color`                   | `var(--text-muted)`                              | Color for expand/collapse arrows                                    |
-| `--nn-theme-navitem-icon-color`                      | `var(--text-muted)`                              | Icon color for folders and tags                                     |
-| `--nn-theme-navitem-name-color`                      | `var(--text-normal)`                             | Text color for folder and tag names                                 |
+| `--nn-theme-navitem-chevron-color`                   | `var(--nn-theme-foreground-muted)`               | Color for expand/collapse arrows                                    |
+| `--nn-theme-navitem-icon-color`                      | `var(--nn-theme-foreground-muted)`               | Icon color for folders and tags                                     |
+| `--nn-theme-navitem-name-color`                      | `var(--nn-theme-foreground)`                     | Text color for folder and tag names                                 |
 | `--nn-theme-navitem-file-name-color`                 | `var(--nn-theme-navitem-name-color)`             | Text color for note shortcuts and recent files                      |
-| `--nn-theme-navitem-count-color`                     | `var(--text-muted)`                              | Text color for file count badges                                    |
+| `--nn-theme-navitem-count-color`                     | `var(--nn-theme-foreground-muted)`               | Text color for file count badges                                    |
 | `--nn-theme-navitem-count-bg`                        | `transparent`                                    | Background color for file count badges                              |
 | `--nn-theme-navitem-count-border-radius`             | `8px`                                            | Corner radius for file count badges (0-8px)                         |
 | `--nn-theme-navitem-border-radius`                   | `4px`                                            | Corner radius for folder and tag items (0-14px)                     |
@@ -123,27 +132,27 @@ Priority order: folder note styles override custom color styles, which override 
 | Variable                                  | Default                             | Description                                                                        |
 | ----------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------- |
 | `--nn-theme-list-bg`                      | `var(--background-primary)`         | Background color of the list pane (desktop only, see mobile styles)                |
-| `--nn-theme-list-header-icon-color`       | `var(--text-muted)`                 | Folder/tag icon color shown beside the breadcrumb in the desktop header            |
-| `--nn-theme-list-header-breadcrumb-color` | `var(--text-muted)`                 | Text color for the breadcrumb path in the desktop header                           |
+| `--nn-theme-list-header-icon-color`       | `var(--nn-theme-foreground-muted)`  | Folder/tag icon color shown beside the breadcrumb in the desktop header            |
+| `--nn-theme-list-header-breadcrumb-color` | `var(--nn-theme-foreground-muted)`  | Text color for the breadcrumb path in the desktop header                           |
 | `--nn-theme-list-search-active-bg`        | `var(--text-highlight-bg)`          | Background color for the search field when a search query is active (desktop only) |
 | `--nn-theme-list-search-border-color`     | `var(--background-modifier-border)` | Border and focus ring color for the search field (desktop only)                    |
-| `--nn-theme-list-heading-color`           | `var(--text-muted)`                 | Text color for the list pane overlay heading                                       |
-| `--nn-theme-list-group-header-color`      | `var(--text-muted)`                 | Text color for date groups and pinned section                                      |
+| `--nn-theme-list-heading-color`           | `var(--nn-theme-foreground-muted)`  | Text color for the list pane overlay heading                                       |
+| `--nn-theme-list-group-header-color`      | `var(--nn-theme-foreground-muted)`  | Text color for date groups and pinned section                                      |
 | `--nn-theme-list-separator-color`         | `var(--background-modifier-border)` | Divider line color between files                                                   |
 
 #### File items
 
 | Variable                                          | Default                                       | Description                                                     |
 | ------------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------- |
-| `--nn-theme-file-name-color`                      | `var(--text-normal)`                          | Text color for file names                                       |
-| `--nn-theme-file-preview-color`                   | `color-mix(in srgb, var(--text-normal) 75%, transparent)` | Text color for content preview                                  |
+| `--nn-theme-file-name-color`                      | `var(--nn-theme-foreground)`                  | Text color for file names                                       |
+| `--nn-theme-file-preview-color`                   | `var(--nn-theme-foreground-muted)`            | Text color for content preview                                  |
 | `--nn-theme-file-feature-border-radius`           | `4px`                                         | Corner radius for feature images (0-32px)                       |
-| `--nn-theme-file-date-color`                      | `color-mix(in srgb, var(--text-normal) 50%, transparent)` | Text color for creation or modification dates                   |
-| `--nn-theme-file-parent-color`                    | `color-mix(in srgb, var(--text-normal) 50%, transparent)` | Text color for parent folder path (when showing subfolders)     |
-| `--nn-theme-file-tag-color`                       | `color-mix(in srgb, var(--text-normal) 50%, transparent)` | Text color for tag pills without custom colors                  |
+| `--nn-theme-file-date-color`                      | `var(--nn-theme-foreground-faded)`            | Text color for creation or modification dates                   |
+| `--nn-theme-file-parent-color`                    | `var(--nn-theme-foreground-faded)`            | Text color for parent folder path (when showing subfolders)     |
+| `--nn-theme-file-tag-color`                       | `var(--nn-theme-foreground-faded)`            | Text color for tag pills without custom colors                  |
 | `--nn-theme-file-tag-custom-color-text-color`     | `var(--nn-theme-navitem-name-color)`          | Text color for tags with custom backgrounds but no custom color |
 | `--nn-theme-file-tag-bg`                          | `transparent`                                 | Background color for tag pills without custom backgrounds       |
-| `--nn-theme-file-custom-property-color`           | `color-mix(in srgb, var(--text-normal) 50%, transparent)` | Text color for custom property pill                             |
+| `--nn-theme-file-custom-property-color`           | `var(--nn-theme-foreground-faded)`            | Text color for custom property pill                             |
 | `--nn-theme-file-custom-property-bg`              | `transparent`                                 | Background color for custom property pill                       |
 | `--nn-theme-file-tag-border-radius`               | `10px`                                        | Corner radius for tag pills (0-10px)                            |
 | `--nn-theme-file-custom-property-border-radius`   | `10px`                                        | Corner radius for custom property pills (0-10px)                |
@@ -151,11 +160,11 @@ Priority order: folder note styles override custom color styles, which override 
 | `--nn-theme-file-selected-bg`                     | `var(--text-selection)`                       | Selected file background color                                  |
 | `--nn-theme-file-selected-name-color`             | `var(--nn-theme-file-name-color)`             | Text color for file names when selected                         |
 | `--nn-theme-file-selected-preview-color`          | `var(--nn-theme-file-preview-color)`          | Text color for content preview when selected                    |
-| `--nn-theme-file-selected-date-color`             | `color-mix(in srgb, var(--text-normal) 75%, transparent)` | Text color for file dates when selected                         |
-| `--nn-theme-file-selected-parent-color`           | `color-mix(in srgb, var(--text-normal) 75%, transparent)` | Text color for parent folder path when selected                 |
-| `--nn-theme-file-selected-tag-color`              | `color-mix(in srgb, var(--text-normal) 75%, transparent)` | Text color for tag pills when selected                          |
+| `--nn-theme-file-selected-date-color`             | `var(--nn-theme-foreground-muted)`            | Text color for file dates when selected                         |
+| `--nn-theme-file-selected-parent-color`           | `var(--nn-theme-foreground-muted)`            | Text color for parent folder path when selected                 |
+| `--nn-theme-file-selected-tag-color`              | `var(--nn-theme-foreground-muted)`            | Text color for tag pills when selected                          |
 | `--nn-theme-file-selected-tag-bg`                 | `var(--nn-theme-file-tag-bg)`                 | Background color for tag pills when selected                    |
-| `--nn-theme-file-selected-custom-property-color`  | `color-mix(in srgb, var(--text-normal) 75%, transparent)` | Text color for custom property pill when selected               |
+| `--nn-theme-file-selected-custom-property-color`  | `var(--nn-theme-foreground-muted)`            | Text color for custom property pill when selected               |
 | `--nn-theme-file-selected-custom-property-bg`     | `var(--nn-theme-file-custom-property-bg)`     | Background color for custom property pill when selected         |
 | `--nn-theme-file-selected-inactive-bg`            | `var(--background-modifier-hover)`            | Selected file background when pane is inactive (desktop only)   |
 | `--nn-theme-file-selected-inactive-name-color`    | `var(--nn-theme-file-selected-name-color)`    | File name color when selected and pane is inactive              |
@@ -190,19 +199,19 @@ Tag pills with only a custom text color use the list pane background, and custom
 | `--nn-theme-quick-actions-bg`               | `color-mix(in srgb, var(--background-primary) 95%, transparent)` | Background color of quick actions toolbar (supports transparency) |
 | `--nn-theme-quick-actions-border`           | `var(--background-modifier-border)`                              | Border color of quick actions toolbar                             |
 | `--nn-theme-quick-actions-border-radius`    | `4px`                                                            | Corner radius for quick actions panel (0-12px)                    |
-| `--nn-theme-quick-actions-icon-color`       | `var(--text-muted)`                                              | Icon color for quick action buttons                               |
-| `--nn-theme-quick-actions-icon-hover-color` | `var(--text-normal)`                                             | Icon color when hovering quick action buttons                     |
+| `--nn-theme-quick-actions-icon-color`       | `var(--nn-theme-foreground-muted)`                               | Icon color for quick action buttons                               |
+| `--nn-theme-quick-actions-icon-hover-color` | `var(--nn-theme-foreground)`                                     | Icon color when hovering quick action buttons                     |
 | `--nn-theme-quick-actions-separator-color`  | `var(--background-modifier-border)`                              | Divider color between quick action buttons                        |
 
 ### Headers (desktop only)
 
 | Variable                                       | Default                            | Description                                        |
 | ---------------------------------------------- | ---------------------------------- | -------------------------------------------------- |
-| `--nn-theme-header-button-icon-color`          | `var(--text-muted)`                | Default icon color for header buttons              |
+| `--nn-theme-header-button-icon-color`          | `var(--nn-theme-foreground-muted)` | Default icon color for header buttons              |
 | `--nn-theme-header-button-hover-bg`            | `var(--background-modifier-hover)` | Background color when hovering header buttons      |
 | `--nn-theme-header-button-active-bg`           | `var(--background-modifier-hover)` | Background color for active/toggled header buttons |
-| `--nn-theme-header-button-active-icon-color`   | `var(--text-normal)`               | Icon color for active/toggled header buttons       |
-| `--nn-theme-header-button-disabled-icon-color` | `var(--text-muted)`                | Icon color for disabled header buttons             |
+| `--nn-theme-header-button-active-icon-color`   | `var(--nn-theme-foreground)`       | Icon color for active/toggled header buttons       |
+| `--nn-theme-header-button-disabled-icon-color` | `var(--nn-theme-foreground-muted)` | Icon color for disabled header buttons             |
 
 ### Mobile styles
 
@@ -210,7 +219,7 @@ Tag pills with only a custom text color use the list pane background, and custom
 | ------------------------------------------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `--nn-theme-mobile-bg`                                 | `var(--mobile-sidebar-background)`                               | Navigation and list pane background on mobile                                                                    |
 | `--nn-theme-mobile-list-header-link-color`             | `var(--link-color)`                                              | Color for back button and clickable breadcrumb segments on mobile                                                |
-| `--nn-theme-mobile-list-header-breadcrumb-color`       | `var(--text-normal)`                                             | Color for current folder and separators in breadcrumb on mobile                                                  |
+| `--nn-theme-mobile-list-header-breadcrumb-color`       | `var(--nn-theme-foreground)`                                     | Color for current folder and separators in breadcrumb on mobile                                                  |
 | `--nn-theme-mobile-list-header-breadcrumb-font-weight` | `600`                                                            | Font weight for mobile breadcrumb                                                                                |
 | `--nn-theme-mobile-toolbar-bg`                         | `var(--background-secondary)`                                    | Background color of the mobile toolbar                                                                           |
 | `--nn-theme-mobile-toolbar-button-icon-color`          | `var(--link-color)`                                              | Icon color for toolbar buttons                                                                                   |
@@ -230,6 +239,14 @@ Here's a complete example styling all variables with a JetBrains Darcula-inspire
    ======================================== */
 
 body {
+  /* ========================================
+	     THEME FOREGROUND
+	     ======================================== */
+
+	  --nn-theme-foreground: #a9b7c6; /* Base foreground color */
+	  --nn-theme-foreground-muted: #7f8b91; /* Muted foreground color */
+	  --nn-theme-foreground-faded: #6e6e6e; /* Faded foreground color */
+
   /* ========================================
      PANE OVERLAY STACKS
      ======================================== */
@@ -445,5 +462,5 @@ theme through inline styles.
 
 ## Style Settings Support
 
-Notebook Navigator fully supports the Style Settings plugin. All documented variables, including inactive selection
+Notebook Navigator supports the Style Settings plugin. All documented variables, including inactive selection
 colors for both panes, are configurable through the Style Settings UI.

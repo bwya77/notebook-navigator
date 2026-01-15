@@ -11,7 +11,7 @@
     border: 1px solid var(--background-modifier-border);
     border-radius: var(--radius-s);
     background-color: var(--background-primary);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     font-size: 14px;
     margin: 16px 0;
 }
@@ -54,7 +54,7 @@
 
 .nn-folder-note-type-info {
     margin-bottom: 4px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     text-align: center;
 }
 

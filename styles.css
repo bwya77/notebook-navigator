@@ -169,6 +169,11 @@ body {
        Notebook Navigator Theme Variables
        ======================================================================== */
 
+    /* -- Theme Foreground -- */
+    --nn-theme-foreground: var(--text-normal);
+    --nn-theme-foreground-muted: color-mix(in srgb, var(--nn-theme-foreground) 70%, transparent);
+    --nn-theme-foreground-faded: color-mix(in srgb, var(--nn-theme-foreground) 50%, transparent);
+
     /* -- Pane Overlay Stacks -- */
     /* Overlay stacks (header/search/title) rendered above scrolling content */
     --nn-theme-pane-overlay-opacity: 87;
@@ -176,7 +181,7 @@ body {
 
     /* -- Navigation Pane -- */
     --nn-theme-nav-bg: var(--background-secondary);
-    --nn-theme-nav-separator-color: var(--text-muted);
+    --nn-theme-nav-separator-color: var(--nn-theme-foreground);
     --nn-theme-nav-separator-background: linear-gradient(
         90deg,
         transparent 0%,
@@ -189,10 +194,10 @@ body {
     --nn-theme-pinned-shortcut-shadow-color: rgba(0, 0, 0, 0.03);
 
     /* -- Navigation Calendar -- */
-    --nn-theme-nav-calendar-header-color: var(--text-normal);
-    --nn-theme-nav-calendar-week-label-color: var(--text-muted);
-    --nn-theme-nav-calendar-day-in-month-color: var(--text-normal);
-    --nn-theme-nav-calendar-day-outside-month-color: var(--text-muted);
+    --nn-theme-nav-calendar-header-color: var(--nn-theme-foreground);
+    --nn-theme-nav-calendar-week-label-color: var(--nn-theme-foreground-muted);
+    --nn-theme-nav-calendar-day-in-month-color: var(--nn-theme-foreground);
+    --nn-theme-nav-calendar-day-outside-month-color: var(--nn-theme-foreground-muted);
     --nn-theme-nav-calendar-hover-bg: var(--background-modifier-hover);
     --nn-theme-nav-calendar-day-has-note-color: white;
     --nn-theme-nav-calendar-day-has-note-bg: var(--text-selection);
@@ -201,11 +206,11 @@ body {
     --nn-theme-nav-calendar-day-today-bg: var(--color-red);
 
     /* -- Folder & Tag Items -- */
-    --nn-theme-navitem-chevron-color: var(--text-muted);
-    --nn-theme-navitem-icon-color: var(--text-muted);
-    --nn-theme-navitem-name-color: var(--text-normal);
+    --nn-theme-navitem-chevron-color: var(--nn-theme-foreground-muted);
+    --nn-theme-navitem-icon-color: var(--nn-theme-foreground-muted);
+    --nn-theme-navitem-name-color: var(--nn-theme-foreground);
     --nn-theme-navitem-file-name-color: var(--nn-theme-navitem-name-color);
-    --nn-theme-navitem-count-color: var(--text-muted);
+    --nn-theme-navitem-count-color: var(--nn-theme-foreground-muted);
     --nn-theme-navitem-count-bg: transparent;
     --nn-theme-navitem-count-border-radius: 8px;
     --nn-theme-navitem-border-radius: 4px;
@@ -241,26 +246,27 @@ body {
 
     /* -- List Pane (Files) -- */
     --nn-theme-list-bg: var(--background-primary);
-    --nn-theme-list-header-icon-color: var(--text-muted);
-    --nn-theme-list-header-breadcrumb-color: var(--text-muted);
+    --nn-theme-list-header-icon-color: var(--nn-theme-foreground-muted);
+    --nn-theme-list-header-breadcrumb-color: var(--nn-theme-foreground-muted);
     --nn-theme-list-header-breadcrumb-font-weight: 600;
     --nn-theme-list-search-active-bg: var(--text-highlight-bg);
     --nn-theme-list-search-border-color: var(--background-modifier-border);
-    --nn-theme-list-heading-color: var(--text-muted);
+    --nn-theme-list-heading-color: var(--nn-theme-foreground-muted);
     --nn-theme-list-heading-font-weight: 600;
-    --nn-theme-list-group-header-color: var(--text-muted);
+    --nn-theme-list-group-header-color: var(--nn-theme-foreground-muted);
     --nn-theme-list-separator-color: var(--background-modifier-border);
 
     /* -- File Items -- */
-    --nn-theme-file-name-color: var(--text-normal);
-    --nn-theme-file-preview-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
+    --nn-theme-file-name-color: var(--nn-theme-foreground);
+    --nn-theme-file-preview-color: var(--nn-theme-foreground-muted);
     --nn-theme-file-feature-border-radius: 4px;
-    --nn-theme-file-date-color: color-mix(in srgb, var(--text-normal) 50%, transparent);
-    --nn-theme-file-parent-color: color-mix(in srgb, var(--text-normal) 50%, transparent);
-    --nn-theme-file-tag-color: color-mix(in srgb, var(--text-normal) 50%, transparent);
+    --nn-theme-file-date-color: var(--nn-theme-foreground-faded);
+    --nn-theme-file-parent-color: var(--nn-theme-foreground-faded);
+    --nn-theme-file-tag-color: var(--nn-theme-foreground-faded);
+    --nn-file-pill-border-color: color-mix(in srgb, var(--nn-theme-foreground) 30%, transparent);
     --nn-theme-file-tag-custom-color-text-color: var(--nn-theme-navitem-name-color);
     --nn-theme-file-tag-bg: transparent;
-    --nn-theme-file-custom-property-color: color-mix(in srgb, var(--text-normal) 50%, transparent);
+    --nn-theme-file-custom-property-color: var(--nn-theme-foreground-faded);
     --nn-theme-file-custom-property-bg: transparent;
     --nn-theme-file-tag-border-radius: 10px;
     --nn-theme-file-custom-property-border-radius: 10px;
@@ -268,11 +274,11 @@ body {
     --nn-theme-file-selected-bg: var(--text-selection);
     --nn-theme-file-selected-name-color: var(--nn-theme-file-name-color);
     --nn-theme-file-selected-preview-color: var(--nn-theme-file-preview-color);
-    --nn-theme-file-selected-date-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
-    --nn-theme-file-selected-parent-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
-    --nn-theme-file-selected-tag-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
+    --nn-theme-file-selected-date-color: var(--nn-theme-foreground-muted);
+    --nn-theme-file-selected-parent-color: var(--nn-theme-foreground-muted);
+    --nn-theme-file-selected-tag-color: var(--nn-theme-foreground-muted);
     --nn-theme-file-selected-tag-bg: var(--nn-theme-file-tag-bg);
-    --nn-theme-file-selected-custom-property-color: color-mix(in srgb, var(--text-normal) 75%, transparent);
+    --nn-theme-file-selected-custom-property-color: var(--nn-theme-foreground-muted);
     --nn-theme-file-selected-custom-property-bg: var(--nn-theme-file-custom-property-bg);
     --nn-theme-file-selected-inactive-bg: var(--background-modifier-hover);
     --nn-theme-file-selected-inactive-name-color: var(--nn-theme-file-selected-name-color);
@@ -297,21 +303,21 @@ body {
     --nn-theme-quick-actions-bg: color-mix(in srgb, var(--background-primary) 95%, transparent);
     --nn-theme-quick-actions-border: var(--background-modifier-border);
     --nn-theme-quick-actions-border-radius: 4px;
-    --nn-theme-quick-actions-icon-color: var(--text-muted);
-    --nn-theme-quick-actions-icon-hover-color: var(--text-normal);
+    --nn-theme-quick-actions-icon-color: var(--nn-theme-foreground-muted);
+    --nn-theme-quick-actions-icon-hover-color: var(--nn-theme-foreground);
     --nn-theme-quick-actions-separator-color: var(--background-modifier-border);
 
     /* -- Header Buttons -- */
-    --nn-theme-header-button-icon-color: var(--text-muted);
+    --nn-theme-header-button-icon-color: var(--nn-theme-foreground-muted);
     --nn-theme-header-button-hover-bg: var(--background-modifier-hover);
     --nn-theme-header-button-active-bg: var(--background-modifier-hover);
-    --nn-theme-header-button-active-icon-color: var(--text-normal);
-    --nn-theme-header-button-disabled-icon-color: var(--text-muted);
+    --nn-theme-header-button-active-icon-color: var(--nn-theme-foreground);
+    --nn-theme-header-button-disabled-icon-color: var(--nn-theme-foreground-muted);
 
     /* -- Mobile Styles -- */
     --nn-theme-mobile-bg: var(--mobile-sidebar-background);
     --nn-theme-mobile-list-header-link-color: var(--link-color);
-    --nn-theme-mobile-list-header-breadcrumb-color: var(--text-normal);
+    --nn-theme-mobile-list-header-breadcrumb-color: var(--nn-theme-foreground);
     --nn-theme-mobile-list-header-breadcrumb-font-weight: 600;
     --nn-theme-mobile-toolbar-bg: var(--background-secondary);
     --nn-theme-mobile-toolbar-button-icon-color: var(--link-color);
@@ -1317,7 +1323,7 @@ body {
     position: absolute;
     top: 8px;
     cursor: pointer;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1461,7 +1467,7 @@ body {
 
 /* Disabled icon svg stroke color */
 .nn-icon-button:disabled svg {
-    stroke: var(--nn-theme-header-button-disabled-icon-color);
+    stroke: currentColor;
 }
 
 /* Disabled hover state - no hover effect when disabled */
@@ -1472,14 +1478,14 @@ body {
 
 /* Disabled icon color - maintains muted appearance */
 .nn-desktop .nn-icon-button:disabled:hover svg {
-    stroke: var(--nn-theme-header-button-disabled-icon-color);
+    stroke: currentColor;
 }
 
 /* Icon styling - consistent size and appearance for all button icons */
 .nn-icon-button svg {
     width: 16px;
     height: 16px;
-    stroke: var(--nn-theme-header-button-icon-color);
+    stroke: currentColor;
     stroke-width: 2;
     fill: none;
 }
@@ -2223,6 +2229,7 @@ body {
 }
 
 .nn-drag-handle-disabled {
+    color: var(--nn-theme-header-button-disabled-icon-color);
     opacity: 0.4;
     cursor: default;
 }
@@ -2271,7 +2278,7 @@ body {
 
 .nn-root-reorder-hint {
     font-size: var(--nn-root-reorder-hint-font-size);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     line-height: 1.25;
 }
 
@@ -2306,7 +2313,7 @@ body {
 
 .nn-root-reorder-item--missing .nn-shortcut-label {
     text-decoration: line-through;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
 }
 
 .nn-root-reorder-actions {
@@ -2373,11 +2380,17 @@ body {
 }
 
 .nn-root-reorder-section-button:disabled {
+    color: var(--nn-theme-header-button-disabled-icon-color);
     opacity: 0.4;
     cursor: not-allowed;
 }
 
 .nn-shortcut-disabled {
+    --nn-theme-navitem-chevron-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-icon-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-name-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-file-name-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-count-color: var(--nn-theme-foreground);
     opacity: 0.5;
     pointer-events: none;
 }
@@ -2852,7 +2865,7 @@ body {
     font-family: var(--font-monospace);
     font-size: 9px;
     font-weight: 700;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     text-transform: uppercase;
     letter-spacing: 0.1px;
     line-height: 1;
@@ -3242,11 +3255,16 @@ body {
     color: var(--nn-theme-file-tag-color);
     border-radius: min(10px, var(--nn-theme-file-tag-border-radius));
     border: 1px solid transparent;
-    border-color: color-mix(in srgb, currentColor 30%, transparent);
+    border-color: var(--nn-file-pill-border-color);
     font-size: 12px;
     font-weight: var(--nn-theme-file-tag-font-weight);
     white-space: nowrap;
     flex-shrink: 0;
+}
+
+.nn-file-tag[data-has-color='true'],
+.nn-file-tag[data-has-background='true'] {
+    --nn-file-pill-border-color: color-mix(in srgb, currentColor 30%, transparent);
 }
 
 .nn-file-custom-property {
@@ -3298,11 +3316,13 @@ body {
 .nn-file.nn-selected .nn-file-tag:not(.nn-file-custom-property):not([data-has-color='true']):not([data-has-background='true']) {
     background-color: var(--nn-selected-file-tag-bg);
     color: var(--nn-selected-file-tag-color);
+    border-color: transparent;
 }
 
 .nn-file.nn-selected .nn-file-tag.nn-file-custom-property:not([data-has-color='true']):not([data-has-background='true']) {
     background-color: var(--nn-selected-file-custom-property-bg);
     color: var(--nn-selected-file-custom-property-color);
+    border-color: transparent;
 }
 
 /* Selected file text colors */
@@ -3464,7 +3484,7 @@ body {
 .nn-file-extension-text {
     font-size: 9px;
     font-weight: 700;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     text-transform: uppercase;
     letter-spacing: 0.1px;
 }
@@ -3615,7 +3635,7 @@ body {
     height: 100%;
     padding: 40px 20px;
     text-align: center;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: 14px;
 }
 
@@ -3926,6 +3946,18 @@ body.nn-resizing {
    ======================================================================== */
 
 /* Hidden items (folders and tags) - dimmed appearance */
+.nn-navitem.nn-excluded {
+    --nn-theme-navitem-chevron-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-icon-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-count-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-selected-chevron-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-selected-icon-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-selected-count-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-selected-inactive-chevron-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-selected-inactive-icon-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-selected-inactive-count-color: var(--nn-theme-foreground);
+}
+
 .nn-navitem.nn-excluded .nn-navitem-chevron,
 .nn-navitem.nn-excluded .nn-navitem-icon,
 .nn-navitem.nn-excluded .nn-navitem-name,
@@ -3935,7 +3967,28 @@ body.nn-resizing {
 
 /* Hidden files surfaced via "show hidden" toggle */
 .nn-file.nn-hidden-file {
-    opacity: 0.55;
+    --nn-theme-file-name-color: var(--nn-theme-foreground);
+    --nn-theme-file-preview-color: var(--nn-theme-foreground);
+    --nn-theme-file-date-color: var(--nn-theme-foreground);
+    --nn-theme-file-parent-color: var(--nn-theme-foreground);
+    --nn-theme-file-tag-color: var(--nn-theme-foreground);
+    --nn-theme-file-custom-property-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-name-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-preview-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-date-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-parent-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-tag-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-custom-property-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-inactive-name-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-inactive-preview-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-inactive-date-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-inactive-parent-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-inactive-tag-color: var(--nn-theme-foreground);
+    --nn-theme-file-selected-inactive-custom-property-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-icon-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-selected-icon-color: var(--nn-theme-foreground);
+    --nn-theme-navitem-selected-inactive-icon-color: var(--nn-theme-foreground);
+    opacity: 0.5;
 }
 /* Source: src/styles/sections/modal-base.css */
 
@@ -3950,7 +4003,7 @@ body.nn-resizing {
     border: 1px solid var(--background-modifier-border);
     border-radius: var(--radius-s);
     background-color: var(--background-primary);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     font-size: 14px;
     margin: 16px 0;
 }
@@ -3993,7 +4046,7 @@ body.nn-resizing {
 
 .nn-folder-note-type-info {
     margin-bottom: 4px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     text-align: center;
 }
 
@@ -4035,7 +4088,7 @@ body.nn-resizing {
     padding: var(--size-2-3) var(--size-4-2);
     border-radius: var(--radius-m);
     background-color: transparent;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     cursor: pointer;
     transition: background-color 120ms ease;
 }
@@ -4066,14 +4119,14 @@ body.nn-resizing {
 
 .nn-select-profile-item-badge {
     font-size: var(--font-ui-small);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-weight: var(--font-semibold);
 }
 
 .nn-select-profile-empty {
     margin: 0;
     padding: var(--size-4-4) 0;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: var(--font-ui-small);
     text-align: center;
 }
@@ -4088,7 +4141,7 @@ body.nn-resizing {
     height: 32px;
     padding: 0;
     background-color: transparent;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     border: 1px solid var(--background-modifier-border);
     border-radius: var(--radius-s);
     display: flex;
@@ -4100,13 +4153,18 @@ body.nn-resizing {
 
 .nn-action-btn:hover:not(:disabled):not(.mod-warning) {
     background: var(--background-modifier-hover);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     border-color: var(--background-modifier-border-hover);
 }
 
 .nn-action-btn:disabled {
+    color: var(--nn-theme-foreground);
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+.nn-action-btn.mod-warning:disabled {
+    color: var(--text-error);
 }
 
 .nn-action-btn.mod-warning {
@@ -4310,7 +4368,7 @@ body.nn-resizing {
     margin: 0;
     font-size: 0.95em;
     font-weight: 600;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
 }
 
 .is-mobile .modal.nn-ux-icon-map-modal .nn-ux-icon-map-group-heading {
@@ -4355,7 +4413,7 @@ body.nn-resizing {
 
 .nn-welcome-text {
     margin: 0;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     line-height: 1.5;
     font-size: 14px;
 }
@@ -4460,7 +4518,7 @@ body.nn-resizing {
 .nn-whats-new-version h3 {
     font-size: 14px;
     font-weight: 600;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     margin: 0 0 4px 0;
 }
 
@@ -4479,7 +4537,7 @@ body.nn-resizing {
 /* Info text */
 .nn-whats-new-info {
     margin-bottom: 12px;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     line-height: 1.5;
     /* Match list item text size on desktop */
     font-size: 14px;
@@ -4494,7 +4552,7 @@ body.nn-resizing {
 
 /* Version date */
 .nn-whats-new-date {
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: 12px;
     display: block;
     margin-bottom: 8px;
@@ -4537,7 +4595,7 @@ body.nn-resizing {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: 13px;
 }
 
@@ -4581,7 +4639,7 @@ body.nn-resizing {
 /* Feature list item */
 .nn-whats-new-version li {
     margin-bottom: 4px;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     font-size: 14px;
     line-height: 1.5;
 }
@@ -4589,7 +4647,7 @@ body.nn-resizing {
 /* Highlight emphasis */
 .nn-highlight {
     background-color: var(--text-highlight-bg);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     padding: 0 2px;
     border-radius: 3px;
     font-weight: 600;
@@ -4603,7 +4661,7 @@ body.nn-resizing {
 
 /* Support text */
 .nn-whats-new-support-text {
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: 14px;
     margin-bottom: 12px;
 }
@@ -4774,7 +4832,7 @@ body.nn-resizing {
 .nn-icon-section-header {
     font-size: 13px;
     font-weight: 400;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
@@ -4815,7 +4873,7 @@ body.nn-resizing {
     width: 32px;
     height: 32px;
     margin-bottom: 4px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
 }
 
 /* Icon SVG size */
@@ -4837,7 +4895,7 @@ body.nn-resizing {
 /* Icon name label */
 .nn-icon-item-name {
     font-size: 11px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     text-align: center;
     word-break: break-word;
     line-height: 1.2;
@@ -4848,7 +4906,7 @@ body.nn-resizing {
 .nn-icon-empty-message,
 .nn-icon-more-message {
     text-align: center;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     padding: 24px;
     font-size: 14px;
 }
@@ -4998,7 +5056,7 @@ body.nn-resizing {
 .nn-toolbar-visibility-group-label {
     font-size: var(--font-ui-small);
     font-weight: var(--font-semibold);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
 }
 
 .nn-toolbar-visibility-grid {
@@ -5052,7 +5110,7 @@ body.nn-resizing {
     justify-content: center;
     width: 18px;
     height: 18px;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
 }
 
 .nn-toolbar-visibility-icon svg {
@@ -5152,7 +5210,7 @@ body.nn-resizing {
 .nn-slider-value {
     margin-left: 12px;
     font-size: var(--font-ui-smaller);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     min-width: 48px;
     text-align: right;
     font-variant-numeric: tabular-nums;
@@ -5194,7 +5252,7 @@ body.nn-resizing {
 /* Statistics text styling */
 .nn-stats-text {
     font-size: var(--font-ui-smaller);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     text-align: center;
     line-height: 1.5;
 }
@@ -5261,7 +5319,7 @@ body.nn-resizing {
     margin: 0;
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
 }
 
 /* Two column layout */
@@ -5314,7 +5372,7 @@ body.nn-resizing {
 .nn-rgb-title,
 .nn-hex-title {
     font-size: 11px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-weight: 500;
 }
 
@@ -5362,7 +5420,7 @@ body.nn-resizing {
 .nn-preview-arrow {
     width: 20px;
     height: 20px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     flex-shrink: 0;
     margin-top: 18px;
 }
@@ -5439,7 +5497,7 @@ body.nn-resizing {
     width: 32px;
     text-align: right;
     font-size: 11px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-family: var(--font-monospace);
 }
 
@@ -5475,7 +5533,7 @@ body.nn-resizing {
 
 .nn-hex-label {
     font-size: 14px;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     font-weight: 500;
 }
 
@@ -5485,7 +5543,7 @@ body.nn-resizing {
     border: 1px solid var(--background-modifier-border);
     border-radius: var(--radius-s);
     background: var(--background-primary);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     font-family: var(--font-monospace);
     font-size: 13px;
 }
@@ -5507,7 +5565,7 @@ body.nn-resizing {
 
 .nn-section-label {
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-weight: 500;
 }
 
@@ -5527,18 +5585,18 @@ body.nn-resizing {
     border: none;
     padding: 0;
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     cursor: pointer;
     font-weight: 500;
 }
 
 .nn-preset-toggle-label.nn-preset-toggle-active {
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     font-weight: 700;
 }
 
 .nn-preset-toggle-separator {
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: 12px;
     line-height: 1;
 }
@@ -5549,7 +5607,7 @@ body.nn-resizing {
     height: 20px;
     padding: 0;
     background: transparent;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     border: 1px solid var(--background-modifier-border);
     border-radius: 3px;
     cursor: pointer;
@@ -5572,7 +5630,7 @@ body.nn-resizing {
 .nn-preset-action-button:hover,
 .nn-clear-recent:hover {
     background: var(--background-modifier-hover);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     border-color: var(--background-modifier-border-hover);
 }
 
@@ -5620,7 +5678,7 @@ body.nn-resizing {
     border-radius: 999px;
     border: 1px solid var(--background-modifier-border);
     background: var(--background-primary);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -5628,7 +5686,7 @@ body.nn-resizing {
 }
 
 .nn-recent-remove-button:hover {
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     border-color: var(--interactive-accent);
 }
 
@@ -6035,7 +6093,7 @@ body.nn-resizing {
 }
 
 .notebook-navigator-obsidian-1-11-plus-ios {
-    --nn-theme-mobile-toolbar-button-icon-color: var(--text-normal);
+    --nn-theme-mobile-toolbar-button-icon-color: var(--nn-theme-foreground);
     --nn-ios-toolbar-glass-bg: color-mix(in srgb, var(--nn-theme-mobile-toolbar-glass-bg) 45%, transparent);
     --nn-ios-toolbar-glass-outline: rgba(255, 255, 255, 0.6);
     --nn-ios-toolbar-glass-shadow: 0 0 0 2px var(--nn-ios-toolbar-glass-outline), 0 16px 32px rgba(0, 0, 0, 0.09);
@@ -6477,13 +6535,13 @@ body.nn-resizing {
 .nn-icon-provider-tab {
     padding: 4px 12px;
     border-radius: var(--radius-s);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     white-space: nowrap;
 }
 
 .nn-icon-provider-tab:hover {
     background-color: var(--background-modifier-hover);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
 }
 
 .nn-icon-provider-tab.nn-active {
@@ -6500,7 +6558,7 @@ body.nn-resizing {
 .nn-icon-section-header {
     font-size: var(--font-ui-small);
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     margin-top: 12px;
     margin-bottom: 4px;
 }
@@ -6553,6 +6611,42 @@ name: Notebook Navigator
 id: notebook-navigator-style-settings
 settings:
     -
+        id: nn-theme-foreground-heading
+        title: Theme foreground
+        description: Base foreground color variables used by Notebook Navigator.
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: nn-theme-foreground-colors-heading
+        title: Foreground colors
+        type: heading
+        level: 2
+        collapsed: false
+    -
+        id: nn-theme-foreground
+        title: Base foreground
+        description: Base foreground color.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+        id: nn-theme-foreground-muted
+        title: Muted foreground
+        description: Muted foreground color.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
+    -
+        id: nn-theme-foreground-faded
+        title: Faded foreground
+        description: Faded foreground color.
+        type: variable-themed-color
+        format: hex
+        default-light: '#'
+        default-dark: '#'
     -
         id: nn-header-heading
         title: Headers
@@ -6567,7 +6661,6 @@ settings:
         level: 2
         collapsed: false
     -
-    -
         id: nn-theme-header-button-icon-color
         title: Button icon color
         description: Default icon color for header buttons.
@@ -6575,7 +6668,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-header-button-hover-bg
         title: Button hover background
@@ -6585,7 +6677,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-header-button-active-bg
         title: Button active background
         description: Background color for active/toggled header buttons.
@@ -6593,7 +6684,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-header-button-active-icon-color
         title: Button active icon color
@@ -6603,7 +6693,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-header-button-disabled-icon-color
         title: Button disabled icon color
         description: Icon color for disabled header buttons.
@@ -6612,14 +6701,12 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-nav-pane-heading
         title: Navigation pane (folders, tags, shortcuts)
         description: Customize the background and items within the navigation pane.
         type: heading
         level: 1
         collapsed: true
-    -
     -
         id: nn-theme-nav-bg
         title: Navigation pane background
@@ -6629,7 +6716,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-nav-separator-color
         title: Navigation separator color
         description: Line color for separators rendered inside navigation spacers.
@@ -6638,13 +6724,11 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-nav-pane-items-heading
         title: Folder & tag items
         type: heading
         level: 2
         collapsed: false
-    -
     -
         id: nn-theme-navitem-chevron-color
         title: Expand/collapse arrow color
@@ -6654,7 +6738,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-navitem-icon-color
         title: Icon color
         description: Icon color for folders and tags.
@@ -6662,7 +6745,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-navitem-name-color
         title: Text color
@@ -6672,7 +6754,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-navitem-file-name-color
         title: File text color
         description: Text color for note shortcuts and recent files. Defaults to folder/tag text color.
@@ -6680,7 +6761,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-navitem-count-color
         title: File count text color
@@ -6690,7 +6770,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-navitem-count-bg
         title: File count background
         description: Background color for file count badges.
@@ -6698,7 +6777,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-navitem-count-border-radius
         title: File count border radius
@@ -6710,7 +6788,6 @@ settings:
         max: 8
         step: 1
     -
-    -
         id: nn-theme-navitem-border-radius
         title: Item border radius
         description: Corner radius for folder and tag items.
@@ -6721,7 +6798,6 @@ settings:
         max: 14
         step: 1
     -
-    -
         id: nn-theme-navitem-hover-bg
         title: Hover background
         description: Item hover background color.
@@ -6729,7 +6805,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-navitem-selected-bg
         title: Selection background
@@ -6739,7 +6814,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-navitem-selected-chevron-color
         title: Selected chevron color
         description: Expand/collapse arrow color when item is selected.
@@ -6747,7 +6821,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-navitem-selected-icon-color
         title: Selected icon color
@@ -6757,7 +6830,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-navitem-selected-name-color
         title: Selected name color
         description: Folder/tag name color when selected.
@@ -6765,7 +6837,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-navitem-selected-count-color
         title: Selected count text color
@@ -6775,7 +6846,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-navitem-selected-count-bg
         title: Selected count background
         description: File count background color when selected.
@@ -6783,7 +6853,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-navitem-selected-inactive-chevron-color
         title: Selected chevron color (inactive)
@@ -6793,7 +6862,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-navitem-selected-inactive-icon-color
         title: Selected icon color (inactive)
         description: Icon color when item is selected and pane is inactive.
@@ -6801,7 +6869,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-navitem-selected-inactive-count-color
         title: Selected count text color (inactive)
@@ -6811,7 +6878,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-navitem-selected-inactive-count-bg
         title: Selected count background (inactive)
         description: File count background color when item is selected and pane is inactive.
@@ -6819,7 +6885,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-navitem-selected-inactive-bg
         title: Selection background (inactive)
@@ -6829,7 +6894,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-navitem-selected-inactive-name-color
         title: Selected name color (inactive)
         description: Folder/tag name color when selected and pane is inactive.
@@ -6837,7 +6901,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-tag-positive-bg
         title: Tag highlight (include)
@@ -6847,7 +6910,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-tag-negative-bg
         title: Tag highlight (exclude)
         description: Background color for negative tag highlights and the untagged drop target.
@@ -6856,13 +6918,11 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-navitem-text-styling-heading
         title: Text styling
         type: heading
         level: 2
         collapsed: false
-    -
     -
         id: nn-theme-navitem-file-name-font-weight
         title: Default file name weight
@@ -6873,7 +6933,6 @@ settings:
         max: 900
         step: 100
     -
-    -
         id: nn-theme-navitem-name-font-weight
         title: Default folder/tag weight
         description: Default font weight for folder and tag names.
@@ -6882,7 +6941,6 @@ settings:
         min: 100
         max: 900
         step: 100
-    -
     -
         id: nn-theme-navitem-count-font-weight
         title: File count font weight
@@ -6893,7 +6951,6 @@ settings:
         max: 900
         step: 100
     -
-    -
         id: nn-theme-navitem-custom-color-file-name-font-weight
         title: Custom color file name weight
         description: Font weight for file names with custom colors (overrides default file weight).
@@ -6902,7 +6959,6 @@ settings:
         min: 100
         max: 900
         step: 100
-    -
     -
         id: nn-theme-navitem-custom-color-name-font-weight
         title: Custom color folder/tag weight
@@ -6913,7 +6969,6 @@ settings:
         max: 900
         step: 100
     -
-    -
         id: nn-theme-navitem-folder-note-name-font-weight
         title: Folder note weight
         description: Font weight for folders with notes (overrides all others).
@@ -6922,7 +6977,6 @@ settings:
         min: 100
         max: 900
         step: 100
-    -
     -
         id: nn-theme-navitem-folder-note-name-decoration
         title: Folder note decoration
@@ -6940,7 +6994,6 @@ settings:
             label: Dotted underline
             value: underline dotted
     -
-    -
         id: nn-theme-navitem-folder-note-name-hover-decoration
         title: Folder note hover decoration
         description: Text decoration when hovering folders with notes.
@@ -6957,13 +7010,11 @@ settings:
             label: Dotted underline
             value: underline dotted
     -
-    -
         id: nn-pinned-shortcuts-heading
         title: Pinned shortcuts
         type: heading
         level: 2
         collapsed: false
-    -
     -
         id: nn-theme-pinned-shortcut-shadow-color
         title: Pinned shortcut shadow color
@@ -6973,14 +7024,12 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-file-list-heading
         title: List pane (files)
         description: Customize the file list appearance.
         type: heading
         level: 1
         collapsed: true
-    -
     -
         id: nn-theme-list-bg
         title: List pane background
@@ -6990,7 +7039,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-list-search-active-bg
         title: Search field active background
         description: Background color for the search field when a search query is active (desktop only).
@@ -6998,7 +7046,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-list-search-border-color
         title: Search border color
@@ -7008,7 +7055,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-list-heading-color
         title: List heading text color
         description: Text color for the list pane overlay heading.
@@ -7016,7 +7062,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-list-heading-font-weight
         title: List heading font weight
@@ -7027,7 +7072,6 @@ settings:
         max: 900
         step: 100
     -
-    -
         id: nn-theme-list-header-icon-color
         title: List header icon color
         description: Color for the folder/tag icon shown beside the desktop list header breadcrumb.
@@ -7036,7 +7080,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-list-header-breadcrumb-color
         title: List header breadcrumb color
         description: Text color for the breadcrumb path in the desktop list header.
@@ -7044,7 +7087,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-list-header-breadcrumb-font-weight
         title: List header breadcrumb font weight
@@ -7055,7 +7097,6 @@ settings:
         max: 900
         step: 100
     -
-    -
         id: nn-theme-list-group-header-color
         title: Group header text color
         description: Text color for date groups and pinned section.
@@ -7063,7 +7104,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-list-separator-color
         title: List separator color
@@ -7073,13 +7113,11 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-file-list-items-heading
         title: File items
         type: heading
         level: 2
         collapsed: false
-    -
     -
         id: nn-theme-file-name-color
         title: File name color
@@ -7089,7 +7127,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-preview-color
         title: File preview text color
         description: Text color for content preview.
@@ -7097,7 +7134,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-feature-border-radius
         title: Feature image border radius
@@ -7109,7 +7145,6 @@ settings:
         max: 32
         step: 1
     -
-    -
         id: nn-theme-file-date-color
         title: File date color
         description: Text color for creation or modification dates.
@@ -7117,7 +7152,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-parent-color
         title: File parent folder color
@@ -7127,7 +7161,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-tag-color
         title: File tag text color
         description: Text color for tag pills.
@@ -7135,7 +7168,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-tag-custom-color-text-color
         title: Custom tag text color
@@ -7145,7 +7177,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-tag-bg
         title: File tag background
         description: Background color for tag pills.
@@ -7153,7 +7184,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-custom-property-color
         title: Custom property text color
@@ -7163,7 +7193,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-custom-property-bg
         title: Custom property background
         description: Background color for custom property pill.
@@ -7171,7 +7200,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-tag-border-radius
         title: Tag pill border radius
@@ -7183,7 +7211,6 @@ settings:
         max: 10
         step: 1
     -
-    -
         id: nn-theme-file-custom-property-border-radius
         title: Custom property pill border radius
         description: Corner radius for custom property pills.
@@ -7193,7 +7220,6 @@ settings:
         min: 0
         max: 10
         step: 1
-    -
     -
         id: nn-theme-file-border-radius
         title: File item border radius
@@ -7205,7 +7231,6 @@ settings:
         max: 16
         step: 1
     -
-    -
         id: nn-theme-file-selected-bg
         title: Selection background
         description: Selected file background color.
@@ -7213,7 +7238,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-selected-name-color
         title: Selected file name color
@@ -7223,7 +7247,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-selected-preview-color
         title: Selected file preview color
         description: Text color for content preview when selected.
@@ -7231,7 +7254,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-selected-date-color
         title: Selected file date color
@@ -7241,7 +7263,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-selected-parent-color
         title: Selected file parent folder color
         description: Text color for parent folder path when selected.
@@ -7249,7 +7270,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-selected-tag-color
         title: Selected file tag text color
@@ -7259,7 +7279,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-selected-tag-bg
         title: Selected file tag background
         description: Background color for tag pills when selected.
@@ -7267,7 +7286,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-selected-custom-property-color
         title: Selected custom property text color
@@ -7277,7 +7295,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-selected-custom-property-bg
         title: Selected custom property background
         description: Background color for custom property pill when selected.
@@ -7285,7 +7302,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-selected-inactive-preview-color
         title: Selected file preview color (inactive)
@@ -7295,7 +7311,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-selected-inactive-date-color
         title: Selected file date color (inactive)
         description: File date color when selected and pane is inactive.
@@ -7303,7 +7318,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-selected-inactive-parent-color
         title: Selected file parent folder color (inactive)
@@ -7313,7 +7327,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-selected-inactive-tag-color
         title: Selected file tag text color (inactive)
         description: Tag text color when file is selected and pane is inactive.
@@ -7321,7 +7334,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-selected-inactive-tag-bg
         title: Selected file tag background (inactive)
@@ -7331,7 +7343,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-selected-inactive-custom-property-color
         title: Selected custom property text color (inactive)
         description: Text color for custom property pill when file is selected and pane is inactive.
@@ -7339,7 +7350,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-file-selected-inactive-custom-property-bg
         title: Selected custom property background (inactive)
@@ -7349,7 +7359,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-selected-inactive-bg
         title: Selection background (inactive)
         description: Selected file background color when pane is inactive.
@@ -7358,7 +7367,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-file-selected-inactive-name-color
         title: Selected file name color (inactive)
         description: File name color when selected and pane is inactive.
@@ -7366,7 +7374,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-file-text-styling-heading
         title: Text styling
@@ -7383,7 +7390,6 @@ settings:
         max: 900
         step: 100
     -
-    -
         id: nn-theme-file-name-font-weight
         title: File name font weight
         description: Font weight for file names.
@@ -7392,7 +7398,6 @@ settings:
         min: 100
         max: 900
         step: 100
-    -
     -
         id: nn-theme-file-compact-name-font-weight
         title: File name font weight (compact mode)
@@ -7403,7 +7408,6 @@ settings:
         max: 900
         step: 100
     -
-    -
         id: nn-theme-file-preview-font-weight
         title: File preview font weight
         description: Font weight for file preview text.
@@ -7412,7 +7416,6 @@ settings:
         min: 100
         max: 900
         step: 100
-    -
     -
         id: nn-theme-file-date-font-weight
         title: Date font weight
@@ -7423,7 +7426,6 @@ settings:
         max: 900
         step: 100
     -
-    -
         id: nn-theme-file-parent-font-weight
         title: Parent folder font weight
         description: Font weight for parent folder path.
@@ -7432,7 +7434,6 @@ settings:
         min: 100
         max: 900
         step: 100
-    -
     -
         id: nn-theme-file-tag-font-weight
         title: Tag text font weight
@@ -7443,13 +7444,11 @@ settings:
         max: 900
         step: 100
     -
-    -
         id: nn-theme-quick-actions-heading
         title: Quick actions
         type: heading
         level: 2
         collapsed: false
-    -
     -
         id: nn-theme-quick-actions-bg
         title: Toolbar background
@@ -7460,7 +7459,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-quick-actions-border
         title: Toolbar border color
         description: Border color of quick actions toolbar.
@@ -7468,7 +7466,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-quick-actions-border-radius
         title: Toolbar border radius
@@ -7480,7 +7477,6 @@ settings:
         max: 12
         step: 1
     -
-    -
         id: nn-theme-quick-actions-icon-color
         title: Icon color
         description: Icon color for quick action buttons.
@@ -7488,7 +7484,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-quick-actions-icon-hover-color
         title: Icon hover color
@@ -7498,7 +7493,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-quick-actions-separator-color
         title: Separator color
         description: Divider color between quick action buttons.
@@ -7507,14 +7501,12 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-pane-overlay-heading
         title: Pane overlay stacks
         description: Customize the overlay stacks rendered above scrolling rows in both panes.
         type: heading
         level: 1
         collapsed: true
-    -
     -
         id: nn-theme-pane-overlay-opacity
         title: Overlay opacity
@@ -7525,14 +7517,12 @@ settings:
         max: 100
         step: 1
     -
-    -
         id: nn-theme-pane-divider-heading
         title: Pane divider
         description: Vertical divider between navigation and file list panes.
         type: heading
         level: 1
         collapsed: true
-    -
     -
         id: nn-theme-divider-border-color
         title: Divider border color
@@ -7542,7 +7532,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-divider-resize-handle-hover-bg
         title: Resize handle hover background
         description: Background color when hovering the pane divider to resize.
@@ -7551,14 +7540,12 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-nav-calendar-heading
         title: Calendar overlay
         description: Customize the navigation pane calendar overlay.
         type: heading
         level: 1
         collapsed: true
-    -
     -
         id: nn-theme-nav-calendar-header-color
         title: Header text color
@@ -7568,7 +7555,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-nav-calendar-week-label-color
         title: Week label text color
         description: Text color for weekday labels and week numbers.
@@ -7576,7 +7562,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-nav-calendar-day-in-month-color
         title: Day text color (current month)
@@ -7586,7 +7571,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-nav-calendar-day-outside-month-color
         title: Day text color (outside month)
         description: Text color for days outside the current month.
@@ -7594,7 +7578,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-nav-calendar-hover-bg
         title: Hover background
@@ -7604,7 +7587,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-nav-calendar-day-has-note-color
         title: Daily note text color
         description: Text color for dates with a daily note.
@@ -7612,7 +7594,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-nav-calendar-day-has-note-bg
         title: Daily note background
@@ -7622,7 +7603,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-nav-calendar-day-has-feature-image-color
         title: Feature image text color
         description: Text color for dates with feature images.
@@ -7630,7 +7610,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-nav-calendar-day-today-color
         title: Day text color (today)
@@ -7640,7 +7619,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-nav-calendar-day-today-bg
         title: Today highlight background
         description: Background color for the today highlight circle.
@@ -7649,14 +7627,12 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-mobile-heading
         title: Mobile styles
         description: Customize mobile interface elements.
         type: heading
         level: 1
         collapsed: true
-    -
     -
         id: nn-theme-mobile-bg
         title: Mobile pane background
@@ -7666,7 +7642,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-mobile-list-header-link-color
         title: Mobile header link color
         description: Color for back button and clickable breadcrumb segments on mobile.
@@ -7675,7 +7650,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-mobile-list-header-breadcrumb-color
         title: Mobile header breadcrumb color
         description: Color for current folder and separators in breadcrumb on mobile.
@@ -7683,7 +7657,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-mobile-list-header-breadcrumb-font-weight
         title: Mobile breadcrumb font weight
@@ -7702,7 +7675,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-mobile-toolbar-glass-bg
         title: iOS glass toolbar background
         description: Background color of the Obsidian 1.11+ iOS glass toolbar (used for border and background, supports transparency).
@@ -7712,7 +7684,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-mobile-toolbar-button-icon-color
         title: Toolbar button icon color
         description: Icon color in mobile toolbar.
@@ -7721,7 +7692,6 @@ settings:
         default-light: '#'
         default-dark: '#'
     -
-    -
         id: nn-theme-mobile-toolbar-button-active-bg
         title: Toolbar button active background
         description: Background color for active toolbar button.
@@ -7729,7 +7699,6 @@ settings:
         format: hex
         default-light: '#'
         default-dark: '#'
-    -
     -
         id: nn-theme-mobile-toolbar-button-active-icon-color
         title: Toolbar button active icon color

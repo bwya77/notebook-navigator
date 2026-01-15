@@ -77,7 +77,7 @@
 .nn-icon-section-header {
     font-size: 13px;
     font-weight: 400;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
@@ -118,7 +118,7 @@
     width: 32px;
     height: 32px;
     margin-bottom: 4px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
 }
 
 /* Icon SVG size */
@@ -140,7 +140,7 @@
 /* Icon name label */
 .nn-icon-item-name {
     font-size: 11px;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     text-align: center;
     word-break: break-word;
     line-height: 1.2;
@@ -151,7 +151,7 @@
 .nn-icon-empty-message,
 .nn-icon-more-message {
     text-align: center;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     padding: 24px;
     font-size: 14px;
 }

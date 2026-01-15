@@ -165,13 +165,13 @@
 .nn-icon-provider-tab {
     padding: 4px 12px;
     border-radius: var(--radius-s);
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     white-space: nowrap;
 }
 
 .nn-icon-provider-tab:hover {
     background-color: var(--background-modifier-hover);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
 }
 
 .nn-icon-provider-tab.nn-active {
@@ -188,7 +188,7 @@
 .nn-icon-section-header {
     font-size: var(--font-ui-small);
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     margin-top: 12px;
     margin-bottom: 4px;
 }

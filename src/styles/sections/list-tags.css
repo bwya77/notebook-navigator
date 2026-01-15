@@ -80,11 +80,16 @@
     color: var(--nn-theme-file-tag-color);
     border-radius: min(10px, var(--nn-theme-file-tag-border-radius));
     border: 1px solid transparent;
-    border-color: color-mix(in srgb, currentColor 30%, transparent);
+    border-color: var(--nn-file-pill-border-color);
     font-size: 12px;
     font-weight: var(--nn-theme-file-tag-font-weight);
     white-space: nowrap;
     flex-shrink: 0;
+}
+
+.nn-file-tag[data-has-color='true'],
+.nn-file-tag[data-has-background='true'] {
+    --nn-file-pill-border-color: color-mix(in srgb, currentColor 30%, transparent);
 }
 
 .nn-file-custom-property {
@@ -136,11 +141,13 @@
 .nn-file.nn-selected .nn-file-tag:not(.nn-file-custom-property):not([data-has-color='true']):not([data-has-background='true']) {
     background-color: var(--nn-selected-file-tag-bg);
     color: var(--nn-selected-file-tag-color);
+    border-color: transparent;
 }
 
 .nn-file.nn-selected .nn-file-tag.nn-file-custom-property:not([data-has-color='true']):not([data-has-background='true']) {
     background-color: var(--nn-selected-file-custom-property-bg);
     color: var(--nn-selected-file-custom-property-color);
+    border-color: transparent;
 }
 
 /* Selected file text colors */

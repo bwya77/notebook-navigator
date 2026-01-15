@@ -87,7 +87,7 @@
 .nn-file-extension-text {
     font-size: 9px;
     font-weight: 700;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     text-transform: uppercase;
     letter-spacing: 0.1px;
 }

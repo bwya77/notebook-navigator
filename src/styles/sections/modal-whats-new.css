@@ -51,7 +51,7 @@
 .nn-whats-new-version h3 {
     font-size: 14px;
     font-weight: 600;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     margin: 0 0 4px 0;
 }
 
@@ -70,7 +70,7 @@
 /* Info text */
 .nn-whats-new-info {
     margin-bottom: 12px;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     line-height: 1.5;
     /* Match list item text size on desktop */
     font-size: 14px;
@@ -85,7 +85,7 @@
 
 /* Version date */
 .nn-whats-new-date {
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: 12px;
     display: block;
     margin-bottom: 8px;
@@ -128,7 +128,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: 13px;
 }
 
@@ -172,7 +172,7 @@
 /* Feature list item */
 .nn-whats-new-version li {
     margin-bottom: 4px;
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     font-size: 14px;
     line-height: 1.5;
 }
@@ -180,7 +180,7 @@
 /* Highlight emphasis */
 .nn-highlight {
     background-color: var(--text-highlight-bg);
-    color: var(--text-normal);
+    color: var(--nn-theme-foreground);
     padding: 0 2px;
     border-radius: 3px;
     font-weight: 600;
@@ -194,7 +194,7 @@
 
 /* Support text */
 .nn-whats-new-support-text {
-    color: var(--text-muted);
+    color: var(--nn-theme-foreground-muted);
     font-size: 14px;
     margin-bottom: 12px;
 }
