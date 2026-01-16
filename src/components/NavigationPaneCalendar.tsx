@@ -509,8 +509,8 @@ export function NavigationPaneCalendar({ onWeekCountChange }: NavigationPaneCale
             <div className="nn-navigation-calendar-grid" data-weeknumbers={showWeekNumbers ? 'true' : undefined}>
                 <div className="nn-navigation-calendar-weekdays" data-weeknumbers={showWeekNumbers ? 'true' : undefined}>
                     {showWeekNumbers ? <div className="nn-navigation-calendar-weeknumber-spacer" /> : null}
-                    {weekdays.map(day => (
-                        <div key={day} className="nn-navigation-calendar-weekday">
+                    {weekdays.map((day, index) => (
+                        <div key={(weekStartsOn + index) % 7} className="nn-navigation-calendar-weekday">
                             {day}
                         </div>
                     ))}

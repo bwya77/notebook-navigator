@@ -82,7 +82,8 @@ const RELEASE_NOTES: ReleaseNote[] = [
         improved: [],
         changed: [],
         fixed: [
-            'Fixed an issue with UI scale causing the floating toolbar buttons on iOS with Obsidian 1.11 and later to be mispositioned.'
+            'Fixed an issue with UI scale causing the floating toolbar buttons on iOS with Obsidian 1.11 and later to be mispositioned.',
+            'Fixed an issue where changing locale could leave calendar weekday labels misaligned until restart.'
         ]
     },
     {
