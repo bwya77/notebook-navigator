@@ -78,12 +78,9 @@ const RELEASE_NOTES: ReleaseNote[] = [
         version: '2.1.1',
         date: '2026-01-16',
         showOnUpdate: true,
-        new: [
-        ],
-        improved: [
-        ],
-        changed: [
-        ],
+        new: [],
+        improved: [],
+        changed: [],
         fixed: [
             'Fixed an issue with UI scale causing the floating toolbar buttons on iOS with Obsidian 1.11 and later to be mispositioned.'
         ]

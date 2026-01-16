@@ -6067,11 +6067,12 @@ body.nn-resizing {
 }
 
 /*
- * Obsidian 1.11+ iOS: sticky bottom overlays inside `.nn-scale-wrapper`.
- *
- * WebKit resolves `position: sticky` offsets against the unscaled pane height when an ancestor is transformed.
- * `--nn-ios-ui-scale-sticky-bottom-offset` compensates so the overlays stay anchored in the pane.
- */
+  * Obsidian 1.11+ iOS: sticky bottom overlays inside `.nn-scale-wrapper`.
+  *
+  * WebKit resolves `position: sticky` offsets against the unscaled pane height when an ancestor is transformed.
+  * This makes bottom-sticky overlays drift upward when `--nn-ui-scale` < 1 and downward when `--nn-ui-scale` > 1.
+  * `--nn-ios-ui-scale-sticky-bottom-offset` compensates so the overlays stay anchored in the pane.
+  */
 .notebook-navigator-obsidian-1-11-plus-ios .nn-scale-wrapper[data-ui-scale] {
     --nn-ios-ui-scale-sticky-bottom-offset: calc(100% - (100% / var(--nn-ui-scale, 1)));
 }
