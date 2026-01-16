@@ -4,7 +4,8 @@
    Navigation Pane Calendar (bottom overlay)
    ======================================================================== */
 
-.nn-navigation-pane {
+.nn-navigation-pane,
+.nn-list-pane {
     /* CSS vars are used to compute the overlay height and to coordinate scroller padding + mobile toolbar positioning. */
     --nn-nav-calendar-week-count: 6;
     --nn-nav-calendar-scrollbar-gap: var(--scrollbar-size, 12px);
@@ -23,13 +24,15 @@
     --nn-pane-bottom-calendar-space: 0px;
 }
 
-.notebook-navigator-mobile .nn-navigation-pane {
+.notebook-navigator-mobile .nn-navigation-pane,
+.notebook-navigator-mobile .nn-list-pane {
     --nn-nav-calendar-safe-area: var(--nn-mobile-safe-area-bottom);
     --nn-nav-calendar-scrollbar-gap: 0px;
     --nn-nav-calendar-border-width: 0px;
 }
 
-.nn-navigation-pane[data-calendar='true'] {
+.nn-navigation-pane[data-calendar='true'],
+.nn-list-pane[data-calendar='true'] {
     --nn-nav-calendar-height: calc(
         var(--nn-nav-calendar-border-width) + (var(--nn-nav-calendar-padding) * 2) + var(--nn-nav-calendar-safe-area) +
             var(--nn-nav-calendar-header-row-height) + var(--nn-nav-calendar-weekday-row-height) +
@@ -39,7 +42,8 @@
     --nn-pane-bottom-calendar-space: var(--nn-nav-calendar-height);
 }
 
-.nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
+.nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar,
+.nn-list-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
     bottom: var(--nn-nav-calendar-height);
 }
 

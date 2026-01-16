@@ -6,6 +6,7 @@
 
 .nn-list-pane {
     --nn-pane-bottom-toolbar-space: 0px;
+    --nn-pane-bottom-calendar-space: 0px;
 }
 
 /* File list container - scrollable area for files */
@@ -27,7 +28,8 @@
 /* Keep the chrome stack and bottom toolbar sized to their content; let the list content fill the remainder. */
 .nn-list-pane-scroller > .nn-list-pane-overlay,
 .nn-list-pane-scroller > .nn-list-pane-content,
-.nn-list-pane-scroller > .nn-pane-bottom-toolbar {
+.nn-list-pane-scroller > .nn-pane-bottom-toolbar,
+.nn-list-pane-scroller > .nn-navigation-calendar-overlay {
     flex-shrink: 0;
 }
 
@@ -36,7 +38,7 @@
 }
 
 .nn-list-pane-content {
-    padding-bottom: var(--nn-pane-bottom-toolbar-space);
+    padding-bottom: calc(var(--nn-pane-bottom-toolbar-space) + var(--nn-pane-bottom-calendar-space, 0px));
 }
 
 .nn-list-title-area {

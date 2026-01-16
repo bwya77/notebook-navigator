@@ -15,13 +15,18 @@
     --nn-mobile-safe-area-bottom: 0px;
 }
 
-.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-navigation-pane[data-calendar='true'] {
+.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-navigation-pane[data-calendar='true'],
+.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios) .nn-list-pane[data-calendar='true'] {
     /* The calendar overlay accounts for the safe area; keep the bottom toolbar at the fixed 49px height above it. */
     --nn-pane-bottom-toolbar-space: 49px;
 }
 
 .notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios)
     .nn-navigation-pane[data-calendar='true']
+    .nn-pane-bottom-toolbar
+    .nn-mobile-toolbar,
+.notebook-navigator-ios:not(.notebook-navigator-obsidian-1-11-plus-ios)
+    .nn-list-pane[data-calendar='true']
     .nn-pane-bottom-toolbar
     .nn-mobile-toolbar {
     padding-bottom: 0;
@@ -54,7 +59,8 @@
 }
 
 /* Navigation pane calendar safe area for Obsidian 1.11+ iOS */
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane {
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane {
     /* Obsidian 1.11+ already accounts for iOS safe areas in the view chrome. */
     --nn-nav-calendar-safe-area: 0px;
 }
@@ -79,7 +85,8 @@
     bottom: 0;
 }
 
-.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
+.notebook-navigator-obsidian-1-11-plus-ios .nn-navigation-pane[data-calendar='true'] .nn-pane-bottom-toolbar,
+.notebook-navigator-obsidian-1-11-plus-ios .nn-list-pane[data-calendar='true'] .nn-pane-bottom-toolbar {
     bottom: var(--nn-nav-calendar-height);
 }
 

@@ -79,7 +79,7 @@ const RELEASE_NOTES: ReleaseNote[] = [
         date: '2026-01-16',
         showOnUpdate: true,
         new: [],
-        improved: [],
+        improved: ['Calendar overlay now renders in the list pane when using vertical split.'],
         changed: [],
         fixed: [
             'Fixed an issue with UI scale causing the floating toolbar buttons on iOS with Obsidian 1.11 and later to be mispositioned.',

@@ -279,6 +279,8 @@ export const NavigationPane = React.memo(
         const updateSettings = useSettingsUpdate();
         const uiState = useUIState();
         const uiDispatch = useUIDispatch();
+        const isVerticalDualPane = !uiState.singlePane && settings.dualPaneOrientation === 'vertical';
+        const shouldRenderCalendarOverlay = showCalendar && !isVerticalDualPane;
         const shortcuts = useShortcuts();
         const {
             shortcuts: shortcutsList,
@@ -966,7 +968,7 @@ export const NavigationPane = React.memo(
         // The virtualized list is rendered below this stack inside the same scroll container. Feed its height into TanStack Virtual
         // as scrollMargin/scrollPaddingStart so scrollToIndex aligns items below the chrome (not under it).
         const navigationOverlayHeight = useMeasuredElementHeight(navigationOverlayRef);
-        const calendarOverlayHeight = useMeasuredElementHeight(calendarOverlayRef, { enabled: showCalendar });
+        const calendarOverlayHeight = useMeasuredElementHeight(calendarOverlayRef, { enabled: shouldRenderCalendarOverlay });
         const bottomToolbarHeight = useMeasuredElementHeight(bottomToolbarRef, { enabled: isMobile && !isAndroid });
 
         // We only reserve gutter space when a banner exists because Windows scrollbars
@@ -2731,7 +2733,7 @@ export const NavigationPane = React.memo(
                 ref={navigationPaneRef}
                 className="nn-navigation-pane"
                 style={navigationPaneStyle}
-                data-calendar={showCalendar ? 'true' : undefined}
+                data-calendar={shouldRenderCalendarOverlay ? 'true' : undefined}
                 data-shortcut-sorting={isShortcutSorting ? 'true' : undefined}
                 data-shortcuts-resizing={!isMobile && isPinnedShortcutsResizing ? 'true' : undefined}
             >
@@ -2866,7 +2868,7 @@ export const NavigationPane = React.memo(
                             />
                         </div>
                     )}
-                    {showCalendar ? (
+                    {shouldRenderCalendarOverlay ? (
                         <div className="nn-navigation-calendar-overlay" ref={calendarOverlayRef}>
                             <NavigationPaneCalendar onWeekCountChange={setCalendarWeekCount} />
                         </div>

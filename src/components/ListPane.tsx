@@ -65,6 +65,7 @@ import { getEffectiveSortOption } from '../utils/sortUtils';
 import { FileItem } from './FileItem';
 import { ListPaneHeader } from './ListPaneHeader';
 import { ListToolbar } from './ListToolbar';
+import { NavigationPaneCalendar } from './NavigationPaneCalendar';
 import { SearchInput } from './SearchInput';
 import { ListPaneTitleArea } from './ListPaneTitleArea';
 import { InputModal } from '../modals/InputModal';
@@ -84,6 +85,8 @@ import { getListPaneMeasurements } from '../utils/listPaneMeasurements';
 import { ServiceIcon } from './ServiceIcon';
 import { resolveUXIcon } from '../utils/uxIcons';
 import { showNotice } from '../utils/noticeUtils';
+
+type CSSPropertiesWithVars = React.CSSProperties & Record<`--${string}`, string | number>;
 
 /**
  * Renders the list pane displaying files from the selected folder.
@@ -152,14 +155,18 @@ export const ListPane = React.memo(
         const uxPreferences = useUXPreferences();
         const includeDescendantNotes = uxPreferences.includeDescendantNotes;
         const showHiddenItems = uxPreferences.showHiddenItems;
+        const showCalendar = uxPreferences.showCalendar;
         const { setSearchActive } = useUXPreferenceActions();
         const appearanceSettings = useListPaneAppearance();
         const uiState = useUIState();
         const uiDispatch = useUIDispatch();
+        const isVerticalDualPane = !uiState.singlePane && settings.dualPaneOrientation === 'vertical';
+        const shouldRenderCalendarOverlay = showCalendar && isVerticalDualPane;
         const shortcuts = useShortcuts();
         const { addSearchShortcut, removeSearchShortcut, searchShortcutsByName } = shortcuts;
         const listPaneRef = useRef<HTMLDivElement>(null);
         const listOverlayRef = useRef<HTMLDivElement>(null);
+        const calendarOverlayRef = useRef<HTMLDivElement>(null);
         // The iOS bottom toolbar is a sticky overlay inside the scroll container. Measure its rendered height so
         // TanStack Virtual can treat it as a bottom inset when auto-revealing files.
         const bottomToolbarRef = useRef<HTMLDivElement>(null);
@@ -173,6 +180,7 @@ export const ListPane = React.memo(
         });
         const searchShortcuts = useMemo(() => Array.from(searchShortcutsByName.values()), [searchShortcutsByName]);
         const [isSavingSearchShortcut, setIsSavingSearchShortcut] = useState(false);
+        const [calendarWeekCount, setCalendarWeekCount] = useState<number>(() => settings.calendarWeeksToShow);
         const listPaneTitle = settings.listPaneTitle ?? 'header';
         const shouldShowDesktopTitleArea = !isMobile && listPaneTitle === 'list';
         const listMeasurements = getListPaneMeasurements(isMobile);
@@ -188,6 +196,18 @@ export const ListPane = React.memo(
                 '--nn-file-icon-slot-gap': '0px'
             } as React.CSSProperties;
         }, [settings.showFileIcons]);
+        const listPaneStyle = useMemo<CSSPropertiesWithVars>(() => {
+            return {
+                ...(iconColumnStyle ?? {}),
+                '--nn-nav-calendar-week-count': calendarWeekCount
+            };
+        }, [calendarWeekCount, iconColumnStyle]);
+
+        useEffect(() => {
+            if (settings.calendarWeeksToShow !== 6) {
+                setCalendarWeekCount(settings.calendarWeeksToShow);
+            }
+        }, [settings.calendarWeeksToShow]);
 
         // Search state - use directly from settings for sync across devices
         const isSearchActive = uxPreferences.searchActive;
@@ -195,6 +215,7 @@ export const ListPane = React.memo(
         // TanStack Virtual needs the overlay height to align scrollToIndex and visible range calculations with the start of the file rows.
         const listOverlayHeight = useMeasuredElementHeight(listOverlayRef);
         const bottomToolbarHeight = useMeasuredElementHeight(bottomToolbarRef, { enabled: isMobile && !isAndroid });
+        const calendarOverlayHeight = useMeasuredElementHeight(calendarOverlayRef, { enabled: shouldRenderCalendarOverlay });
         const [searchQuery, setSearchQuery] = useState('');
         // Debounced search query used for data filtering to avoid per-keystroke spikes
         const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
@@ -412,7 +433,7 @@ export const ListPane = React.memo(
             topSpacerHeight,
             includeDescendantNotes,
             scrollMargin: listOverlayHeight,
-            scrollPaddingEnd: bottomToolbarHeight
+            scrollPaddingEnd: bottomToolbarHeight + calendarOverlayHeight
         });
 
         // Attach context menu to empty areas in the list pane for file creation
@@ -913,7 +934,8 @@ export const ListPane = React.memo(
             <div
                 ref={listPaneRef}
                 className={`nn-list-pane ${isSearchActive ? 'nn-search-active' : ''}`}
-                style={iconColumnStyle ?? undefined}
+                style={listPaneStyle}
+                data-calendar={shouldRenderCalendarOverlay ? 'true' : undefined}
             >
                 {props.resizeHandleProps && <div className="nn-resize-handle" {...props.resizeHandleProps} />}
                 <div
@@ -1184,6 +1206,11 @@ export const ListPane = React.memo(
                             />
                         </div>
                     )}
+                    {shouldRenderCalendarOverlay ? (
+                        <div className="nn-navigation-calendar-overlay" ref={calendarOverlayRef}>
+                            <NavigationPaneCalendar onWeekCountChange={setCalendarWeekCount} />
+                        </div>
+                    ) : null}
                 </div>
             </div>
         );
