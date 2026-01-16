@@ -6066,6 +6066,24 @@ body.nn-resizing {
     bottom: var(--nn-nav-calendar-height);
 }
 
+/*
+ * Obsidian 1.11+ iOS: sticky bottom overlays inside `.nn-scale-wrapper`.
+ *
+ * WebKit resolves `position: sticky` offsets against the unscaled pane height when an ancestor is transformed.
+ * `--nn-ios-ui-scale-sticky-bottom-offset` compensates so the overlays stay anchored in the pane.
+ */
+.notebook-navigator-obsidian-1-11-plus-ios .nn-scale-wrapper[data-ui-scale] {
+    --nn-ios-ui-scale-sticky-bottom-offset: calc(100% - (100% / var(--nn-ui-scale, 1)));
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-scale-wrapper[data-ui-scale] .nn-pane-bottom-toolbar {
+    bottom: calc(var(--nn-pane-bottom-calendar-space, 0px) + var(--nn-ios-ui-scale-sticky-bottom-offset));
+}
+
+.notebook-navigator-obsidian-1-11-plus-ios .nn-scale-wrapper[data-ui-scale] .nn-navigation-calendar-overlay {
+    bottom: var(--nn-ios-ui-scale-sticky-bottom-offset);
+}
+
 /* Obsidian 1.11+ iOS glass toolbar */
 .notebook-navigator-obsidian-1-11-plus-ios .nn-mobile-toolbar {
     pointer-events: none;
