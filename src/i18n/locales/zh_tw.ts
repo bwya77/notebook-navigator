@@ -902,6 +902,14 @@ export const STRINGS_ZH_TW = {
                 name: '醒目顯示今天日期',
                 desc: '在今天日期上顯示紅色圓圈和粗體文字。'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: '顯示週號',
                 desc: '在每行開頭顯示週號。'
@@ -1281,6 +1289,10 @@ export const STRINGS_ZH_TW = {
             confirmBeforeDelete: {
                 name: '刪除前確認',
                 desc: '刪除筆記或資料夾時顯示確認對話方塊'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: '清理中繼資料',

@@ -904,6 +904,14 @@ export const STRINGS_TR = {
                 name: 'Bugünün tarihini vurgula',
                 desc: 'Bugünün tarihinde kırmızı bir daire ve kalın metin göster.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'Hafta numarasını göster',
                 desc: 'Hafta numarasıyla bir sütun ekle.'
@@ -1283,6 +1291,10 @@ export const STRINGS_TR = {
             confirmBeforeDelete: {
                 name: 'Silmeden önce onayla',
                 desc: 'Not veya klasör silerken onay iletişim kutusunu göster'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'Meta verileri temizle',

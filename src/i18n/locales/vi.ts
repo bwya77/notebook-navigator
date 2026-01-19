@@ -904,6 +904,14 @@ export const STRINGS_VI = {
                 name: 'Làm nổi bật ngày hôm nay',
                 desc: 'Hiển thị vòng tròn đỏ và chữ in đậm cho ngày hôm nay.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'Hiển thị số tuần',
                 desc: 'Thêm cột với số tuần.'
@@ -1283,6 +1291,10 @@ export const STRINGS_VI = {
             confirmBeforeDelete: {
                 name: 'Xác nhận trước khi xóa',
                 desc: 'Hiện hộp thoại xác nhận khi xóa ghi chú hoặc thư mục'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'Dọn dẹp metadata',

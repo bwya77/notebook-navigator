@@ -20,7 +20,7 @@ import { ButtonComponent, DropdownComponent, Setting, SliderComponent } from 'ob
 import { strings } from '../../i18n';
 import { NavigationBannerModal } from '../../modals/NavigationBannerModal';
 import { DEFAULT_SETTINGS } from '../defaultSettings';
-import type { CalendarWeeksToShow, ItemScope, ShortcutBadgeDisplayMode } from '../types';
+import type { CalendarDailyNoteIndicator, CalendarWeeksToShow, ItemScope, ShortcutBadgeDisplayMode } from '../types';
 import type { SettingsTabContext } from './SettingsTabContext';
 import { runAsyncAction } from '../../utils/async';
 import { getActiveVaultProfile } from '../../utils/vaultProfiles';
@@ -237,6 +237,23 @@ export function renderNavigationPaneTab(context: SettingsTabContext): void {
                 await plugin.saveSettingsAndUpdate();
             })
         );
+
+    calendarGroup
+        .addSetting(setting => {
+            setting
+                .setName(strings.settings.items.calendarDailyNoteIndicator.name)
+                .setDesc(strings.settings.items.calendarDailyNoteIndicator.desc);
+        })
+        .addDropdown((dropdown: DropdownComponent) => {
+            dropdown
+                .addOption('highlight', strings.settings.items.calendarDailyNoteIndicator.options.highlight)
+                .addOption('dot', strings.settings.items.calendarDailyNoteIndicator.options.dot)
+                .setValue(plugin.settings.calendarDailyNoteIndicator)
+                .onChange(async (value: CalendarDailyNoteIndicator) => {
+                    plugin.settings.calendarDailyNoteIndicator = value;
+                    await plugin.saveSettingsAndUpdate();
+                });
+        });
 
     calendarGroup
         .addSetting(setting => {

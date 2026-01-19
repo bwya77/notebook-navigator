@@ -904,6 +904,14 @@ export const STRINGS_AR = {
                 name: 'تمييز تاريخ اليوم',
                 desc: 'إظهار دائرة حمراء ونص غامق على تاريخ اليوم.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'عرض رقم الأسبوع',
                 desc: 'إضافة عمود برقم الأسبوع.'
@@ -1283,6 +1291,10 @@ export const STRINGS_AR = {
             confirmBeforeDelete: {
                 name: 'التأكيد قبل الحذف',
                 desc: 'إظهار مربع حوار تأكيد عند حذف الملاحظات أو المجلدات'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'تنظيف البيانات الوصفية',

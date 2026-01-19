@@ -904,6 +904,14 @@ export const STRINGS_EN = {
                 name: "Highlight today's date",
                 desc: "Show a red circle and bold text on today's date."
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'Show week number',
                 desc: 'Add a column with the week number.'
@@ -1281,6 +1289,10 @@ export const STRINGS_EN = {
             confirmBeforeDelete: {
                 name: 'Confirm before deleting',
                 desc: 'Show confirmation dialog when deleting notes or folders'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'Clean up metadata',

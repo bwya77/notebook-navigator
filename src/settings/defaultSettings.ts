@@ -42,6 +42,7 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
             hiddenFileTags: [],
             hiddenFileProperties: [],
             navigationBanner: null,
+            navigationBannerHeight: null,
             shortcuts: []
         }
     ],
@@ -92,6 +93,7 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
     calendarLocale: 'system-default',
     calendarWeeksToShow: 1,
     calendarHighlightToday: true,
+    calendarDailyNoteIndicator: 'dot',
     calendarShowWeekNumber: false,
     calendarConfirmBeforeCreate: true,
 
@@ -163,6 +165,7 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
     quickActionAddToShortcuts: true,
     quickActionPinNote: true,
     quickActionOpenInNewTab: false,
+    quickActionDelete: false,
 
     // Notes tab
     useFrontmatterMetadata: false,
@@ -217,6 +220,7 @@ export const DEFAULT_SETTINGS: NotebookNavigatorSettings = {
     // Advanced tab
     checkForUpdatesOnStart: true,
     confirmBeforeDelete: true,
+    interceptTagClicks: true,
 
     // Runtime state and cached data
     customVaultName: '',

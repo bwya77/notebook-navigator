@@ -274,7 +274,7 @@ export function ListPaneHeader({ onHeaderClick, isSearchActive, onSearchToggle }
                             onClick={() => {
                                 runAsyncAction(() => handleNewFile());
                             }}
-                            disabled={!selectionState.selectedFolder}
+                            disabled={!selectionState.selectedFolder && !selectionState.selectedTag}
                             tabIndex={-1}
                         >
                             <ServiceIcon iconId={resolveUXIcon(settings.interfaceIcons, 'list-new-note')} />

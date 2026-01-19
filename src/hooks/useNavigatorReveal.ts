@@ -622,6 +622,13 @@ export function useNavigatorReveal({
                 return;
             }
 
+            // Don't reveal if we're creating a note from tag view
+            const isCreatingNoteFromTag = commandQueue && commandQueue.isCreatingNoteFromTag();
+
+            if (isCreatingNoteFromTag) {
+                return;
+            }
+
             // Reveal the file
             setFileToReveal(file);
         };

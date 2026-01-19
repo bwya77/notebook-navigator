@@ -31,7 +31,8 @@ type QuickActionSettingKey =
     | 'quickActionAddTag'
     | 'quickActionAddToShortcuts'
     | 'quickActionPinNote'
-    | 'quickActionOpenInNewTab';
+    | 'quickActionOpenInNewTab'
+    | 'quickActionDelete';
 
 interface QuickActionToggleConfig {
     key: QuickActionSettingKey;
@@ -133,6 +134,11 @@ export function renderListPaneTab(context: SettingsTabContext): void {
                 key: 'quickActionOpenInNewTab',
                 icon: 'lucide-file-plus',
                 label: strings.contextMenu.file.openInNewTab
+            },
+            {
+                key: 'quickActionDelete',
+                icon: 'lucide-trash-2',
+                label: strings.contextMenu.file.deleteNote
             }
         ];
 

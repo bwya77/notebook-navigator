@@ -904,6 +904,14 @@ export const STRINGS_KO = {
                 name: '오늘 날짜 강조 표시',
                 desc: '오늘 날짜에 빨간 원과 굵은 텍스트를 표시합니다.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: '주 번호 표시',
                 desc: '주 번호 열을 추가합니다.'
@@ -1283,6 +1291,10 @@ export const STRINGS_KO = {
             confirmBeforeDelete: {
                 name: '삭제 전 확인',
                 desc: '노트나 폴더를 삭제할 때 확인 대화 상자 표시'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: '메타데이터 정리',

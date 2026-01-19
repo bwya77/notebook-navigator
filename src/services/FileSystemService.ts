@@ -518,6 +518,22 @@ export class FileSystemOperations {
     }
 
     /**
+     * Creates a new markdown file in the vault root folder
+     * Used when creating notes from tag view
+     * @param openFile - Whether to open the file after creation (default: true)
+     * @returns The created file or null if creation failed
+     */
+    async createNewFileInRoot(openFile: boolean = true): Promise<TFile | null> {
+        const rootFolder = this.app.vault.getRoot();
+        return createFileWithOptions(rootFolder, this.app, {
+            extension: 'md',
+            content: '',
+            errorKey: 'createFile',
+            openFile
+        });
+    }
+
+    /**
      * Renames a folder with user-provided name
      * Shows input modal pre-filled with current name
      * Validates that new name is different from current

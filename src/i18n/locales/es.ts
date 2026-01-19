@@ -905,6 +905,14 @@ export const STRINGS_ES = {
                 name: 'Resaltar la fecha de hoy',
                 desc: 'Mostrar un círculo rojo y texto en negrita en la fecha de hoy.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'Mostrar número de semana',
                 desc: 'Agregar una columna con el número de semana.'
@@ -1286,6 +1294,10 @@ export const STRINGS_ES = {
             confirmBeforeDelete: {
                 name: 'Confirmar antes de eliminar',
                 desc: 'Muestra un diálogo de confirmación al eliminar notas o carpetas'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'Limpiar metadatos',

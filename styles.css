@@ -1816,16 +1816,48 @@ body {
 
 /* Navigation banner displayed above tree items */
 .nn-nav-banner {
+    position: relative;
     padding: var(--nn-nav-banner-padding-vertical, 8px) var(--nn-nav-item-padding-horizontal);
     box-sizing: border-box;
 }
 
 .nn-nav-banner-image {
     display: block;
-    width: 100%;
-    height: auto;
     border-radius: min(14px, var(--nn-theme-navitem-border-radius));
     background-color: var(--background-tertiary);
+}
+
+.nn-nav-banner-grabber {
+    position: absolute;
+    bottom: calc(var(--nn-nav-banner-padding-vertical, 8px) + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px 16px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1;
+    cursor: ns-resize;
+    opacity: 0;
+    transition: opacity 150ms ease;
+    user-select: none;
+}
+
+.nn-nav-banner-grabber-icon {
+    display: block;
+}
+
+.nn-nav-banner:hover .nn-nav-banner-grabber {
+    opacity: 1;
+}
+
+.nn-nav-banner.is-dragging .nn-nav-banner-grabber {
+    opacity: 1;
+}
+
+.nn-nav-banner.is-dragging {
+    cursor: ns-resize;
 }
 /* Source: src/styles/sections/navigation-tree.css */
 
@@ -2667,8 +2699,12 @@ body {
         filter: brightness(1.05);
     }
 
-    .nn-navigation-calendar-day:hover:not(.has-feature-image):not(.has-daily-note) {
+    .nn-navigation-calendar-day:hover:not(.has-feature-image) {
         background-color: var(--nn-theme-nav-calendar-hover-bg) !important;
+    }
+
+    .nn-navigation-calendar[data-daily-note-indicator='highlight'] .nn-navigation-calendar-day.has-daily-note:hover {
+        background-color: var(--nn-theme-nav-calendar-day-has-note-bg) !important;
     }
 }
 
@@ -2698,13 +2734,31 @@ body {
     z-index: 0;
 }
 
-.nn-navigation-calendar-day.has-daily-note {
+/* Daily note indicator: highlight style */
+.nn-navigation-calendar[data-daily-note-indicator='highlight'] .nn-navigation-calendar-day.has-daily-note {
     background-color: var(--nn-theme-nav-calendar-day-has-note-bg) !important;
     color: var(--nn-theme-nav-calendar-day-has-note-color);
 }
 
-.nn-navigation-calendar-day.has-daily-note .nn-navigation-calendar-day-number {
+.nn-navigation-calendar[data-daily-note-indicator='highlight'] .nn-navigation-calendar-day.has-daily-note .nn-navigation-calendar-day-number {
     font-weight: 600;
+}
+
+/* Daily note indicator: dot style */
+.nn-navigation-calendar[data-daily-note-indicator='dot'] .nn-navigation-calendar-day.has-daily-note .nn-navigation-calendar-day-number::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: calc(50% + 2px);
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.nn-navigation-calendar[data-daily-note-indicator='dot'] .nn-navigation-calendar-day.has-daily-note .nn-navigation-calendar-day-number {
+    position: relative;
 }
 
 .nn-navigation-calendar[data-highlight-today='true'] .nn-navigation-calendar-day.has-daily-note.is-today {

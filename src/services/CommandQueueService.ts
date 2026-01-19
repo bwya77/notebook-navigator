@@ -28,7 +28,8 @@ export enum OperationType {
     OPEN_VERSION_HISTORY = 'open-version-history',
     OPEN_IN_NEW_CONTEXT = 'open-in-new-context',
     OPEN_ACTIVE_FILE = 'open-active-file',
-    OPEN_HOMEPAGE = 'open-homepage'
+    OPEN_HOMEPAGE = 'open-homepage',
+    CREATE_NOTE_FROM_TAG = 'create-note-from-tag'
 }
 
 /**
@@ -97,6 +98,15 @@ interface OpenHomepageOperation extends BaseOperation {
     type: OperationType.OPEN_HOMEPAGE;
     file: TFile;
 }
+
+/**
+ * Operation for tracking note creation from tag view
+ */
+interface CreateNoteFromTagOperation extends BaseOperation {
+    type: OperationType.CREATE_NOTE_FROM_TAG;
+    tag: string;
+}
+
 type Operation =
     | MoveFileOperation
     | DeleteFilesOperation
@@ -104,7 +114,8 @@ type Operation =
     | OpenVersionHistoryOperation
     | OpenInNewContextOperation
     | OpenActiveFileOperation
-    | OpenHomepageOperation;
+    | OpenHomepageOperation
+    | CreateNoteFromTagOperation;
 
 /**
  * Result of a command execution
@@ -221,6 +232,13 @@ export class CommandQueueService {
      */
     isOpeningHomepage(): boolean {
         return this.hasActiveOperation(OperationType.OPEN_HOMEPAGE);
+    }
+
+    /**
+     * Check if creating a note from tag view
+     */
+    isCreatingNoteFromTag(): boolean {
+        return this.hasActiveOperation(OperationType.CREATE_NOTE_FROM_TAG);
     }
 
     /**
@@ -517,6 +535,36 @@ export class CommandQueueService {
         } finally {
             this.activeOperations.delete(operationId);
             this.markInactive(OperationType.OPEN_HOMEPAGE);
+        }
+    }
+
+    /**
+     * Execute creating a note from tag view with context tracking.
+     * This prevents auto-reveal from switching away from the tag view.
+     */
+    async executeCreateNoteFromTag(tag: string, createAndOpen: () => Promise<void>): Promise<CommandResult> {
+        const operationId = this.generateOperationId();
+        const operation: CreateNoteFromTagOperation = {
+            id: operationId,
+            type: OperationType.CREATE_NOTE_FROM_TAG,
+            timestamp: Date.now(),
+            tag
+        };
+
+        this.activeOperations.set(operationId, operation);
+        this.markActive(OperationType.CREATE_NOTE_FROM_TAG);
+
+        try {
+            await createAndOpen();
+            return { success: true };
+        } catch (error) {
+            return {
+                success: false,
+                error: error as Error
+            };
+        } finally {
+            this.activeOperations.delete(operationId);
+            this.markInactive(OperationType.CREATE_NOTE_FROM_TAG);
         }
     }
 

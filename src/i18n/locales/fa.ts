@@ -904,6 +904,14 @@ export const STRINGS_FA = {
                 name: 'برجسته کردن تاریخ امروز',
                 desc: 'نمایش دایره قرمز و متن پررنگ در تاریخ امروز.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'نمایش شماره هفته',
                 desc: 'افزودن ستون شماره هفته.'
@@ -1283,6 +1291,10 @@ export const STRINGS_FA = {
             confirmBeforeDelete: {
                 name: 'تأیید قبل از حذف',
                 desc: 'هنگام حذف یادداشت‌ها یا پوشه‌ها گفتگوی تأیید نمایش دهید'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'پاکسازی متادیتا',

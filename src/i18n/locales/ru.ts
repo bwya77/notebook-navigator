@@ -905,6 +905,14 @@ export const STRINGS_RU = {
                 name: 'Выделять сегодняшнюю дату',
                 desc: 'Показывать красный круг и жирный текст на сегодняшней дате.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'Показать номер недели',
                 desc: 'Добавить колонку с номером недели.'
@@ -1285,6 +1293,10 @@ export const STRINGS_RU = {
             confirmBeforeDelete: {
                 name: 'Подтверждать перед удалением',
                 desc: 'Показывать диалог подтверждения при удалении заметок или папок'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'Очистка метаданных',

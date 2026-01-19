@@ -904,6 +904,14 @@ export const STRINGS_TH = {
                 name: 'ไฮไลต์วันที่วันนี้',
                 desc: 'แสดงวงกลมสีแดงและข้อความตัวหนาบนวันที่วันนี้'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'แสดงหมายเลขสัปดาห์',
                 desc: 'เพิ่มคอลัมน์พร้อมหมายเลขสัปดาห์'
@@ -1283,6 +1291,10 @@ export const STRINGS_TH = {
             confirmBeforeDelete: {
                 name: 'ยืนยันก่อนลบ',
                 desc: 'แสดงกล่องยืนยันเมื่อลบโน้ตหรือโฟลเดอร์'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'ล้างเมตาดาต้า',

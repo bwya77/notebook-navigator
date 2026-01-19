@@ -25,6 +25,7 @@ import type NotebookNavigatorPlugin from '../../main';
 import { strings } from '../../i18n';
 import { runAsyncAction } from '../../utils/async';
 import { NOTEBOOK_NAVIGATOR_ICON_ID } from '../../constants/notebookNavigatorIcon';
+import { NOTEBOOK_NAVIGATOR_VIEW } from '../../types';
 import { removeHiddenFolderExactMatches, updateHiddenFolderExactMatches } from '../../utils/vaultProfiles';
 
 /**
@@ -192,5 +193,114 @@ export default function registerWorkspaceEvents(plugin: NotebookNavigatorPlugin)
                 }
             });
         })
+    );
+
+    // Intercept tag clicks in editor to navigate to tag in Navigator
+    plugin.registerDomEvent(
+        document,
+        'click',
+        (event: MouseEvent) => {
+            // Only intercept if the setting is enabled
+            if (!plugin.settings.interceptTagClicks) {
+                return;
+            }
+
+            const target = event.target as HTMLElement;
+            if (!target) {
+                return;
+            }
+
+            // Check if the clicked element is a tag or contains a tag
+            let tagName: string | null = null;
+
+            // Check for frontmatter/properties tags (multi-select-pill)
+            const pillElement = target.closest('.multi-select-pill') as HTMLElement;
+            if (pillElement) {
+                // Don't intercept clicks on the pill's remove button (the X)
+                if (
+                    target.closest('.multi-select-pill-remove-button') ||
+                    target.classList.contains('multi-select-pill-remove-button')
+                ) {
+                    return;
+                }
+
+                const metadataProperty = pillElement.closest('.metadata-property') as HTMLElement;
+                if (metadataProperty) {
+                    // Check the data-property-key attribute
+                    const propertyKeyAttr = metadataProperty.getAttribute('data-property-key');
+                    if (propertyKeyAttr && propertyKeyAttr.toLowerCase().includes('tag')) {
+                        const pillContent = pillElement.querySelector('.multi-select-pill-content');
+                        tagName = pillContent ? pillContent.textContent : pillElement.textContent;
+                    }
+                }
+            }
+            // Check if the target itself is a tag (inline tags in reading mode)
+            else if (target.classList.contains('tag')) {
+                tagName = target.getAttribute('data-tag-name') || target.textContent;
+            }
+            // Check for editor mode tags
+            else if (
+                target.classList.contains('cm-hashtag') ||
+                target.classList.contains('cm-hashtag-begin') ||
+                target.classList.contains('cm-hashtag-end')
+            ) {
+                const hashtagElement = (target.closest('.cm-hashtag') as HTMLElement) || target;
+                tagName = hashtagElement.textContent;
+            }
+            // Check parent elements
+            else if (target.closest('.tag')) {
+                const tagElement = target.closest('.tag') as HTMLElement;
+                tagName = tagElement.getAttribute('data-tag-name') || tagElement.textContent;
+            } else if (target.closest('.cm-hashtag')) {
+                const hashtagElement = target.closest('.cm-hashtag') as HTMLElement;
+                tagName = hashtagElement.textContent;
+            }
+
+            // If we found a tag, navigate to it
+            if (tagName) {
+                // Remove leading # if present
+                tagName = tagName.replace(/^#/, '').trim();
+
+                if (tagName) {
+                    // Prevent default Obsidian search behavior
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+
+                    // Navigate to the tag in Notebook Navigator
+                    runAsyncAction(async () => {
+                        try {
+                            await plugin.activateView();
+
+                            // Get the navigator view
+                            const leaves = plugin.app.workspace.getLeavesOfType(NOTEBOOK_NAVIGATOR_VIEW);
+
+                            if (leaves.length > 0) {
+                                const view = leaves[0]?.view;
+                                if (view && typeof (view as any).navigateToTag === 'function') {
+                                    // Call navigateToTag to select the tag
+                                    (view as any).navigateToTag(tagName);
+
+                                    // Click the selected tag to trigger list pane update
+                                    requestAnimationFrame(() => {
+                                        const navigatorElement = leaves[0].view.containerEl;
+                                        const selectedTag = navigatorElement.querySelector(
+                                            '.nn-tag.nn-selected .nn-navitem-content'
+                                        ) as HTMLElement;
+
+                                        if (selectedTag) {
+                                            selectedTag.click();
+                                        }
+                                    });
+                                }
+                            }
+                        } catch (error) {
+                            console.error('[Notebook Navigator] Failed to navigate to tag:', error);
+                        }
+                    });
+                }
+            }
+        },
+        { capture: true }
     );
 }

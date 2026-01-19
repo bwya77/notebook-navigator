@@ -50,6 +50,7 @@ interface VaultProfileInitOptions {
     hiddenFileTags?: string[];
     fileVisibility?: FileVisibility;
     navigationBanner?: string | null;
+    navigationBannerHeight?: number | null;
     shortcuts?: ShortcutEntry[];
 }
 
@@ -307,6 +308,7 @@ export function createVaultProfile(name: string, options: VaultProfileInitOption
         hiddenFileProperties: clonePatterns(options.hiddenFileProperties),
         navigationBanner:
             typeof options.navigationBanner === 'string' && options.navigationBanner.length > 0 ? options.navigationBanner : null,
+        navigationBannerHeight: typeof options.navigationBannerHeight === 'number' ? options.navigationBannerHeight : null,
         shortcuts: cloneShortcuts(options.shortcuts)
     };
 }

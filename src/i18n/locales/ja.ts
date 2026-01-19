@@ -905,6 +905,14 @@ export const STRINGS_JA = {
                 name: '今日の日付を強調表示',
                 desc: '今日の日付に赤い円と太字のテキストを表示します。'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: '週番号を表示',
                 desc: '週番号の列を追加します。'
@@ -1286,6 +1294,10 @@ export const STRINGS_JA = {
             confirmBeforeDelete: {
                 name: '削除前に確認',
                 desc: 'ノートやフォルダを削除する際に確認ダイアログを表示'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'メタデータをクリーンアップ',

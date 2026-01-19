@@ -906,6 +906,14 @@ export const STRINGS_NL = {
                 name: 'Datum van vandaag markeren',
                 desc: 'Toon een rode cirkel en vetgedrukte tekst op de datum van vandaag.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'Weeknummer tonen',
                 desc: 'Voeg een kolom toe met het weeknummer.'
@@ -1287,6 +1295,10 @@ export const STRINGS_NL = {
             confirmBeforeDelete: {
                 name: 'Bevestigen voor verwijderen',
                 desc: 'Bevestigingsdialoog tonen bij het verwijderen van notities of mappen'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'Metadata opschonen',

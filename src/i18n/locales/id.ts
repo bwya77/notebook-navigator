@@ -904,6 +904,14 @@ export const STRINGS_ID = {
                 name: 'Sorot tanggal hari ini',
                 desc: 'Tampilkan lingkaran merah dan teks tebal pada tanggal hari ini.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'Tampilkan nomor minggu',
                 desc: 'Tambahkan kolom dengan nomor minggu.'
@@ -1284,6 +1292,10 @@ export const STRINGS_ID = {
             confirmBeforeDelete: {
                 name: 'Konfirmasi sebelum menghapus',
                 desc: 'Tampilkan dialog konfirmasi saat menghapus catatan atau folder'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'Bersihkan metadata',

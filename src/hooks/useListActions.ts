@@ -25,12 +25,15 @@ import { useUXPreferenceActions, useUXPreferences } from '../context/UXPreferenc
 import { strings } from '../i18n';
 import type { SortOption } from '../settings';
 import { ItemType } from '../types';
+import { TIMEOUTS, OBSIDIAN_COMMANDS } from '../types/obsidian-extended';
 import { getEffectiveSortOption, getSortIcon as getSortIconName, SORT_OPTIONS } from '../utils/sortUtils';
 import { showListPaneAppearanceMenu } from '../components/ListPaneAppearanceMenu';
 import { getDefaultListMode } from './useListPaneAppearance';
 import type { FolderAppearance } from './useListPaneAppearance';
 import { getFilesForFolder } from '../utils/fileFinder';
 import { runAsyncAction } from '../utils/async';
+import { executeCommand } from '../utils/typeGuards';
+import { resolveDisplayTagPath } from '../services/tagOperations/TagOperationUtils';
 
 /**
  * Custom hook that provides shared actions for list pane toolbars.
@@ -39,7 +42,7 @@ import { runAsyncAction } from '../utils/async';
  * @returns Object containing action handlers and computed values for list pane operations
  */
 export function useListActions() {
-    const { app } = useServices();
+    const { app, tagOperations, tagTreeService, commandQueue } = useServices();
     const settings = useSettingsState();
     const uxPreferences = useUXPreferences();
     const includeDescendantNotes = uxPreferences.includeDescendantNotes;
@@ -50,15 +53,54 @@ export function useListActions() {
     const selectionDispatch = useSelectionDispatch();
     const fileSystemOps = useFileSystemOps();
     const metadataService = useMetadataService();
+
     const handleNewFile = useCallback(async () => {
-        if (!selectionState.selectedFolder) return;
+        const { selectedFolder, selectedTag } = selectionState;
+
+        // Early return if neither folder nor tag is selected
+        if (!selectedFolder && !selectedTag) return;
 
         try {
-            await fileSystemOps.createNewFile(selectionState.selectedFolder);
-        } catch {
-            // Error is handled by FileSystemOperations with user notification
+            // Case 1: Folder is selected - create in that folder (existing behavior)
+            if (selectedFolder) {
+                await fileSystemOps.createNewFile(selectedFolder);
+                return;
+            }
+
+            // Case 2: Tag is selected - create in vault root and apply tag
+            // Wrap in executeCreateNoteFromTag to prevent auto-reveal from switching away from tag view
+            if (selectedTag && commandQueue) {
+                await commandQueue.executeCreateNoteFromTag(selectedTag, async () => {
+                    // Step 1: Create file WITHOUT opening it first
+                    const newFile = await fileSystemOps.createNewFileInRoot(false);
+
+                    if (newFile && tagOperations) {
+                        // Step 2: Resolve display path to preserve original casing
+                        // (e.g., "devops" → "DevOps")
+                        const tagWithOriginalCase = resolveDisplayTagPath(selectedTag, tagTreeService);
+
+                        // Step 3: Apply tag with original casing BEFORE opening file
+                        // This ensures auto-reveal keeps us in tag view
+                        await tagOperations.addTagToFiles(tagWithOriginalCase, [newFile]);
+
+                        // Step 4: Open the file with rename mode
+                        const leaf = app.workspace.getLeaf(false);
+                        await leaf.openFile(newFile, {
+                            state: { mode: 'source' },
+                            active: true
+                        });
+
+                        // Step 5: Trigger rename mode after a brief delay
+                        window.setTimeout(() => {
+                            executeCommand(app, OBSIDIAN_COMMANDS.EDIT_FILE_TITLE);
+                        }, TIMEOUTS.FILE_OPERATION_DELAY);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('[Notebook Navigator] Error creating new file:', error);
         }
-    }, [selectionState.selectedFolder, fileSystemOps]);
+    }, [selectionState, fileSystemOps, tagOperations, tagTreeService, app, commandQueue]);
 
     const getCurrentSortOption = useCallback((): SortOption => {
         return getEffectiveSortOption(settings, selectionState.selectionType, selectionState.selectedFolder, selectionState.selectedTag);

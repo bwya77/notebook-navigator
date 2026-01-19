@@ -48,7 +48,7 @@
 
 import React, { useRef, useMemo, useEffect, useState, useCallback, useId } from 'react';
 import { TFile, TFolder, setTooltip, setIcon } from 'obsidian';
-import { useServices } from '../context/ServicesContext';
+import { useServices, useFileSystemOps } from '../context/ServicesContext';
 import type { CustomPropertyItem, FeatureImageStatus, FileContentChange } from '../storage/IndexedDBStorage';
 import { useMetadataService } from '../context/ServicesContext';
 import { useActiveProfile, useSettingsDerived, useSettingsState } from '../context/SettingsContext';
@@ -303,6 +303,7 @@ export const FileItem = React.memo(function FileItem({
 }: FileItemProps) {
     // === Hooks (all hooks together at the top) ===
     const { app, isMobile, plugin, commandQueue, tagOperations } = useServices();
+    const fileSystemOps = useFileSystemOps();
     const settings = useSettingsState();
     const { fileNameIconNeedles } = useSettingsDerived();
     const { hiddenTags } = useActiveProfile();
@@ -370,6 +371,7 @@ export const FileItem = React.memo(function FileItem({
     const addShortcutIconRef = useRef<HTMLDivElement>(null);
     const pinNoteIconRef = useRef<HTMLDivElement>(null);
     const openInNewTabIconRef = useRef<HTMLDivElement>(null);
+    const deleteIconRef = useRef<HTMLDivElement>(null);
     const fileIconRef = useRef<HTMLSpanElement>(null);
     const featureImageObjectUrlRef = useRef<string | null>(null);
     const featureImageImgRef = useRef<HTMLImageElement | null>(null);
@@ -388,8 +390,9 @@ export const FileItem = React.memo(function FileItem({
     const shouldShowAddTagAction = settings.showQuickActions && settings.quickActionAddTag && canAddTagsToFile && Boolean(tagOperations);
     const hasShortcut = hasNoteShortcut(file.path);
     const shouldShowShortcutAction = settings.showQuickActions && settings.quickActionAddToShortcuts;
+    const shouldShowDeleteAction = settings.showQuickActions && settings.quickActionDelete;
     const hasQuickActions =
-        shouldShowOpenInNewTab || shouldShowPinNote || shouldShowRevealIcon || shouldShowAddTagAction || shouldShowShortcutAction;
+        shouldShowOpenInNewTab || shouldShowPinNote || shouldShowRevealIcon || shouldShowAddTagAction || shouldShowShortcutAction || shouldShowDeleteAction;
     const iconServiceVersion = useIconServiceVersion();
     const showFileIcons = settings.showFileIcons;
 
@@ -1355,6 +1358,15 @@ export const FileItem = React.memo(function FileItem({
         });
     };
 
+    // Delete the file (respects confirmBeforeDelete setting)
+    const handleDeleteClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        runAsyncAction(async () => {
+            await fileSystemOps.deleteFile(file, settings.confirmBeforeDelete);
+        });
+    };
+
     // Handle middle mouse button click to open in new tab
     const handleMouseDown = (e: React.MouseEvent) => {
         if (e.button !== 1) {
@@ -1445,6 +1457,20 @@ export const FileItem = React.memo(function FileItem({
         });
     }
 
+    if (shouldShowDeleteAction) {
+        quickActionItems.push({
+            key: 'delete',
+            element: (
+                <div
+                    ref={deleteIconRef}
+                    className="nn-quick-action-item"
+                    onClick={handleDeleteClick}
+                    title={file.extension === 'md' ? strings.contextMenu.file.deleteNote : strings.contextMenu.file.deleteFile}
+                />
+            )
+        });
+    }
+
     // === Effects ===
 
     // Renders the file icon in the DOM using the icon service
@@ -1485,6 +1511,9 @@ export const FileItem = React.memo(function FileItem({
             if (openInNewTabIconRef.current && shouldShowOpenInNewTab) {
                 setIcon(openInNewTabIconRef.current, 'lucide-file-plus');
             }
+            if (deleteIconRef.current && shouldShowDeleteAction) {
+                setIcon(deleteIconRef.current, 'lucide-trash-2');
+            }
         }
     }, [
         isHovered,
@@ -1494,6 +1523,7 @@ export const FileItem = React.memo(function FileItem({
         shouldShowRevealIcon,
         shouldShowAddTagAction,
         shouldShowShortcutAction,
+        shouldShowDeleteAction,
         hasShortcut,
         isPinned
     ]);

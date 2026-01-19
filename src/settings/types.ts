@@ -61,6 +61,9 @@ export type ShortcutBadgeDisplayMode = 'index' | 'count' | 'none';
 /** Number of calendar week rows shown in the navigation pane */
 export type CalendarWeeksToShow = 1 | 2 | 3 | 4 | 5 | 6;
 
+/** Visual indicator style for days with daily notes in the calendar */
+export type CalendarDailyNoteIndicator = 'highlight' | 'dot';
+
 /** Default display modes for list items */
 export type ListDisplayMode = 'standard' | 'compact';
 
@@ -101,6 +104,7 @@ export interface VaultProfile {
     hiddenFileTags: string[];
     hiddenFileProperties: string[];
     navigationBanner: string | null;
+    navigationBannerHeight: number | null;
     shortcuts: ShortcutEntry[];
 }
 
@@ -156,6 +160,7 @@ export interface NotebookNavigatorSettings {
     calendarLocale: string;
     calendarWeeksToShow: CalendarWeeksToShow;
     calendarHighlightToday: boolean;
+    calendarDailyNoteIndicator: CalendarDailyNoteIndicator;
     calendarShowWeekNumber: boolean;
     calendarConfirmBeforeCreate: boolean;
 
@@ -211,6 +216,7 @@ export interface NotebookNavigatorSettings {
     quickActionAddToShortcuts: boolean;
     quickActionPinNote: boolean;
     quickActionOpenInNewTab: boolean;
+    quickActionDelete: boolean;
 
     // Notes tab
     useFrontmatterMetadata: boolean;
@@ -264,6 +270,7 @@ export interface NotebookNavigatorSettings {
     // Advanced tab
     checkForUpdatesOnStart: boolean;
     confirmBeforeDelete: boolean;
+    interceptTagClicks: boolean;
 
     // Runtime state and cached data
     customVaultName: string;

@@ -904,6 +904,14 @@ export const STRINGS_UK = {
                 name: 'Виділяти сьогоднішню дату',
                 desc: 'Показувати червоне коло та жирний текст на сьогоднішній даті.'
             },
+            calendarDailyNoteIndicator: {
+                name: 'Daily note indicator',
+                desc: 'How to indicate days that have a daily note.',
+                options: {
+                    highlight: 'Highlight',
+                    dot: 'Dot'
+                }
+            },
             calendarShowWeekNumber: {
                 name: 'Показати номер тижня',
                 desc: 'Додати колонку з номером тижня.'
@@ -1284,6 +1292,10 @@ export const STRINGS_UK = {
             confirmBeforeDelete: {
                 name: 'Підтверджувати перед видаленням',
                 desc: 'Показувати діалог підтвердження при видаленні нотаток або папок'
+            },
+            interceptTagClicks: {
+                name: 'Navigate to tags on click',
+                desc: 'When clicking tags in notes, navigate to that tag in Notebook Navigator instead of triggering Obsidian search.'
             },
             metadataCleanup: {
                 name: 'Очистити метадані',
