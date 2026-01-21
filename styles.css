@@ -204,6 +204,8 @@ body {
     --nn-theme-nav-calendar-day-has-feature-image-color: white;
     --nn-theme-nav-calendar-day-today-color: var(--nn-theme-nav-calendar-day-has-note-color);
     --nn-theme-nav-calendar-day-today-bg: var(--color-red);
+    --nn-theme-nav-calendar-day-today-bg-subtle: color-mix(in srgb, var(--color-accent) 15%, transparent);
+    --nn-theme-nav-calendar-day-today-bg-hover: color-mix(in srgb, var(--color-accent) 30%, transparent);
 
     /* -- Folder & Tag Items -- */
     --nn-theme-navitem-chevron-color: var(--nn-theme-foreground-muted);
@@ -2706,6 +2708,10 @@ body {
     .nn-navigation-calendar[data-daily-note-indicator='highlight'] .nn-navigation-calendar-day.has-daily-note:hover {
         background-color: var(--nn-theme-nav-calendar-day-has-note-bg) !important;
     }
+
+    .nn-navigation-calendar[data-highlight-today='true'] .nn-navigation-calendar-day.is-today:hover {
+        background-color: var(--nn-theme-nav-calendar-day-today-bg-hover) !important;
+    }
 }
 
 .nn-navigation-calendar-day.is-outside-month:not(.has-daily-note):not(.has-feature-image) {
@@ -2714,25 +2720,13 @@ body {
 
 .nn-navigation-calendar[data-highlight-today='true'] .nn-navigation-calendar-day.is-today {
     color: var(--nn-theme-nav-calendar-day-today-color);
+    background-color: var(--nn-theme-nav-calendar-day-today-bg-subtle) !important;
 }
 
 .nn-navigation-calendar[data-highlight-today='true'] .nn-navigation-calendar-day.is-today .nn-navigation-calendar-day-number {
     font-weight: 600;
 }
 
-.nn-navigation-calendar[data-highlight-today='true']
-    .nn-navigation-calendar-day.is-today:not(.has-daily-note):not(.has-feature-image)::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: min(calc(100% - 4px), calc(var(--nn-nav-calendar-week-row-height) - 4px));
-    height: min(calc(100% - 4px), calc(var(--nn-nav-calendar-week-row-height) - 4px));
-    border-radius: 999px;
-    background-color: var(--nn-theme-nav-calendar-day-today-bg);
-    z-index: 0;
-}
 
 /* Daily note indicator: highlight style */
 .nn-navigation-calendar[data-daily-note-indicator='highlight'] .nn-navigation-calendar-day.has-daily-note {

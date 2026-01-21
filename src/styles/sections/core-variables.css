@@ -177,6 +177,8 @@ body {
     --nn-theme-nav-calendar-day-has-feature-image-color: white;
     --nn-theme-nav-calendar-day-today-color: var(--nn-theme-nav-calendar-day-has-note-color);
     --nn-theme-nav-calendar-day-today-bg: var(--color-red);
+    --nn-theme-nav-calendar-day-today-bg-subtle: color-mix(in srgb, var(--color-accent) 15%, transparent);
+    --nn-theme-nav-calendar-day-today-bg-hover: color-mix(in srgb, var(--color-accent) 30%, transparent);
 
     /* -- Folder & Tag Items -- */
     --nn-theme-navitem-chevron-color: var(--nn-theme-foreground-muted);
